@@ -1,0 +1,4 @@
+spring:
+  config:
+    import: classpath:key.properties, classpath:wordnik_link.properties
+
