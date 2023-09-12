@@ -10,10 +10,11 @@ import systems.ajax.englishstudytelegrambot.dto.AudioForWordResponse
 import systems.ajax.englishstudytelegrambot.dto.DefinitionOfWordResponse
 import systems.ajax.englishstudytelegrambot.dto.ExampleOfWordResponse
 import systems.ajax.englishstudytelegrambot.dto.PronunciationOfWordResponse
+import systems.ajax.englishstudytelegrambot.dto.GettingPartOfAdditionalInfoAboutWord
 import systems.ajax.englishstudytelegrambot.entity.AdditionalInfoAboutWord
 import kotlin.reflect.KSuspendFunction1
 
-interface AdditionalInfoAboutWordService{
+interface AdditionalInfoAboutWordService {
     suspend fun findAdditionInfoAboutWord(wordSpelling: String): AdditionalInfoAboutWord
 }
 
@@ -58,18 +59,21 @@ class AdditionalInfoAboutWordServiceImpl(private val webClient: WebClient) : Add
         }
 
     private suspend fun findAudioLink(wordSpelling: String): String =
-        customGetInfoAboutWord<List<AudioForWordResponse>>(wordSpelling, audioLink)
+        customGetInfoAboutWord<AudioForWordResponse>(wordSpelling, audioLink)
 
     private suspend fun findDefinitionOfWord(wordSpelling: String): String =
-        customGetInfoAboutWord<List<DefinitionOfWordResponse>>(wordSpelling, definitionLink)
+        customGetInfoAboutWord<DefinitionOfWordResponse>(wordSpelling, definitionLink)
 
     private suspend fun findExampleOfWord(wordSpelling: String): String =
         customGetInfoAboutWord<ExampleOfWordResponse>(wordSpelling, exampleLink)
 
     private suspend fun findPronunciationOfWord(wordSpelling: String): String =
-        customGetInfoAboutWord<List<PronunciationOfWordResponse>>(wordSpelling, pronunciationLink)
+        customGetInfoAboutWord<PronunciationOfWordResponse>(wordSpelling, pronunciationLink)
 
-    private suspend inline fun <reified T> customGetInfoAboutWord(wordSpelling: String, link: String) =
+    private suspend inline fun <reified T : GettingPartOfAdditionalInfoAboutWord> customGetInfoAboutWord(
+        wordSpelling: String,
+        link: String
+    ): String =
         webClient.get()
             .uri(
                 link, wordSpelling, wordnikAPIKey
@@ -78,7 +82,7 @@ class AdditionalInfoAboutWordServiceImpl(private val webClient: WebClient) : Add
             .onStatus({ responseStatus ->
                 responseStatus == HttpStatus.NOT_FOUND
             }) { throw ResponseStatusException(HttpStatus.NOT_FOUND) }
-            .bodyToMono(T::class.java)
-            .block()
-            .toString()
+            .bodyToFlux(T::class.java)
+            .blockFirst()
+            ?.getPartOfAdditionalInfoAboutWord() ?: "Missing"
 }
