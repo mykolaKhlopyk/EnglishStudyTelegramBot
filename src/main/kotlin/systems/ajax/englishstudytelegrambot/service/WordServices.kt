@@ -36,8 +36,6 @@ class AdditionalInfoAboutWordServiceImpl(private val webClient: WebClient) : Add
     @Value("\${link.pronunciation}")
     lateinit var pronunciationLink: String
 
-    val log = LoggerFactory.getLogger(this::class.java)
-
     override suspend fun findAdditionInfoAboutWord(wordSpelling: String): AdditionalInfoAboutWord {
         val audioLink: String = getPartOfInfoOrElseReturnMissing(wordSpelling, ::findAudioLink)
         val definition: String = getPartOfInfoOrElseReturnMissing(wordSpelling, ::findDefinitionOfWord)
@@ -84,5 +82,9 @@ class AdditionalInfoAboutWordServiceImpl(private val webClient: WebClient) : Add
             }) { throw ResponseStatusException(HttpStatus.NOT_FOUND) }
             .bodyToFlux(T::class.java)
             .blockFirst()
-            ?.getPartOfAdditionalInfoAboutWord() ?: "Missing"
+            ?.partOfAdditionalInfoAboutWord ?: "Missing"
+
+    companion object {
+        val log = LoggerFactory.getLogger(this::class.java)
+    }
 }
