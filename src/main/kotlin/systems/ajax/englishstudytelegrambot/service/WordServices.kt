@@ -1,8 +1,10 @@
 package systems.ajax.englishstudytelegrambot.service
 
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.bind.ConstructorBinding
 import org.springframework.http.HttpStatus
+import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.server.ResponseStatusException
@@ -18,23 +20,19 @@ interface AdditionalInfoAboutWordService {
     suspend fun findAdditionInfoAboutWord(wordSpelling: String): AdditionalInfoAboutWord
 }
 
+@ConfigurationProperties(prefix = "link")
+data class WordnikLinkProperties @ConstructorBinding constructor(
+    val audio: String,
+    val definition: String,
+    val example: String,
+    val pronunciation: String
+)
+
 @Service
-class AdditionalInfoAboutWordServiceImpl(private val webClient: WebClient) : AdditionalInfoAboutWordService {
-
-    @Value("\${wordnik.api.key}")
-    lateinit var wordnikAPIKey: String
-
-    @Value("\${link.audio}")
-    lateinit var audioLink: String
-
-    @Value("\${link.definition}")
-    lateinit var definitionLink: String
-
-    @Value("\${link.example}")
-    lateinit var exampleLink: String
-
-    @Value("\${link.pronunciation}")
-    lateinit var pronunciationLink: String
+class AdditionalInfoAboutWordServiceImpl(
+    private val wordnikLinkProperties: WordnikLinkProperties,
+    private val externalWordSource: ExternalWordSource
+) : AdditionalInfoAboutWordService {
 
     override suspend fun findAdditionInfoAboutWord(wordSpelling: String): AdditionalInfoAboutWord {
         val audioLink: String = getPartOfInfoOrElseReturnMissing(wordSpelling, ::findAudioLink)
@@ -57,24 +55,41 @@ class AdditionalInfoAboutWordServiceImpl(private val webClient: WebClient) : Add
         }
 
     private suspend fun findAudioLink(wordSpelling: String): String =
-        customGetInfoAboutWord<AudioForWordResponse>(wordSpelling, audioLink)
+        externalWordSource.customGetInfoAboutWord<AudioForWordResponse>(wordSpelling, wordnikLinkProperties.audio)
 
     private suspend fun findDefinitionOfWord(wordSpelling: String): String =
-        customGetInfoAboutWord<DefinitionOfWordResponse>(wordSpelling, definitionLink)
+        externalWordSource.customGetInfoAboutWord<DefinitionOfWordResponse>(
+            wordSpelling,
+            wordnikLinkProperties.definition
+        )
 
     private suspend fun findExampleOfWord(wordSpelling: String): String =
-        customGetInfoAboutWord<ExampleOfWordResponse>(wordSpelling, exampleLink)
+        externalWordSource.customGetInfoAboutWord<ExampleOfWordResponse>(wordSpelling, wordnikLinkProperties.example)
 
     private suspend fun findPronunciationOfWord(wordSpelling: String): String =
-        customGetInfoAboutWord<PronunciationOfWordResponse>(wordSpelling, pronunciationLink)
+        externalWordSource.customGetInfoAboutWord<PronunciationOfWordResponse>(
+            wordSpelling,
+            wordnikLinkProperties.pronunciation
+        )
 
-    private suspend inline fun <reified T : GettingPartOfAdditionalInfoAboutWord> customGetInfoAboutWord(
+    companion object {
+        val log = LoggerFactory.getLogger(this::class.java)
+    }
+}
+
+@ConfigurationProperties(prefix = "wordnik.api")
+data class WordinkKeyProperty @ConstructorBinding constructor(val key: String)
+
+@Component
+class ExternalWordSource(val webClient: WebClient, val wordnikKeyProperty: WordinkKeyProperty) {
+
+    final inline fun <reified T : GettingPartOfAdditionalInfoAboutWord> customGetInfoAboutWord(
         wordSpelling: String,
         link: String
     ): String =
         webClient.get()
             .uri(
-                link, wordSpelling, wordnikAPIKey
+                link, wordSpelling, wordnikKeyProperty.key
             )
             .retrieve()
             .onStatus({ responseStatus ->
@@ -83,8 +98,4 @@ class AdditionalInfoAboutWordServiceImpl(private val webClient: WebClient) : Add
             .bodyToFlux(T::class.java)
             .blockFirst()
             ?.partOfAdditionalInfoAboutWord ?: "Missing"
-
-    companion object {
-        val log = LoggerFactory.getLogger(this::class.java)
-    }
 }
