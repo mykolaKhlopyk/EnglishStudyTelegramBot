@@ -14,6 +14,4 @@ class WordController(val additionalInfoAboutWordService: AdditionalInfoAboutWord
     @GetMapping("/{word}")
     suspend fun getAdditionalInfoAboutWord(@PathVariable("word") wordSpelling: String): AdditionalInfoAboutWord =
         additionalInfoAboutWordService.findAdditionInfoAboutWord(wordSpelling)
-
-
 }
