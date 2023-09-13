@@ -16,5 +16,4 @@ class Configuration {
         builder
             .baseUrl(baseUrlToWordnikAPI)
             .build()
-
 }
