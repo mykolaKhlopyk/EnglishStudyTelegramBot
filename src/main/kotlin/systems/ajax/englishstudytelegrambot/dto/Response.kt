@@ -4,24 +4,23 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 interface GettingPartOfAdditionalInfoAboutWord {
 
-    fun getPartOfAdditionalInfoAboutWord(): String
-
+    val partOfAdditionalInfoAboutWord: String
 }
 
 data class AudioForWordResponse(
     @JsonProperty("fileUrl") val fileUrl: String
 ) : GettingPartOfAdditionalInfoAboutWord {
 
-    override fun getPartOfAdditionalInfoAboutWord(): String = fileUrl
-
+    override val partOfAdditionalInfoAboutWord: String
+        get() = fileUrl
 }
 
 data class DefinitionOfWordResponse(
     @JsonProperty("text") val definition: String
 ) : GettingPartOfAdditionalInfoAboutWord {
 
-    override fun getPartOfAdditionalInfoAboutWord(): String = definition
-
+    override val partOfAdditionalInfoAboutWord: String
+        get() = definition
 }
 
 data class ExampleOfWordResponse(
@@ -32,15 +31,14 @@ data class ExampleOfWordResponse(
         override fun toString(): String = text
     }
 
-    override fun getPartOfAdditionalInfoAboutWord(): String =
-        buildString { examples.forEachIndexed { index, example -> this.append("$index) $example\n") } }
-
+    override val partOfAdditionalInfoAboutWord: String
+        get() = buildString { examples.forEachIndexed { index, example -> this.append("$index) $example\n") } }
 }
 
 data class PronunciationOfWordResponse(
     @JsonProperty("raw") val pronunciation: String
 ) : GettingPartOfAdditionalInfoAboutWord {
 
-    override fun getPartOfAdditionalInfoAboutWord(): String = pronunciation
-
+    override val partOfAdditionalInfoAboutWord: String
+        get()= pronunciation
 }
