@@ -20,6 +20,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.mongodb:mongo-java-driver:3.12.14")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
     implementation("org.springframework.boot:spring-boot-starter-web")
