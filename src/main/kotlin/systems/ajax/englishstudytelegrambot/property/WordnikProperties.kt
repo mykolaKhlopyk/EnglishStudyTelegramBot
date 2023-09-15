@@ -14,7 +14,7 @@ data class WordinkKeyProperty @ConstructorBinding constructor(val tokenKey: Stri
 @ConfigurationProperties(prefix = "wordnik.link")
 data class WordnikLinkProperties @ConstructorBinding constructor(
     val audioSourceLink: String,
-    val definitionOfWord: String,
-    val examplesOfUsingWordInSentences: String,
-    val correctPronunciationOfWord: String
+    val definitionOfWordLink: String,
+    val examplesOfUsingWordInSentencesLink: String,
+    val correctPronunciationOfWordLink: String
 )

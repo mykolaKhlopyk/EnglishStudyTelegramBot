@@ -4,8 +4,8 @@ data class Word(val spelling: String, val translate: String, val additionalInfoA
 
 data class AdditionalInfoAboutWord(
     val linkToAudio: String,
-    val definition: String,
-    val example: String,
+    val definitionOfWord: String,
+    val exampleInSentences: String,
     val pronunciationOfWord: String
 )
 
