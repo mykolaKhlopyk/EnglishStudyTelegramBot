@@ -43,21 +43,21 @@ class AdditionalInfoAboutWordServiceImpl(
         }
 
     private suspend fun findAudioLink(wordSpelling: String): String =
-        externalWordSource.customGetInfoAboutWord<AudioForWordResponse>(wordSpelling, wordnikLinkProperties.audio)
+        externalWordSource.customGetInfoAboutWord<AudioForWordResponse>(wordSpelling, wordnikLinkProperties.audioSourceLink)
 
     private suspend fun findDefinitionOfWord(wordSpelling: String): String =
         externalWordSource.customGetInfoAboutWord<DefinitionOfWordResponse>(
             wordSpelling,
-            wordnikLinkProperties.definition
+            wordnikLinkProperties.definitionOfWord
         )
 
     private suspend fun findExampleOfWord(wordSpelling: String): String =
-        externalWordSource.customGetInfoAboutWord<ExampleOfWordResponse>(wordSpelling, wordnikLinkProperties.example)
+        externalWordSource.customGetInfoAboutWord<ExampleOfWordResponse>(wordSpelling, wordnikLinkProperties.examplesOfUsingWordInSentences)
 
     private suspend fun findPronunciationOfWord(wordSpelling: String): String =
         externalWordSource.customGetInfoAboutWord<PronunciationOfWordResponse>(
             wordSpelling,
-            wordnikLinkProperties.pronunciation
+            wordnikLinkProperties.correctPronunciationOfWord
         )
 
     companion object {
