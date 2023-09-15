@@ -1,3 +1,3 @@
 spring:
   config:
-    import: classpath:key.properties, classpath:wordnik.properties, classpath:mongodb.yml
+    import: classpath:mongodb/mongodb.yml, classpath:wodnik/wordnik.yml
