@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
 @Component
 class LogMethodsByRequiredAnnotationsBeanPostProcessor : BeanPostProcessor {
 
-    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
+    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any {
         if (bean.javaClass.isAnnotationPresent(LogMethodsByRequiredAnnotations::class.java)) {
             LoggingInterceptor.requiredAnnotations =
                 bean.javaClass.getAnnotation(LogMethodsByRequiredAnnotations::class.java).requiredAnnotations
