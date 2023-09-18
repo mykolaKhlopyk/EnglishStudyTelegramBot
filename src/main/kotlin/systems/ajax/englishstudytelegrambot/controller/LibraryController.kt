@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.service.LibraryService
+import systems.ajax.englishstudytelegrambot.telegram.TelegramBot
 
 @RestController
 @RequestMapping("/api/library")
-class LibraryController(val libraryService: LibraryService) {
+class LibraryController(val libraryService: LibraryService, val telegramBot: TelegramBot) {
 
     @PostMapping("/{nameOfNewLibrary}")
     fun createLibrary(@PathVariable("nameOfNewLibrary") nameOfNewLibrary: String): Library
