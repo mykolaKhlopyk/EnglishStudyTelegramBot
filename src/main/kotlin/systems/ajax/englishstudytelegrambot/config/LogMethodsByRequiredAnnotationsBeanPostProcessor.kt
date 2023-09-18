@@ -41,8 +41,6 @@ class LogMethodsByRequiredAnnotationsBeanPostProcessor : BeanPostProcessor {
         private fun logFullInfoAboutMethod(method: Method, durationOfWorkInMs: Long, result: Any?) {
             log.info("method name = {}, duration of work = {} ms, result = {}", method.name, durationOfWorkInMs, result)
         }
-
-
     }
 
     companion object {
