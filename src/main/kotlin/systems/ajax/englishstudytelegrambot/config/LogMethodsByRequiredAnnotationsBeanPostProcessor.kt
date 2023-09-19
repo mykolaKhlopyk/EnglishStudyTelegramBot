@@ -10,37 +10,76 @@ import systems.ajax.englishstudytelegrambot.annotation.LogMethodsByRequiredAnnot
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 
+
 @Component
 class LogMethodsByRequiredAnnotationsBeanPostProcessor : BeanPostProcessor {
 
-    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any {
-        if (bean.javaClass.isAnnotationPresent(LogMethodsByRequiredAnnotations::class.java)) {
-            LoggingInterceptor.requiredAnnotations =
-                bean.javaClass.getAnnotation(LogMethodsByRequiredAnnotations::class.java).requiredAnnotations
-            val proxyFactory = ProxyFactory(bean);
-            proxyFactory.addAdvice(LoggingInterceptor);
-            return proxyFactory.getProxy();
+    private val mapBeanNameBeanClassAndAnnotatedMethods: MutableMap<String, Pair<Class<*>, List<Method>>> =
+        mutableMapOf()
+
+    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
+        val beanClass = bean.javaClass
+        if (beanClass.isAnnotationPresent(LogMethodsByRequiredAnnotations::class.java)) {
+            mapBeanNameBeanClassAndAnnotatedMethods[beanName] =
+                beanClass to findMethodsWithRequiredAnnotations(beanClass)
         }
-        return bean;
+        return bean
     }
 
-    object LoggingInterceptor : MethodInterceptor {
-        var requiredAnnotations: Array<out KClass<out Any>> = arrayOf()
-        override fun invoke(invocation: MethodInvocation): Any? {
-            val methodAnnotations = invocation.method.annotations.map { it.annotationClass }
-            if (methodAnnotations.any { requiredAnnotations.contains(it) }) {
-                val start: Long = System.currentTimeMillis()
-                val result: Any? = invocation.proceed()
-                val finish: Long = System.currentTimeMillis()
-                logFullInfoAboutMethod(invocation.method, finish - start, result)
-                return result
+    private fun findMethodsWithRequiredAnnotations(beanClass: Class<*>): List<Method> {
+        val requiredAnnotations: Array<out KClass<out Any>> =
+            beanClass.getAnnotation(LogMethodsByRequiredAnnotations::class.java).requiredAnnotations
+        return beanClass
+            .getDeclaredMethods()
+            .asSequence()
+            .filter { method ->
+                method.annotations
+                    .map { it.annotationClass }
+                    .any { requiredAnnotations.contains(it) }
             }
-            return invocation.proceed()
-        }
+            .toList()
+    }
 
-        private fun logFullInfoAboutMethod(method: Method, durationOfWorkInMs: Long, result: Any?) {
-            log.info("method name = {}, duration of work = {} ms, result = {}", method.name, durationOfWorkInMs, result)
+    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any {
+        mapBeanNameBeanClassAndAnnotatedMethods[beanName]?.run {
+            val proxyFactory = ProxyFactory(bean)
+            putAdviceInProxyFactory(proxyFactory, beanName)
+            return proxyFactory.getProxy()
         }
+        return bean
+    }
+
+    private fun putAdviceInProxyFactory(proxyFactory: ProxyFactory, beanName: String) {
+        proxyFactory.addAdvice(
+            object : MethodInterceptor {
+                override fun invoke(invocation: MethodInvocation): Any? {
+                    if (mapBeanNameBeanClassAndAnnotatedMethods[beanName]!!.second.containsRequiredMethod(invocation.method)) {
+                        return invocation.decorateAndReturnResult()
+                    }
+                    return invocation.proceed()
+                }
+
+                private fun List<Method>.containsRequiredMethod(method: Method): Boolean =
+                    any { it.name == method.name && it.parameterTypes.contentEquals(method.parameterTypes) }
+
+                private fun MethodInvocation.decorateAndReturnResult(): Any? {
+                    val startTime: Long = System.currentTimeMillis()
+                    val resultOfMethod: Any? = proceed()
+                    val finishTime: Long = System.currentTimeMillis()
+                    val durationOfFunctionWork: Long = finishTime - startTime
+                    logFullInfoAboutMethod(method, durationOfFunctionWork, resultOfMethod)
+                    return resultOfMethod
+                }
+
+                private fun logFullInfoAboutMethod(method: Method, durationOfWorkInMs: Long, result: Any?) {
+                    log.info(
+                        "method name = {}, duration of work = {} ms, result = {}",
+                        method.name,
+                        durationOfWorkInMs,
+                        result
+                    )
+                }
+            })
     }
 
     companion object {
