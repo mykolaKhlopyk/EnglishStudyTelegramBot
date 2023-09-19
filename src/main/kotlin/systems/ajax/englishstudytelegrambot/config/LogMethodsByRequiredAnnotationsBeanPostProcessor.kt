@@ -1,14 +1,14 @@
 package systems.ajax.englishstudytelegrambot.config
 
-import org.aopalliance.intercept.MethodInterceptor
-import org.aopalliance.intercept.MethodInvocation
 import org.slf4j.LoggerFactory
-import org.springframework.aop.framework.ProxyFactory
 import org.springframework.beans.factory.config.BeanPostProcessor
+import org.springframework.cglib.proxy.Enhancer
+import org.springframework.cglib.proxy.MethodProxy
 import org.springframework.stereotype.Component
 import systems.ajax.englishstudytelegrambot.annotation.LogMethodsByRequiredAnnotations
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
+import org.springframework.cglib.proxy.MethodInterceptor;
 
 
 @Component
@@ -40,46 +40,49 @@ class LogMethodsByRequiredAnnotationsBeanPostProcessor : BeanPostProcessor {
             .toList()
     }
 
-    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any {
-        mapBeanNameBeanClassAndAnnotatedMethods[beanName]?.run {
-            val proxyFactory = ProxyFactory(bean)
-            putAdviceInProxyFactory(proxyFactory, beanName)
-            return proxyFactory.getProxy()
-        }
-        return bean
+    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any =
+        mapBeanNameBeanClassAndAnnotatedMethods.get(beanName)?.let { enhanceBean(bean, beanName) } ?: bean
+
+    private fun enhanceBean(bean: Any, beanName: String): Any {
+        val enhancer = Enhancer()
+        enhancer.setSuperclass(mapBeanNameBeanClassAndAnnotatedMethods[beanName]!!.first)
+        putCallbackInEnhancer(enhancer, beanName, bean)
+        return enhancer.create()
     }
 
-    private fun putAdviceInProxyFactory(proxyFactory: ProxyFactory, beanName: String) {
-        proxyFactory.addAdvice(
+    fun putCallbackInEnhancer(enhancer: Enhancer, beanName: String, bean: Any) {
+        enhancer.setCallback(
             object : MethodInterceptor {
-                override fun invoke(invocation: MethodInvocation): Any? {
-                    if (mapBeanNameBeanClassAndAnnotatedMethods[beanName]!!.second.containsRequiredMethod(invocation.method)) {
-                        return invocation.decorateAndReturnResult()
+
+                override fun intercept(obj: Any?, method: Method?, args: Array<out Any>?, proxy: MethodProxy?): Any {
+                    if (mapBeanNameBeanClassAndAnnotatedMethods[beanName]!!.second.containsRequiredMethod(method!!)) {
+                        return method.decorateAndReturnResult(bean, args)
                     }
-                    return invocation.proceed()
+                    return method.invoke(bean, *args.orEmpty())
                 }
 
                 private fun List<Method>.containsRequiredMethod(method: Method): Boolean =
                     any { it.name == method.name && it.parameterTypes.contentEquals(method.parameterTypes) }
 
-                private fun MethodInvocation.decorateAndReturnResult(): Any? {
+                private fun Method.decorateAndReturnResult(obj: Any?, args: Array<out Any>?): Any {
                     val startTime: Long = System.currentTimeMillis()
-                    val resultOfMethod: Any? = proceed()
+                    val resultOfMethod: Any = invoke(obj, *args.orEmpty())
                     val finishTime: Long = System.currentTimeMillis()
                     val durationOfFunctionWork: Long = finishTime - startTime
-                    logFullInfoAboutMethod(method, durationOfFunctionWork, resultOfMethod)
+                    logFullInfoAboutMethod(durationOfFunctionWork, resultOfMethod)
                     return resultOfMethod
                 }
 
-                private fun logFullInfoAboutMethod(method: Method, durationOfWorkInMs: Long, result: Any?) {
+                private fun Method.logFullInfoAboutMethod(durationOfWorkInMs: Long, result: Any?) {
                     log.info(
-                        "method name = {}, duration of work = {} ms, result = {}",
-                        method.name,
+                        "methods name = {}, duration of work = {} ms, result = {}",
+                        name,
                         durationOfWorkInMs,
                         result
                     )
                 }
-            })
+            }
+        )
     }
 
     companion object {
