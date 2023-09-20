@@ -4,16 +4,15 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.client.WebClient
-import systems.ajax.englishstudytelegrambot.property.WordinkKeyProperty
-import systems.ajax.englishstudytelegrambot.property.WordnikBaseUrlProperty
-import systems.ajax.englishstudytelegrambot.property.WordnikLinkProperties
+import org.springframework.web.reactive.function.client.WebClient.Builder
+import systems.ajax.englishstudytelegrambot.property.WordnikProperties
 
 @Configuration
-@EnableConfigurationProperties(WordnikLinkProperties::class, WordnikBaseUrlProperty::class, WordinkKeyProperty::class)
+@EnableConfigurationProperties(WordnikProperties::class)
 class Configuration {
+
     @Bean
-    fun webClient(builder: WebClient.Builder, wordnikBaseUrlProperty: WordnikBaseUrlProperty): WebClient =
-        builder
-            .baseUrl(wordnikBaseUrlProperty.url)
-            .build()
+    fun webClient(builder: Builder, wordnikProperties: WordnikProperties): WebClient = builder
+        .baseUrl(wordnikProperties.baseUrl)
+        .build()
 }

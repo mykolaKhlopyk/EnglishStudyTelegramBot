@@ -1,0 +1,8 @@
+wordnik:
+  baseUrl: https://api.wordnik.com/v4
+  tokenKey:
+  link:
+    audioSourceLink: /word.json/{word}/audio?useCanonical=false&limit=1&api_key={key}
+    definitionOfWordLink: /word.json/{word}/definitions?limit=2&useCanonical=false&includeTags=false&api_key={key}
+    examplesOfUsingWordInSentencesLink: /word.json/{word}/examples?includeDuplicates=false&useCanonical=false&limit=5&api_key={key}
+    correctPronunciationOfWordLink: /word.json/{word}/pronunciations?useCanonical=false&sourceDictionary=wiktionary&typeFormat=IPA&limit=50&api_key={key}
