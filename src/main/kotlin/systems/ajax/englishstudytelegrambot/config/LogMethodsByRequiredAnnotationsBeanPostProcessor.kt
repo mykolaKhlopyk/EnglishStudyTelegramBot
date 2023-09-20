@@ -17,7 +17,7 @@ class LogMethodsByRequiredAnnotationsBeanPostProcessor : BeanPostProcessor {
     private val mapBeanNameBeanClassAndAnnotatedMethods: MutableMap<String, Pair<Class<*>, List<Method>>> =
         mutableMapOf()
 
-    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any? {
+    override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any {
         val beanClass = bean.javaClass
         if (beanClass.isAnnotationPresent(LogMethodsByRequiredAnnotations::class.java)) {
             mapBeanNameBeanClassAndAnnotatedMethods[beanName] =
@@ -25,6 +25,9 @@ class LogMethodsByRequiredAnnotationsBeanPostProcessor : BeanPostProcessor {
         }
         return bean
     }
+
+    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any =
+        mapBeanNameBeanClassAndAnnotatedMethods.get(beanName)?.let { enhanceBean(bean, beanName) } ?: bean
 
     private fun findMethodsWithRequiredAnnotations(beanClass: Class<*>): List<Method> {
         val requiredAnnotations: Array<out KClass<out Any>> =
@@ -40,9 +43,6 @@ class LogMethodsByRequiredAnnotationsBeanPostProcessor : BeanPostProcessor {
             .toList()
     }
 
-    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any =
-        mapBeanNameBeanClassAndAnnotatedMethods.get(beanName)?.let { enhanceBean(bean, beanName) } ?: bean
-
     private fun enhanceBean(bean: Any, beanName: String): Any {
         val enhancer = Enhancer()
         enhancer.setSuperclass(mapBeanNameBeanClassAndAnnotatedMethods[beanName]!!.first)
@@ -50,7 +50,7 @@ class LogMethodsByRequiredAnnotationsBeanPostProcessor : BeanPostProcessor {
         return enhancer.create()
     }
 
-    fun putCallbackInEnhancer(enhancer: Enhancer, beanName: String, bean: Any) {
+    private fun putCallbackInEnhancer(enhancer: Enhancer, beanName: String, bean: Any) {
         enhancer.setCallback(
             object : MethodInterceptor {
 
