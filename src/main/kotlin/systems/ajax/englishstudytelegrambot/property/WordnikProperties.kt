@@ -1,20 +1,19 @@
 package systems.ajax.englishstudytelegrambot.property
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.bind.ConstructorBinding
+import org.springframework.stereotype.Component
 
+@Component
 @ConfigurationProperties(prefix = "wordnik")
-data class WordnikBaseUrlProperty @ConstructorBinding constructor(
-    val baseUrl: String
-)
+class WordnikProperties {
+    lateinit var baseUrl: String
+    lateinit var tokenKey: String
+    lateinit var link: Link
 
-@ConfigurationProperties(prefix = "wordnik")
-data class WordinkKeyProperty @ConstructorBinding constructor(val tokenKey: String)
-
-@ConfigurationProperties(prefix = "wordnik.link")
-data class WordnikLinkProperties @ConstructorBinding constructor(
-    val audioSourceLink: String,
-    val definitionOfWordLink: String,
-    val examplesOfUsingWordInSentencesLink: String,
-    val correctPronunciationOfWordLink: String
-)
+    class Link {
+        lateinit var audioSourceLink: String
+        lateinit var definitionOfWordLink: String
+        lateinit var examplesOfUsingWordInSentencesLink: String
+        lateinit var correctPronunciationOfWordLink: String
+    }
+}

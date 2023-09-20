@@ -8,7 +8,7 @@ import systems.ajax.englishstudytelegrambot.dto.ExampleOfWordResponse
 import systems.ajax.englishstudytelegrambot.dto.PronunciationOfWordResponse
 import systems.ajax.englishstudytelegrambot.entity.AdditionalInfoAboutWord
 import systems.ajax.englishstudytelegrambot.external.source.ExternalWordSource
-import systems.ajax.englishstudytelegrambot.property.WordnikLinkProperties
+import systems.ajax.englishstudytelegrambot.property.WordnikProperties
 
 interface AdditionalInfoAboutWordService {
     suspend fun findAdditionInfoAboutWord(wordSpelling: String): AdditionalInfoAboutWord
@@ -16,7 +16,7 @@ interface AdditionalInfoAboutWordService {
 
 @Service
 class AdditionalInfoAboutWordServiceImpl(
-    private val wordnikLinkProperties: WordnikLinkProperties,
+    private val wordnikProperties: WordnikProperties,
     private val externalWordSource: ExternalWordSource
 ) : AdditionalInfoAboutWordService {
 
@@ -32,25 +32,25 @@ class AdditionalInfoAboutWordServiceImpl(
     private suspend fun String.findAudioLink(): String =
         externalWordSource.customGetInfoAboutWord<AudioForWordResponse>(
             this,
-            wordnikLinkProperties.audioSourceLink
+            wordnikProperties.link.audioSourceLink
         )
 
     private suspend fun String.findDefinitionOfWord(): String =
         externalWordSource.customGetInfoAboutWord<DefinitionOfWordResponse>(
             this,
-            wordnikLinkProperties.definitionOfWordLink
+            wordnikProperties.link.definitionOfWordLink
         )
 
     private suspend fun String.findExampleOfWord(): String =
         externalWordSource.customGetInfoAboutWord<ExampleOfWordResponse>(
             this,
-            wordnikLinkProperties.examplesOfUsingWordInSentencesLink
+            wordnikProperties.link.examplesOfUsingWordInSentencesLink
         )
 
     private suspend fun String.findPronunciationOfWord(): String =
         externalWordSource.customGetInfoAboutWord<PronunciationOfWordResponse>(
             this,
-            wordnikLinkProperties.correctPronunciationOfWordLink
+            wordnikProperties.link.correctPronunciationOfWordLink
         )
 
     companion object {

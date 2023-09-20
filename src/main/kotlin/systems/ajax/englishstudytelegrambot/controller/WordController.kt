@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import systems.ajax.englishstudytelegrambot.annotation.LogMethodsByRequiredAnnotations
 import systems.ajax.englishstudytelegrambot.entity.AdditionalInfoAboutWord
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.service.AdditionalInfoAboutWordService
@@ -14,13 +15,17 @@ import systems.ajax.englishstudytelegrambot.service.WordService
 
 @RestController
 @RequestMapping("/api")
+@LogMethodsByRequiredAnnotations(LogMethodsByRequiredAnnotations::class, PostMapping::class)
 class WordController(
     val additionalInfoAboutWordService: AdditionalInfoAboutWordService,
     val wordService: WordService
 ) {
 
+    @LogMethodsByRequiredAnnotations
     @GetMapping("addInfo/{word}")
-    suspend fun getAdditionalInfoAboutWord(@NotBlank @PathVariable("word") wordSpelling: String): AdditionalInfoAboutWord =
+    suspend fun getAdditionalInfoAboutWord(
+        @NotBlank @PathVariable("word") wordSpelling: String
+    ): AdditionalInfoAboutWord =
         additionalInfoAboutWordService.findAdditionInfoAboutWord(wordSpelling)
 
     @PostMapping("/{wordSpelling}/{wordTranslate}")
