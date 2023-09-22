@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @Document(value = "users")
 data class User(
-    @Id val telegramId: String
+    @Id val telegramUserId: String
 )
 
 @Document(value = "libraries")

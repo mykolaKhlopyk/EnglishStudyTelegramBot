@@ -3,7 +3,6 @@ package systems.ajax.englishstudytelegrambot.repository
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
-import org.springframework.data.mongodb.core.query.Update
 import org.springframework.stereotype.Repository
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.entity.User
@@ -15,7 +14,7 @@ interface UserRepository {
 
     fun insert(newUser: User): User
 
-    fun getUserByTelegramId(telegramId: String): User
+    fun getUserByTelegramId(telegramUserId: String): User
 
     fun getAllLibrariesOfUser(telegramIdOfCurrentUser: String): List<Library>
 }
@@ -27,8 +26,8 @@ class UserRepositoryImpl(val mongoTemplate: MongoTemplate) : UserRepository {
 
     override fun insert(newUser: User): User = mongoTemplate.insert(newUser)
 
-    override fun getUserByTelegramId(telegramId: String): User =
-        mongoTemplate.findById(telegramId, User::class.java) ?: insert(User(telegramId))
+    override fun getUserByTelegramId(telegramUserId: String): User =
+        mongoTemplate.findById(telegramUserId, User::class.java) ?: insert(User(telegramUserId))
 
     override fun getAllLibrariesOfUser(telegramIdOfCurrentUser: String): List<Library> =
         mongoTemplate.find(
