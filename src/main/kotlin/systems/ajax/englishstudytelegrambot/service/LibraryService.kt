@@ -9,7 +9,7 @@ import systems.ajax.englishstudytelegrambot.repository.UserRepository
 
 interface LibraryService {
     fun createNewLibrary(nameOfNewLibrary: String, telegramUserId: String): Library
-    fun deleteLibrary(nameOfLibraryForDeleting: String): Library
+    fun deleteLibrary(nameOfLibraryForDeleting: String, telegramUserId: String): Library
 
 }
 
@@ -23,9 +23,12 @@ class LibraryServiceImpl(
         val createdLibrary: Library = libraryRepository.takeIf {
             !user.isHavingLibraryWithName(nameOfNewLibrary)
         }?.saveNewLibrary(nameOfNewLibrary, user.telegramUserId)
-            ?: throw LibraryAlreadyPresentExceptions()
+            ?: throw LibraryAlreadyPresentException()
         return createdLibrary
     }
+
+    override fun deleteLibrary(nameOfLibraryForDeleting: String, telegramUserId: String): Library =
+        libraryRepository.deleteLibrary(nameOfLibraryForDeleting, telegramUserId)
 
     private fun User.isHavingLibraryWithName(nameOfNewLibrary: String) =
         !userRepository.getAllLibrariesOfUser(telegramUserId)
