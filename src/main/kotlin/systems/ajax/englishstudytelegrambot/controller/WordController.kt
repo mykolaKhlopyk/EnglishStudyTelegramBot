@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RestController
 import systems.ajax.englishstudytelegrambot.annotation.LogMethodsByRequiredAnnotations
 import systems.ajax.englishstudytelegrambot.dto.WordDto
 import systems.ajax.englishstudytelegrambot.entity.AdditionalInfoAboutWord
-import systems.ajax.englishstudytelegrambot.entity.Word
+import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.service.AdditionalInfoAboutWordService
 import systems.ajax.englishstudytelegrambot.service.WordService
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/word")
 @LogMethodsByRequiredAnnotations(LogMethodsByRequiredAnnotations::class, PostMapping::class)
 class WordController(
     val additionalInfoAboutWordService: AdditionalInfoAboutWordService,
@@ -32,13 +32,9 @@ class WordController(
         additionalInfoAboutWordService.findAdditionInfoAboutWord(wordSpelling)
 
     @PostMapping("/{libraryName}")
-    suspend fun saveWord(
+    suspend fun saveWordInLibrary(
         @PathVariable("libraryName") libraryName: String,
         @RequestHeader("telegramUserId") telegramUserId: String,
         @RequestBody wordDto: WordDto
-    ): Word = wordService.saveNewWord(libraryName, telegramUserId, wordDto )
-
-    companion object {
-        val log = LoggerFactory.getLogger(this::class.java)
-    }
+    ): Library = wordService.saveNewWordInLibrary(libraryName, telegramUserId, wordDto)
 }
