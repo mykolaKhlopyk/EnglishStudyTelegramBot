@@ -17,7 +17,7 @@ interface WordService {
 
 @Service
 class WordServiceImpl(
-    val wordRepository: WordRepository
+    val wordRepository: WordRepository,
     val additionalInfoAboutWordService: AdditionalInfoAboutWordService
 ) : WordService {
 
