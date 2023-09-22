@@ -3,9 +3,9 @@ package systems.ajax.englishstudytelegrambot.controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import systems.ajax.englishstudytelegrambot.dto.TelegramUserIdDto
 import systems.ajax.englishstudytelegrambot.service.UserService
 
 @RestController
@@ -14,6 +14,6 @@ class UserController(val userService: UserService) {
 
     @GetMapping("/libraries")
     fun getAllUsersLibraries(
-        @RequestBody telegramUserIdDto: TelegramUserIdDto
-    ) = userService.getAllLibrariesOfUser(telegramUserIdDto.telegramUserId)
+        @RequestHeader("telegramUserId") telegramUserId: String
+    ) = userService.getAllLibrariesOfUser(telegramUserId)
 }

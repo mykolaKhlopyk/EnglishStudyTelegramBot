@@ -1,13 +1,6 @@
 package systems.ajax.englishstudytelegrambot.controller
 
-import org.slf4j.LoggerFactory
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-import systems.ajax.englishstudytelegrambot.dto.TelegramUserIdDto
+import org.springframework.web.bind.annotation.*
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.service.LibraryService
 
@@ -20,15 +13,15 @@ class LibraryController(
     @PostMapping("/{nameOfNewLibrary}")
     fun createLibrary(
         @PathVariable("nameOfNewLibrary") nameOfNewLibrary: String,
-        @RequestBody telegramUserIdDto: TelegramUserIdDto
+        @RequestHeader("telegramUserId") telegramUserId: String
     ): Library =
-        libraryService.createNewLibrary(nameOfNewLibrary, telegramUserIdDto.telegramUserId)
+        libraryService.createNewLibrary(nameOfNewLibrary, telegramUserId)
 
     @DeleteMapping("/{nameOfLibraryForDeleting}")
     fun deleteLibrary(
         @PathVariable("nameOfLibraryForDeleting") nameOfLibraryForDeleting: String,
-        @RequestBody telegramUserIdDto: TelegramUserIdDto
+        @RequestHeader("telegramUserId") telegramUserId: String
     ): Library =
-        libraryService.deleteLibrary(nameOfLibraryForDeleting, telegramUserIdDto.telegramUserId)
+        libraryService.deleteLibrary(nameOfLibraryForDeleting, telegramUserId)
 
 }
