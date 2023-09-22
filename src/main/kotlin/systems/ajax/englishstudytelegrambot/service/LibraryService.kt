@@ -2,8 +2,6 @@ package systems.ajax.englishstudytelegrambot.service
 
 import org.springframework.stereotype.Service
 import systems.ajax.englishstudytelegrambot.entity.Library
-import systems.ajax.englishstudytelegrambot.entity.User
-import systems.ajax.englishstudytelegrambot.exception.LibraryAlreadyPresentException
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.UserRepository
 
@@ -18,20 +16,15 @@ class LibraryServiceImpl(
     val libraryRepository: LibraryRepository,
     val userRepository: UserRepository
 ) : LibraryService {
-    override fun createNewLibrary(nameOfNewLibrary: String, telegramUserId: String): Library {
-        val user = userRepository.getUserByTelegramId(telegramUserId)
-        val createdLibrary: Library = libraryRepository.takeIf {
-            !user.isHavingLibraryWithName(nameOfNewLibrary)
-        }?.saveNewLibrary(nameOfNewLibrary, user.telegramUserId)
-            ?: throw LibraryAlreadyPresentException()
-        return createdLibrary
-    }
+
+    override fun createNewLibrary(nameOfNewLibrary: String, telegramUserId: String): Library =
+        libraryRepository.saveNewLibrary(nameOfNewLibrary, telegramUserId)
 
     override fun deleteLibrary(nameOfLibraryForDeleting: String, telegramUserId: String): Library =
         libraryRepository.deleteLibrary(nameOfLibraryForDeleting, telegramUserId)
 
-    private fun User.isHavingLibraryWithName(nameOfNewLibrary: String) =
-        !userRepository.getAllLibrariesOfUser(telegramUserId)
+    private fun String.isUserHavingLibraryWithName(nameOfNewLibrary: String) =
+        userRepository.getAllLibrariesOfUser(this)
             .asSequence()
             .map(Library::name)
             .contains(nameOfNewLibrary)
