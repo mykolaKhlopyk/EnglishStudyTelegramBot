@@ -6,9 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 
 @Document(value = "users")
 data class User(
-    @Id val telegramId: String,
-    val libraries: List<Library> = mutableListOf()
-)
+    @Id val telegramId: String)
 
 @Document(value = "libraries")
 data class Library(
