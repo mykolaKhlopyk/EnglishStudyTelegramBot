@@ -1,29 +1,25 @@
 package systems.ajax.englishstudytelegrambot.service
 
 import org.springframework.stereotype.Service
+import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.entity.User
+import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.UserRepository
 
-interface AdminService{
+interface AdminService {
 
-    fun getAll(): List<User>
+    fun getAllUsers(): List<User>
 
-    fun saveUser(): User
-
-    fun getUserByTelegramId(): User?
-
+    fun getAllLibraries(): List<Library>
 }
 
 @Service
 class AdminServiceImpl(
     val userRepository: UserRepository,
-    val userService: UserService
-) : AdminService{
-    override fun getAll(): List<User> = userRepository.getAll()
+    val libraryRepository: LibraryRepository
+) : AdminService {
 
-    override fun saveUser(): User =
-        getUserByTelegramId() ?: userRepository.insert(User(userService.telegramIdOfCurrentUser))
+    override fun getAllUsers(): List<User> = userRepository.getAllUsers()
 
-    override fun getUserByTelegramId(): User? =
-        userRepository.getUserByTelegramId(userService.telegramIdOfCurrentUser)
+    override fun getAllLibraries(): List<Library> = libraryRepository.getAllLibraries()
 }

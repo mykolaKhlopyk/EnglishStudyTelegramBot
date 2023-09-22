@@ -1,30 +1,23 @@
 package systems.ajax.englishstudytelegrambot.service
 
 import org.springframework.stereotype.Service
+import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.entity.User
+import systems.ajax.englishstudytelegrambot.exception.LibraryAlreadyPresentExceptions
+import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.UserRepository
-import systems.ajax.englishstudytelegrambot.telegram.TelegramBot
 
 interface UserService {
 
-    fun getAll(): List<User>
-
-    fun saveUser(): User
-
-    fun getUserByTelegramId(telegramId: String): User?
+    fun getAllLibrariesOfUser(telegramIdOfUser: String): List<Library>
 }
 
 @Service
 class UserServiceImpl(
     val userRepository: UserRepository,
-    val telegramBot: TelegramBot
+    val libraryRepository: LibraryRepository
 ) : UserService {
 
-    override fun getAll(): List<User> = userRepository.getAll()
-
-    override fun saveUser(): User =
-        getUserByTelegramId(telegramBot.userId) ?: userRepository.insert(User(telegramBot.userId))
-
-    override fun getUserByTelegramId(telegramId: String): User? =
-        userRepository.getUserByTelegramId(telegramId)
+    override fun getAllLibrariesOfUser(telegramIdOfUser: String): List<Library> =
+        userRepository.getAllLibrariesOfUser(telegramIdOfUser)
 }
