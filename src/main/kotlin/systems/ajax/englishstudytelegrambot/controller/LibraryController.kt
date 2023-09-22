@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import systems.ajax.englishstudytelegrambot.dto.TelegramUserIdDto
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.service.LibraryService
 
@@ -18,11 +19,7 @@ class LibraryController(
     @PostMapping("/{nameOfNewLibrary}")
     fun createLibrary(
         @PathVariable("nameOfNewLibrary") nameOfNewLibrary: String,
-        @RequestBody telegramId: String
+        @RequestBody telegramUserIdDto: TelegramUserIdDto
     ): Library =
-        libraryService.createNewLibrary(nameOfNewLibrary, telegramId)
-
-    companion object {
-        val log = LoggerFactory.getLogger(this::class.java)
-    }
+        libraryService.createNewLibrary(nameOfNewLibrary, telegramUserIdDto.telegramUserId)
 }

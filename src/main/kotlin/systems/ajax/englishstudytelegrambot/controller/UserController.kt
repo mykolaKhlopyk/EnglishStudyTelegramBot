@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.telegram.telegrambots.bots.TelegramLongPollingBot
+import systems.ajax.englishstudytelegrambot.dto.TelegramUserIdDto
 import systems.ajax.englishstudytelegrambot.service.UserService
 
 @RestController
@@ -13,5 +13,7 @@ import systems.ajax.englishstudytelegrambot.service.UserService
 class UserController(val userService: UserService) {
 
     @GetMapping("/libraries")
-    fun getAllUsersLibraries(@RequestBody telegramId: String) = userService.getAllLibrariesOfUser(telegramId)
+    fun getAllUsersLibraries(
+        @RequestBody telegramUserIdDto: TelegramUserIdDto
+    ) = userService.getAllLibrariesOfUser(telegramUserIdDto.telegramUserId)
 }
