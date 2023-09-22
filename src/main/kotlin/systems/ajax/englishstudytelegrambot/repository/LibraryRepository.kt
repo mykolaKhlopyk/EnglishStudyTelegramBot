@@ -3,8 +3,6 @@ package systems.ajax.englishstudytelegrambot.repository
 import org.springframework.dao.DuplicateKeyException
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.exception.LibraryWithTheSameNameForUserWasCreatedException
@@ -13,8 +11,12 @@ import systems.ajax.englishstudytelegrambot.exception.LibraryIsMissingException
 interface LibraryRepository {
 
     fun saveNewLibrary(nameOfNewLibrary: String, telegramUserId: String): Library
+
     fun getAllLibraries(): List<Library>
+
     fun deleteLibrary(nameOfLibraryForDeleting: String, telegramUserId: String): Library
+
+    fun getLibraryByPairLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): Library
 }
 
 @Repository
@@ -23,7 +25,7 @@ class LibraryRepositoryImpl(val mongoTemplate: MongoTemplate) : LibraryRepositor
     override fun saveNewLibrary(nameOfNewLibrary: String, telegramUserId: String): Library =
         try {
             mongoTemplate.insert(Library(name = nameOfNewLibrary, ownerId = telegramUserId))
-        }catch(e: DuplicateKeyException) {
+        } catch (e: DuplicateKeyException) {
             throw LibraryWithTheSameNameForUserWasCreatedException()
         }
 
@@ -31,12 +33,13 @@ class LibraryRepositoryImpl(val mongoTemplate: MongoTemplate) : LibraryRepositor
 
     override fun deleteLibrary(nameOfLibraryForDeleting: String, telegramUserId: String): Library =
         mongoTemplate.findAndRemove(
-            Query.query(
-                Criteria().andOperator(
-                    Criteria.where("ownerId").`is`(telegramUserId),
-                    Criteria.where("name").`is`(nameOfLibraryForDeleting)
-                )
-            ),
+            CommonQuery.queryToFindLibraryByNameAndTelegramUserId(telegramUserId, nameOfLibraryForDeleting),
+            Library::class.java
+        ) ?: throw LibraryIsMissingException()
+
+    override fun getLibraryByPairLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): Library =
+        mongoTemplate.findOne(
+            CommonQuery.queryToFindLibraryByNameAndTelegramUserId(telegramUserId, libraryName),
             Library::class.java
         ) ?: throw LibraryIsMissingException()
 
