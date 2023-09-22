@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import systems.ajax.englishstudytelegrambot.entity.Library
+import systems.ajax.englishstudytelegrambot.entity.User
 import systems.ajax.englishstudytelegrambot.service.AdminService
 
 @RestController
@@ -11,10 +13,10 @@ import systems.ajax.englishstudytelegrambot.service.AdminService
 class AdminController(
     val adminService: AdminService
 ) {
-    @GetMapping("/getAll")
-    fun getAll() = adminService.getAll()
 
-    @GetMapping("/save")
-    @PostMapping
-    fun saveUser() = adminService.saveUser()
+    @GetMapping("/getAllLibraries")
+    fun getAllLibraries(): List<Library> = adminService.getAllLibraries()
+
+    @GetMapping("/getAllUsers")
+    fun getAllUsers(): List<User> = adminService.getAllUsers()
 }
