@@ -3,6 +3,8 @@ package systems.ajax.englishstudytelegrambot.repository
 import org.springframework.dao.DuplicateKeyException
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.exception.LibraryWithTheSameNameForUserWasCreatedException
@@ -33,15 +35,25 @@ class LibraryRepositoryImpl(val mongoTemplate: MongoTemplate) : LibraryRepositor
 
     override fun deleteLibrary(nameOfLibraryForDeleting: String, telegramUserId: String): Library =
         mongoTemplate.findAndRemove(
-            CommonQuery.queryToFindLibraryByNameAndTelegramUserId(telegramUserId, nameOfLibraryForDeleting),
+            queryToFindLibraryByNameAndTelegramUserId(telegramUserId, nameOfLibraryForDeleting),
             Library::class.java
         ) ?: throw LibraryIsMissingException()
 
     override fun getLibraryByPairLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): Library =
         mongoTemplate.findOne(
-            CommonQuery.queryToFindLibraryByNameAndTelegramUserId(telegramUserId, libraryName),
+            queryToFindLibraryByNameAndTelegramUserId(telegramUserId, libraryName),
             Library::class.java
         ) ?: throw LibraryIsMissingException()
+
+    fun queryToFindLibraryByNameAndTelegramUserId(
+        telegramUserId: String,
+        nameOfLibraryForDeleting: String
+    ) = Query.query(
+        Criteria().andOperator(
+            Criteria.where("ownerId").`is`(telegramUserId),
+            Criteria.where("name").`is`(nameOfLibraryForDeleting)
+        )
+    )
 
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)
