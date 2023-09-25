@@ -17,9 +17,12 @@ data class Library(
     val words: List<Word> = mutableListOf()
 )
 
+@Document(value = "words")
 data class Word(
+    @Id val id: String = ObjectId().toHexString(),
     val spelling: String,
     val translate: String,
+    val libraryId: String,
     val additionalInfoAboutWord: AdditionalInfoAboutWord
 )
 
