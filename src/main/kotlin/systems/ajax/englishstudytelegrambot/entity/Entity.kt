@@ -14,7 +14,6 @@ data class Library(
     @Id val id: String = ObjectId().toHexString(),
     val name: String,
     val ownerId: String,
-    val words: List<Word> = mutableListOf()
 )
 
 @Document(value = "words")
