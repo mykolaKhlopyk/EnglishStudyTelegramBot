@@ -16,7 +16,7 @@ interface UserRepository {
 
     fun getUserByTelegramId(telegramUserId: String): User
 
-    fun getAllLibrariesOfUser(telegramIdOfCurrentUser: String): List<Library>
+    fun getAllLibrariesOfUser(telegramUserId: String): List<Library>
 }
 
 @Repository
@@ -29,9 +29,9 @@ class UserRepositoryImpl(val mongoTemplate: MongoTemplate) : UserRepository {
     override fun getUserByTelegramId(telegramUserId: String): User =
         mongoTemplate.findById(telegramUserId, User::class.java) ?: insert(User(telegramUserId))
 
-    override fun getAllLibrariesOfUser(telegramIdOfCurrentUser: String): List<Library> =
+    override fun getAllLibrariesOfUser(telegramUserId: String): List<Library> =
         mongoTemplate.find(
-            Query.query(Criteria.where("ownerId").`is`(telegramIdOfCurrentUser)),
+            Query.query(Criteria.where("ownerId").`is`(telegramUserId)),
             Library::class.java
         )
 }
