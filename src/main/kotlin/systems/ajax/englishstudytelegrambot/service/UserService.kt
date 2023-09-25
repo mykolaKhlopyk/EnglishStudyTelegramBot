@@ -13,7 +13,6 @@ interface UserService {
 @Service
 class UserServiceImpl(
     val userRepository: UserRepository,
-    val libraryRepository: LibraryRepository
 ) : UserService {
 
     override fun getAllLibrariesOfUser(telegramUserId: String): List<Library> =
