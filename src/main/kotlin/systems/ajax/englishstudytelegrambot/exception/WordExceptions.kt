@@ -1,5 +1,7 @@
 package systems.ajax.englishstudytelegrambot.exception
 
-class WordNotFoundBySpendingExceptions : RuntimeException()
+class WordNotFoundBySpendingException : RuntimeException()
 
-class WordIsAlreadyPresentExceptions : RuntimeException()
+class WordAlreadyPresentInLibraryException : RuntimeException()
+
+class WordIsMissing : RuntimeException()
