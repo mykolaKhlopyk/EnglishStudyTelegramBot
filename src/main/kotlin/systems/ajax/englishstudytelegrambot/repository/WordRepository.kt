@@ -32,6 +32,12 @@ interface WordRepository {
     fun getWordIdBySpellingAndLibraryId(wordSpelling: String, libraryId: ObjectId): ObjectId
 
     fun getAllWords(): List<Word>
+
+    fun getWordByLibraryNameTelegramUserIdWordSpelling(
+        libraryName: String,
+        telegramUserId: String,
+        wordSpelling: String
+    ): ObjectId
 }
 
 @Repository
@@ -79,4 +85,36 @@ class WordRepositoryImpl(
             Query.query(Criteria.where("spelling").`is`(wordSpelling).and("libraryId").`is`(libraryId)),
             Word::class.java
         )?.id ?: throw WordIsMissing()
+
+    override fun getWordByLibraryNameTelegramUserIdWordSpelling(
+        libraryName: String,
+        telegramUserId: String,
+        wordSpelling: String
+    ): ObjectId {
+        val matchLibraryByNameAndOwner = Aggregation.match(
+            Criteria.where("name").`is`(libraryName).and("ownerId").`is`(telegramUserId)
+        )
+        val project: AggregationOperation = Aggregation.project("_id")
+        val lookup = LookupOperation.newLookup()
+            .from("words")
+            .localField("_id")
+            .foreignField("libraryId")
+            .`as`("wordsLibraries")
+        val unwind = Aggregation.unwind("wordsLibraries")
+        val replaceRoot = Aggregation.replaceRoot().withValueOf("wordsLibraries")
+        val matchWordBySpelling = Aggregation.match(Criteria.where("spelling").`is`(wordSpelling))
+        val aggregation = Aggregation.newAggregation(
+            matchLibraryByNameAndOwner,
+            project,
+            lookup,
+            unwind,
+            replaceRoot,
+            matchWordBySpelling
+        )
+        val result = mongoTemplate.aggregate(
+            aggregation, "libraries",
+            Word::class.java
+        )
+        return (result.mappedResults[0]).id
+    }
 }
