@@ -1,7 +1,11 @@
 package systems.ajax.englishstudytelegrambot.repository
 
+import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.FindAndModifyOptions
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.aggregation.Aggregation
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation
+import org.springframework.data.mongodb.core.aggregation.LookupOperation
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
@@ -10,21 +14,22 @@ import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.exception.WordIsMissing
 import systems.ajax.englishstudytelegrambot.exception.WordNotFoundBySpendingException
 
+
 interface WordRepository {
 
     fun saveNewWord(word: Word): Word
 
-    fun updateWordTranslating(wordId: String, newWordTranslate: String): Word
+    fun updateWordTranslating(wordId: ObjectId, newWordTranslate: String): Word
 
-    fun deleteWord(wordId: String): Word
+    fun deleteWord(wordId: ObjectId): Word
 
-    fun isWordBelongsToLibraryByWordId(wordId: String, libraryId: String): Boolean
+    fun isWordBelongsToLibraryByWordId(wordId: ObjectId, libraryId: ObjectId): Boolean
 
-    fun isWordBelongsToLibraryByWordSpelling(wordSpelling: String, libraryId: String): Boolean
+    fun isWordBelongsToLibraryByWordSpelling(wordSpelling: String, libraryId: ObjectId): Boolean
 
-    fun getFullInfoAboutWord(wordId: String): Word
+    fun getWord(wordId: ObjectId): Word
 
-    fun getWordIdBySpellingAndLibraryId(wordSpelling: String, libraryId: String): String
+    fun getWordIdBySpellingAndLibraryId(wordSpelling: String, libraryId: ObjectId): ObjectId
 
     fun getAllWords(): List<Word>
 }
@@ -37,7 +42,7 @@ class WordRepositoryImpl(
     override fun saveNewWord(word: Word): Word =
         mongoTemplate.save(word)
 
-    override fun updateWordTranslating(wordId: String, newWordTranslate: String): Word =
+    override fun updateWordTranslating(wordId: ObjectId, newWordTranslate: String): Word =
         mongoTemplate.findAndModify(
             Query.query(Criteria.where("_id").`is`(wordId)),
             Update.update("translate", newWordTranslate),
@@ -45,33 +50,31 @@ class WordRepositoryImpl(
             Word::class.java
         ) ?: throw WordNotFoundBySpendingException()
 
-    override fun deleteWord(wordId: String): Word =
+    override fun deleteWord(wordId: ObjectId): Word =
         mongoTemplate.findAndRemove(
             Query.query(Criteria.where("_id").`is`(wordId)),
             Word::class.java
         ) ?: throw WordNotFoundBySpendingException()
 
-    override fun isWordBelongsToLibraryByWordId(wordId: String, libraryId: String): Boolean =
+    override fun isWordBelongsToLibraryByWordId(wordId: ObjectId, libraryId: ObjectId): Boolean =
         mongoTemplate.exists(
             Query.query(Criteria.where("libraryId").`is`(libraryId).and("id").`is`(wordId)),
             Word::class.java
         )
 
-    override fun isWordBelongsToLibraryByWordSpelling(wordSpelling: String, libraryId: String): Boolean =
+    override fun isWordBelongsToLibraryByWordSpelling(wordSpelling: String, libraryId: ObjectId): Boolean =
         mongoTemplate.exists(
             Query.query(Criteria.where("libraryId").`is`(libraryId).and("spelling").`is`(wordSpelling)),
             Word::class.java
         )
 
-    override fun getFullInfoAboutWord(wordId: String): Word =
+    override fun getWord(wordId: ObjectId): Word =
         mongoTemplate.findById(wordId, Word::class.java) ?: throw WordIsMissing()
 
     override fun getAllWords(): List<Word> =
         mongoTemplate.findAll(Word::class.java)
 
-
-
-    override fun getWordIdBySpellingAndLibraryId(wordSpelling: String, libraryId: String): String =
+    override fun getWordIdBySpellingAndLibraryId(wordSpelling: String, libraryId: ObjectId): ObjectId =
         mongoTemplate.findOne(
             Query.query(Criteria.where("spelling").`is`(wordSpelling).and("libraryId").`is`(libraryId)),
             Word::class.java

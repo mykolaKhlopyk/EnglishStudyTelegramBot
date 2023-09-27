@@ -17,19 +17,19 @@ interface LibraryService {
 
 @Service
 class LibraryServiceImpl(
-    val libraryRepository: LibraryRepository,
-    val userRepository: UserRepository
+    val libraryRepository: LibraryRepository
 ) : LibraryService {
 
     override fun createNewLibrary(nameOfNewLibrary: String, telegramUserId: String): Library =
         libraryRepository.saveNewLibrary(nameOfNewLibrary, telegramUserId)
 
-
-    override fun deleteLibrary(nameOfLibraryForDeleting: String, telegramUserId: String): Library =
-        libraryRepository.deleteLibrary(nameOfLibraryForDeleting, telegramUserId)
+    override fun deleteLibrary(nameOfLibraryForDeleting: String, telegramUserId: String): Library{
+        val libraryId = libraryRepository.getLibraryIdByLibraryNameAndTelegramUserId(nameOfLibraryForDeleting, telegramUserId)
+        return libraryRepository.deleteLibrary(libraryId)
+    }
 
     override fun getAllWordsFromLibrary(libraryName: String, telegramUserId: String): List<Word> {
-        val libraryId = libraryRepository.getLibraryIdByPairLibraryNameAndTelegramUserId(libraryName, telegramUserId)
+        val libraryId = libraryRepository.getLibraryIdByLibraryNameAndTelegramUserId(libraryName, telegramUserId)
         return libraryRepository.getAllWordsFromLibrary(libraryId)
     }
 }

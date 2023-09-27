@@ -18,13 +18,13 @@ interface LibraryRepository {
 
     fun getAllLibraries(): List<Library>
 
-    fun deleteLibrary(nameOfLibraryForDeleting: String, telegramUserId: String): Library
+    fun deleteLibrary(libraryId: ObjectId): Library
 
-    fun getLibraryByPairLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): Library
+    fun getLibraryByLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): Library
 
-    fun getLibraryIdByPairLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): String
+    fun getLibraryIdByLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): ObjectId
 
-    fun getAllWordsFromLibrary(libraryId: String): List<Word>
+    fun getAllWordsFromLibrary(libraryId: ObjectId): List<Word>
 }
 
 @Repository
@@ -40,26 +40,26 @@ class LibraryRepositoryImpl(val mongoTemplate: MongoTemplate) : LibraryRepositor
 
     override fun getAllLibraries(): List<Library> = mongoTemplate.findAll(Library::class.java)
 
-    override fun deleteLibrary(nameOfLibraryForDeleting: String, telegramUserId: String): Library =
+    override fun deleteLibrary(libraryId: ObjectId): Library =
         mongoTemplate.findAndRemove(
-            queryToFindLibraryByNameAndTelegramUserId(telegramUserId, nameOfLibraryForDeleting),
+            Query.query(Criteria.where("_id").`is`(libraryId)),
             Library::class.java
         ) ?: throw LibraryIsMissingException()
 
-    override fun getLibraryByPairLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): Library =
+    override fun getLibraryByLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): Library =
         mongoTemplate.findOne(
             queryToFindLibraryByNameAndTelegramUserId(telegramUserId, libraryName),
             Library::class.java
         ) ?: throw LibraryIsMissingException()
 
-    override fun getLibraryIdByPairLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): String =
+    override fun getLibraryIdByLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): ObjectId =
         (mongoTemplate.findOne(
             queryToFindLibraryByNameAndTelegramUserId(telegramUserId, libraryName).apply {
                 this.fields().include("_id")
             },
             Map::class.java,
             "libraries"
-        )?.get("_id") as? ObjectId)?.toHexString() ?: throw LibraryIsMissingException()
+        )?.get("_id") as? ObjectId) ?: throw LibraryIsMissingException()
 
     private fun queryToFindLibraryByNameAndTelegramUserId(
         telegramUserId: String,
@@ -71,7 +71,7 @@ class LibraryRepositoryImpl(val mongoTemplate: MongoTemplate) : LibraryRepositor
         )
     )
 
-    override fun getAllWordsFromLibrary(libraryId: String): List<Word> =
+    override fun getAllWordsFromLibrary(libraryId: ObjectId): List<Word> =
         mongoTemplate.find(
             Query.query(Criteria.where("libraryId").`is`(libraryId)),
             Word::class.java
