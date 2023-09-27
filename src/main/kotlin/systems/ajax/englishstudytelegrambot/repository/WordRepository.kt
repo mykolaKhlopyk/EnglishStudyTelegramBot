@@ -37,6 +37,12 @@ interface WordRepository {
         libraryName: String,
         telegramUserId: String,
         wordSpelling: String
+    ): Word
+
+    fun getWordIdByLibraryNameTelegramUserIdWordSpelling(
+        libraryName: String,
+        telegramUserId: String,
+        wordSpelling: String
     ): ObjectId
 }
 
@@ -90,7 +96,7 @@ class WordRepositoryImpl(
         libraryName: String,
         telegramUserId: String,
         wordSpelling: String
-    ): ObjectId {
+    ): Word {
         val matchLibraryByNameAndOwner = Aggregation.match(
             Criteria.where("name").`is`(libraryName).and("ownerId").`is`(telegramUserId)
         )
@@ -115,6 +121,14 @@ class WordRepositoryImpl(
             aggregation, "libraries",
             Word::class.java
         )
-        return (result.mappedResults[0]).id
+        return result.mappedResults[0]
     }
+
+    override fun getWordIdByLibraryNameTelegramUserIdWordSpelling(
+        libraryName: String,
+        telegramUserId: String,
+        wordSpelling: String
+    ): ObjectId =
+        getWordByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling).id
+
 }
