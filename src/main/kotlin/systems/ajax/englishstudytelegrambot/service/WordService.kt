@@ -44,15 +44,20 @@ class WordServiceImpl(
     }
 
     override fun updateWordTranslate(libraryName: String, telegramUserId: String, wordDto: WordDto): Word {
-        val wordId = wordRepository.getWordIdByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordDto.spelling)
+        val wordId = wordRepository.getWordIdByLibraryNameTelegramUserIdWordSpelling(
+            libraryName,
+            telegramUserId,
+            wordDto.spelling
+        )
         return wordRepository.updateWordTranslating(wordId, wordDto.translate)
     }
 
     override fun deleteWord(libraryName: String, telegramUserId: String, wordSpelling: String): Word {
-        val wordId = wordRepository.getWordIdByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling)
+        val wordId =
+            wordRepository.getWordIdByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling)
         return wordRepository.deleteWord(wordId)
     }
 
-    override fun getFullInfoAboutWord(libraryName: String, telegramUserId: String, wordSpelling: String): Word
-        = wordRepository.getWordByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling)
+    override fun getFullInfoAboutWord(libraryName: String, telegramUserId: String, wordSpelling: String): Word =
+        wordRepository.getWordByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling)
 }

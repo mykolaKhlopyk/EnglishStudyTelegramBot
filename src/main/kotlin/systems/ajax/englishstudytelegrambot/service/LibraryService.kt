@@ -23,8 +23,9 @@ class LibraryServiceImpl(
     override fun createNewLibrary(nameOfNewLibrary: String, telegramUserId: String): Library =
         libraryRepository.saveNewLibrary(nameOfNewLibrary, telegramUserId)
 
-    override fun deleteLibrary(nameOfLibraryForDeleting: String, telegramUserId: String): Library{
-        val libraryId = libraryRepository.getLibraryIdByLibraryNameAndTelegramUserId(nameOfLibraryForDeleting, telegramUserId)
+    override fun deleteLibrary(nameOfLibraryForDeleting: String, telegramUserId: String): Library {
+        val libraryId =
+            libraryRepository.getLibraryIdByLibraryNameAndTelegramUserId(nameOfLibraryForDeleting, telegramUserId)
         return libraryRepository.deleteLibrary(libraryId)
     }
 

@@ -130,5 +130,4 @@ class WordRepositoryImpl(
         wordSpelling: String
     ): ObjectId =
         getWordByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling).id
-
 }

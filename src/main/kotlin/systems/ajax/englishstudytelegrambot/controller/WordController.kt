@@ -50,6 +50,4 @@ class WordController(
         @RequestHeader("telegramUserId") telegramUserId: String,
         @RequestHeader("wordSpelling") wordSpelling: String
     ): Word = wordService.deleteWord(libraryName, telegramUserId, wordSpelling)
-
-
 }
