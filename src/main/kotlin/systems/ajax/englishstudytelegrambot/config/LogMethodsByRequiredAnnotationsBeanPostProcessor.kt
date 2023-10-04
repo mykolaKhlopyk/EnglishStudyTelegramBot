@@ -50,6 +50,7 @@ class LogMethodsByRequiredAnnotationsBeanPostProcessor : BeanPostProcessor {
         return enhancer.create()
     }
 
+    @Suppress("SpreadOperator")
     private fun putCallbackInEnhancer(enhancer: Enhancer, beanName: String, bean: Any) {
         enhancer.setCallback(
             object : MethodInterceptor {
