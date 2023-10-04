@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  telegram-bot:
+    build: .
+    container_name: telegram-bot1
+    ports:
+      - "8080:8080"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - data:/data
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rootuser
+      - MONGO_INITDB_ROOT_PASSWORD=rootpass
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 1s
+      timeout: 1s
+      retries: 5
+volumes:
+  data:
+
