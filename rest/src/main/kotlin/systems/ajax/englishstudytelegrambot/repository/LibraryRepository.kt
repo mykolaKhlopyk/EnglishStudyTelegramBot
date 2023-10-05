@@ -40,11 +40,13 @@ class LibraryRepositoryImpl(val mongoTemplate: MongoTemplate) : LibraryRepositor
 
     override fun getAllLibraries(): List<Library> = mongoTemplate.findAll(Library::class.java)
 
-    override fun deleteLibrary(libraryId: ObjectId): Library =
-        mongoTemplate.findAndRemove(
+    override fun deleteLibrary(libraryId: ObjectId): Library {
+        deleteWordsWhichBelongsToLibrary(libraryId)
+        return mongoTemplate.findAndRemove(
             Query.query(Criteria.where("_id").`is`(libraryId)),
             Library::class.java
         ) ?: throw LibraryIsMissingException()
+    }
 
     override fun getLibraryByLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): Library =
         mongoTemplate.findOne(
@@ -76,6 +78,10 @@ class LibraryRepositoryImpl(val mongoTemplate: MongoTemplate) : LibraryRepositor
             Query.query(Criteria.where("libraryId").`is`(libraryId)),
             Word::class.java
         )
+
+    private fun deleteWordsWhichBelongsToLibrary(libraryId: ObjectId) {
+        mongoTemplate.remove(Query.query(Criteria.where("libraryId").`is`(libraryId)), Word::class.java)
+    }
 
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)

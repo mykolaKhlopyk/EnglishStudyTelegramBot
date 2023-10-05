@@ -4,10 +4,11 @@ import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.CompoundIndex
 import org.springframework.data.mongodb.core.mapping.Document
+import org.springframework.data.mongodb.core.mapping.Field
 
-@Document(value = "users")
 data class User(
-    @Id val telegramUserId: String
+    @Field("ownerId")
+    val telegramUserId: String
 )
 
 @Document(value = "libraries")
@@ -15,7 +16,7 @@ data class User(
 data class Library(
     @Id val id: ObjectId = ObjectId(),
     val name: String,
-    val ownerId: String,
+    val ownerId: String
 )
 
 @Document(value = "words")
