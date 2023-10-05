@@ -1,11 +1,9 @@
 package systems.ajax.englishstudytelegrambot.service
 
-import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
 import systems.ajax.englishstudytelegrambot.dto.WordDto
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.exception.WordAlreadyPresentInLibraryException
-import systems.ajax.englishstudytelegrambot.exception.WordNotFoundBySpendingException
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 

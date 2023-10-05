@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
-import systems.ajax.englishstudytelegrambot.repository.UserRepository
 
 interface LibraryService {
 
