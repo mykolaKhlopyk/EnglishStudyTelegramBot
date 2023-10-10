@@ -1,0 +1,2 @@
+nats:
+  serverPath: nats://localhost:4222
