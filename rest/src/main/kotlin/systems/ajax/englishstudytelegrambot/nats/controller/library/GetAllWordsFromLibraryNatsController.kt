@@ -19,7 +19,8 @@ class GetAllWordsFromLibraryNatsController(private val libraryService: LibrarySe
     override val parser: Parser<GetAllWordsFromLibraryRequest> = GetAllWordsFromLibraryRequest.parser()
 
     override fun handle(request: GetAllWordsFromLibraryRequest): GetAllWordsFromLibraryResponse {
-        val words = libraryService.getAllWordsFromLibrary(request.libraryName, request.telegramUserId).map(Word::toWordResponse)
+        val words = libraryService.getAllWordsFromLibrary(request.libraryName, request.telegramUserId)
+            .map(Word::toWordResponse)
         return GetAllWordsFromLibraryResponse.newBuilder().addAllWords(words).build()
     }
 }
