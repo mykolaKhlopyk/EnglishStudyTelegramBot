@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package response_request;
+
+import "system/ajax/entity/word.proto";
+
+message GetAllWordsFromLibraryRequest{
+  string library_name = 1;
+  string telegram_user_id = 2;
+}
+
+message GetAllWordsFromLibraryResponse{
+  repeated entity.Word words = 1;
+}

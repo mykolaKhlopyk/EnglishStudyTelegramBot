@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package response_request;
+
+import "system/ajax/entity/library.proto";
+
+message DeleteLibraryRequest{
+  string library_name = 1;
+  string telegram_user_id = 2;
+}
+
+message DeleteLibraryResponse{
+  entity.Library deleted_library = 1;
+}

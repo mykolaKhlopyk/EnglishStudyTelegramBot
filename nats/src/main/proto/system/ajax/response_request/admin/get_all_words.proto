@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package response_request;
+
+import "system/ajax/entity/word.proto";
+
+message GetAllWordsRequest{
+
+}
+
+message GetAllWordsResponse{
+  repeated entity.Word words = 1;
+}

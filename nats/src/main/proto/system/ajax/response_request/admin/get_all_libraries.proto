@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package response_request;
+
+import "system/ajax/entity/library.proto";
+
+message GetAllLibrariesRequest{
+
+}
+
+message GetAllLibrariesResponse{
+  repeated entity.Library libraries = 1;
+}

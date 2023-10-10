@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package response_request;
+
+import "system/ajax/entity/user.proto";
+
+message GetAllUsersRequest{
+
+}
+
+message GetAllUsersResponse{
+  repeated string telegram_user_ids = 1;
+}
