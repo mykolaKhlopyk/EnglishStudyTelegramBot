@@ -1,4 +1,4 @@
-package systems.ajax.englishstudytelegrambot.config
+package systems.ajax.englishstudytelegrambot.bpp
 
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.config.BeanPostProcessor

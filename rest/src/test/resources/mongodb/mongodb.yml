@@ -1,0 +1,7 @@
+spring:
+  data:
+    mongodb:
+      database: englishwordsdb_test
+      host: localhost
+      port: 27017
+      auto-index-creation: true
