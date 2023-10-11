@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package exception;
+
+message Failure {
+  string error_message = 1;
+}

@@ -10,7 +10,7 @@ message AdditionalInfoAboutWord{
 }
 
 message Word{
-  string id = 1;
+  optional string id = 1;
   string spelling = 2;
   string translating = 3;
   string library_id = 4;

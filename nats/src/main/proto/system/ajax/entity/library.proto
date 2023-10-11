@@ -3,7 +3,7 @@ syntax = "proto3";
 package entity;
 
 message Library{
-  string id = 1;
+  optional string id = 1;
   string name = 2;
   string owner_id = 3;
 }

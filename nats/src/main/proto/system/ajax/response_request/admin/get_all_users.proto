@@ -1,13 +1,22 @@
 syntax = "proto3";
 
-package response_request;
+package admin;
 
 import "system/ajax/entity/user.proto";
+import "system/ajax/exception/failure.proto";
 
 message GetAllUsersRequest{
 
 }
 
 message GetAllUsersResponse{
-  repeated string telegram_user_ids = 1;
+
+  oneof response{
+    Success success = 1;
+    exception.Failure failure = 2;
+  }
+
+  message Success {
+    repeated string telegram_user_ids = 1;
+  }
 }
