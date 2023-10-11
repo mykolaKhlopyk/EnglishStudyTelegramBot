@@ -1,15 +1,15 @@
 syntax = "proto3";
 
-package library;
+package systems.ajax.response_request.library;
 
-import "system/ajax/entity/library.proto";
+import "systems/ajax/entity/library.proto";
 
-message CreateNewLibraryRequest{
+message DeleteLibraryRequest{
   string library_name = 1;
   string telegram_user_id = 2;
 }
 
-message CreateNewLibraryResponse{
+message DeleteLibraryResponse{
 
   oneof response{
     Success success = 1;
@@ -17,7 +17,7 @@ message CreateNewLibraryResponse{
   }
 
   message Success {
-    entity.Library created_library = 1;
+    entity.Library deleted_library = 1;
   }
 
   message Failure{

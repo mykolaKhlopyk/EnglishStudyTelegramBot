@@ -1,9 +1,9 @@
 package systems.ajax.englishstudytelegrambot.nats.mapper
 
-import entity.LibraryOuterClass
-import entity.WordOuterClass
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.entity.Word
+import systems.ajax.entity.LibraryOuterClass
+import systems.ajax.entity.WordOuterClass
 
 fun Library.toLibraryResponse(): LibraryOuterClass.Library =
     LibraryOuterClass.Library.newBuilder()

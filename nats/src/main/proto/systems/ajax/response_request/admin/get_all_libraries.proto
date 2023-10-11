@@ -1,16 +1,16 @@
 syntax = "proto3";
 
-package admin;
+package systems.ajax.response_request.admin;
 
-import "system/ajax/entity/word.proto";
+import "systems/ajax/entity/library.proto";
 
 option java_multiple_files = true;
 
-message GetAllWordsRequest{
+message GetAllLibrariesRequest{
 
 }
 
-message GetAllWordsResponse{
+message GetAllLibrariesResponse{
 
   oneof response{
     Success success = 1;
@@ -18,7 +18,7 @@ message GetAllWordsResponse{
   }
 
   message Success {
-    repeated entity.Word words = 1;
+    repeated entity.Library libraries = 1;
   }
 
   message Failure{

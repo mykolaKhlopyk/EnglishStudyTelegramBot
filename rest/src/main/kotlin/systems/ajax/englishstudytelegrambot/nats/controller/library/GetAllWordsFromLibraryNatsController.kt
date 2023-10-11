@@ -1,16 +1,16 @@
 package systems.ajax.englishstudytelegrambot.nats.controller.library
 
 import com.google.protobuf.Parser
-import entity.WordOuterClass
 import org.springframework.stereotype.Component
-import library.GetAllWordsFromLibrary.GetAllWordsFromLibraryRequest
-import library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse
-import library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse.Success
 import systems.ajax.NatsSubject.Library.GET_ALL_WORDS_FROM_LIBRARY_SUBJECT
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toWordResponse
 import systems.ajax.englishstudytelegrambot.service.LibraryService
+import systems.ajax.entity.WordOuterClass
+import systems.ajax.response_request.library.GetAllWordsFromLibrary.GetAllWordsFromLibraryRequest
+import systems.ajax.response_request.library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse
+import systems.ajax.response_request.library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse.Success
 
 @Component
 class GetAllWordsFromLibraryNatsController(private val libraryService: LibraryService) :

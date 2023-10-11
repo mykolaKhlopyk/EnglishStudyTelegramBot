@@ -10,18 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.remove
-import library.CreateNewLibrary.CreateNewLibraryRequest
-import library.CreateNewLibrary.CreateNewLibraryResponse
-import library.DeleteLibrary.DeleteLibraryRequest
-import library.DeleteLibrary.DeleteLibraryResponse
-import admin.GetAllLibrariesRequest
-import admin.GetAllLibrariesResponse
-import admin.GetAllUsersRequest
-import admin.GetAllUsersResponse
-import admin.GetAllWordsRequest
-import admin.GetAllWordsResponse
-import library.GetAllWordsFromLibrary.GetAllWordsFromLibraryRequest
-import library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse
 import systems.ajax.NatsSubject.Admin.GET_ALL_LIBRARIES_SUBJECT
 import systems.ajax.NatsSubject.Admin.GET_ALL_USERS_SUBJECT
 import systems.ajax.NatsSubject.Admin.GET_ALL_WORDS_SUBJECT
@@ -37,6 +25,14 @@ import systems.ajax.englishstudytelegrambot.nats.mapper.toWordResponse
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import systems.ajax.englishstudytelegrambot.service.AdminService
+import systems.ajax.response_request.admin.*
+import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryRequest
+import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryResponse
+import systems.ajax.response_request.library.DeleteLibrary.DeleteLibraryResponse
+import systems.ajax.response_request.library.DeleteLibrary.DeleteLibraryRequest
+import systems.ajax.response_request.library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse
+import systems.ajax.response_request.library.GetAllWordsFromLibrary.GetAllWordsFromLibraryRequest
+
 import java.time.Duration
 
 @SpringBootTest
@@ -130,8 +126,7 @@ class NatsControllerTest {
 
         val wordsFromLibraryList = GetAllWordsFromLibraryResponse.parser().parseFrom(message.data).success.wordsList
 
-        //word1, word2
-        Assertions.assertEquals(listOf(words[0], words[1]).map(Word::toWordResponse), wordsFromLibraryList)
+         Assertions.assertEquals(listOf(words[0], words[1]).map(Word::toWordResponse), wordsFromLibraryList)
     }
 
     @Test
@@ -149,7 +144,6 @@ class NatsControllerTest {
 
         val wordsFromLibraryList = GetAllWordsFromLibraryResponse.parser().parseFrom(message.data).success.wordsList
 
-        //word1, word2
         Assertions.assertEquals(2, wordsFromLibraryList.size)
     }
 

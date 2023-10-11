@@ -2,15 +2,15 @@ package systems.ajax.englishstudytelegrambot.nats.controller.admin
 
 import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
-import admin.GetAllWordsResponse
-import admin.GetAllWordsResponse.Success
-import admin.GetAllWordsRequest
-import entity.WordOuterClass
 import systems.ajax.NatsSubject.Admin.GET_ALL_WORDS_SUBJECT
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toWordResponse
 import systems.ajax.englishstudytelegrambot.service.AdminService
+import systems.ajax.entity.WordOuterClass
+import systems.ajax.response_request.admin.GetAllWordsRequest
+import systems.ajax.response_request.admin.GetAllWordsResponse
+import systems.ajax.response_request.admin.GetAllWordsResponse.Success
 
 @Component
 class GetAllWordsNatsController(

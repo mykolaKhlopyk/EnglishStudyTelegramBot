@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package entity;
+package systems.ajax.entity;
 
 message AdditionalInfoAboutWord{
   string link_to_audio = 1;

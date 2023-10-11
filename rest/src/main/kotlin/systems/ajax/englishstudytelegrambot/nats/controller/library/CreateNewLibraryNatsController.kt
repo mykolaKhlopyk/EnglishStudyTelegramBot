@@ -1,16 +1,15 @@
 package systems.ajax.englishstudytelegrambot.nats.controller.library
 
 import com.google.protobuf.Parser
-import entity.LibraryOuterClass
-import entity.LibraryOuterClass.Library
-import library.CreateNewLibrary.CreateNewLibraryResponse.Success
 import org.springframework.stereotype.Component
-import library.CreateNewLibrary.CreateNewLibraryRequest
-import library.CreateNewLibrary.CreateNewLibraryResponse
 import systems.ajax.NatsSubject.Library.CREATE_NEW_LIBRARY_SUBJECT
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.service.LibraryService
+import systems.ajax.entity.LibraryOuterClass
+import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryRequest
+import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryResponse
+import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryResponse.Success
 
 @Component
 class CreateNewLibraryNatsController(private val libraryService: LibraryService) :
@@ -28,7 +27,7 @@ class CreateNewLibraryNatsController(private val libraryService: LibraryService)
             createFailureResponse(it)
         }
 
-    private fun createdLibrary(request: CreateNewLibraryRequest): Library {
+    private fun createdLibrary(request: CreateNewLibraryRequest): LibraryOuterClass.Library {
         val createdLibrary =
             libraryService.createNewLibrary(request.libraryName, request.telegramUserId).toLibraryResponse()
         return createdLibrary

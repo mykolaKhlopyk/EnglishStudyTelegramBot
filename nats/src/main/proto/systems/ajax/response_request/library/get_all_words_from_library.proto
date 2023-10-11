@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package library;
+package systems.ajax.response_request.library;
 
-import "system/ajax/entity/word.proto";
+import "systems/ajax/entity/word.proto";
 
 message GetAllWordsFromLibraryRequest{
   string library_name = 1;

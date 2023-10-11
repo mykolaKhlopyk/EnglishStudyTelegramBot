@@ -1,15 +1,14 @@
 package systems.ajax.englishstudytelegrambot.nats.controller.admin
 
-import admin.GetAllLibrariesResponse
 import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
-import admin.GetAllUsersRequest
-import admin.GetAllUsersResponse
-import admin.GetAllUsersResponse.Success
 import systems.ajax.NatsSubject.Admin.GET_ALL_USERS_SUBJECT
 import systems.ajax.englishstudytelegrambot.entity.User
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.service.AdminService
+import systems.ajax.response_request.admin.GetAllUsersRequest
+import systems.ajax.response_request.admin.GetAllUsersResponse
+import systems.ajax.response_request.admin.GetAllUsersResponse.Success
 
 @Component
 class GetAllUsersNatsController(
