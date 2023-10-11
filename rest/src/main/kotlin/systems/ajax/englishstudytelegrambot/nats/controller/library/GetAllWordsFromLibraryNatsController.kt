@@ -2,11 +2,13 @@ package systems.ajax.englishstudytelegrambot.nats.controller.library
 
 import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
-import response_request.GetAllWordsFromLibrary.GetAllWordsFromLibraryRequest
-import response_request.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse
+import library.GetAllWordsFromLibrary.GetAllWordsFromLibraryRequest
+import library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse
+import library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse.Success
 import systems.ajax.NatsSubject
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
+import systems.ajax.englishstudytelegrambot.nats.mapper.toFailureResponse
 import systems.ajax.englishstudytelegrambot.nats.mapper.toWordResponse
 import systems.ajax.englishstudytelegrambot.service.LibraryService
 
@@ -18,9 +20,17 @@ class GetAllWordsFromLibraryNatsController(private val libraryService: LibrarySe
 
     override val parser: Parser<GetAllWordsFromLibraryRequest> = GetAllWordsFromLibraryRequest.parser()
 
-    override fun handle(request: GetAllWordsFromLibraryRequest): GetAllWordsFromLibraryResponse {
-        val words = libraryService.getAllWordsFromLibrary(request.libraryName, request.telegramUserId)
+    override fun handle(request: GetAllWordsFromLibraryRequest): GetAllWordsFromLibraryResponse =
+        runCatching {
+            val wordsFromLibrary = getAllWordsFromLibraryInResponseFormat(request)
+            GetAllWordsFromLibraryResponse.newBuilder()
+                .setSuccess(Success.newBuilder().addAllWords(wordsFromLibrary))
+                .build()
+        }.getOrElse { exception ->
+            GetAllWordsFromLibraryResponse.newBuilder().setFailure(exception.toFailureResponse()).build()
+        }
+
+    private fun getAllWordsFromLibraryInResponseFormat(request: GetAllWordsFromLibraryRequest) =
+        libraryService.getAllWordsFromLibrary(request.libraryName, request.telegramUserId)
             .map(Word::toWordResponse)
-        return GetAllWordsFromLibraryResponse.newBuilder().addAllWords(words).build()
-    }
 }

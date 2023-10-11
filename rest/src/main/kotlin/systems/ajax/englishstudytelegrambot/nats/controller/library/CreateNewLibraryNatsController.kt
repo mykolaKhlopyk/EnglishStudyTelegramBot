@@ -2,11 +2,13 @@ package systems.ajax.englishstudytelegrambot.nats.controller.library
 
 import com.google.protobuf.Parser
 import entity.LibraryOuterClass.Library
+import library.CreateNewLibrary.CreateNewLibraryResponse.Success
 import org.springframework.stereotype.Component
-import response_request.CreateNewLibrary.CreateNewLibraryRequest
-import response_request.CreateNewLibrary.CreateNewLibraryResponse
+import library.CreateNewLibrary.CreateNewLibraryRequest
+import library.CreateNewLibrary.CreateNewLibraryResponse
 import systems.ajax.NatsSubject
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
+import systems.ajax.englishstudytelegrambot.nats.mapper.toFailureResponse
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.service.LibraryService
 
@@ -18,9 +20,19 @@ class CreateNewLibraryNatsController(private val libraryService: LibraryService)
 
     override val parser: Parser<CreateNewLibraryRequest> = CreateNewLibraryRequest.parser()
 
-    override fun handle(request: CreateNewLibraryRequest): CreateNewLibraryResponse {
-        val createdLibrary: Library =
+    override fun handle(request: CreateNewLibraryRequest): CreateNewLibraryResponse =
+        runCatching {
+            val createdLibrary = createdLibrary(request)
+            CreateNewLibraryResponse.newBuilder()
+                .setSuccess(Success.newBuilder().setCreatedLibrary(createdLibrary).build())
+                .build()
+        }.getOrElse { exception ->
+            CreateNewLibraryResponse.newBuilder().setFailure(exception.toFailureResponse()).build()
+        }
+
+    private fun createdLibrary(request: CreateNewLibraryRequest): Library {
+        val createdLibrary =
             libraryService.createNewLibrary(request.libraryName, request.telegramUserId).toLibraryResponse()
-        return CreateNewLibraryResponse.newBuilder().setCreatedLibrary(createdLibrary).build()
+        return createdLibrary
     }
 }

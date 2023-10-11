@@ -1,12 +1,17 @@
 package systems.ajax.englishstudytelegrambot.nats.controller.admin
 
+import admin.GetAllLibraries
 import com.google.protobuf.Parser
+import entity.LibraryOuterClass
 import org.springframework.stereotype.Component
-import response_request.GetAllLibraries.GetAllLibrariesResponse
-import response_request.GetAllLibraries.GetAllLibrariesRequest
+import admin.GetAllLibraries.GetAllLibrariesResponse
+import admin.GetAllLibraries.GetAllLibrariesResponse.Success
+import admin.GetAllLibraries.GetAllLibrariesRequest
+import exception.FailureOuterClass
 import systems.ajax.NatsSubject
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
+import systems.ajax.englishstudytelegrambot.nats.mapper.toFailureResponse
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.service.AdminService
 
@@ -19,9 +24,19 @@ class GetAllLibrariesNatsController(
 
     override val parser: Parser<GetAllLibrariesRequest> = GetAllLibrariesRequest.parser()
 
-    override fun handle(request: GetAllLibrariesRequest): GetAllLibrariesResponse {
-        val libraries = adminService.getAllLibraries()
-            .map(Library::toLibraryResponse)
-        return GetAllLibrariesResponse.newBuilder().addAllLibraries(libraries).build()
-    }
+    override fun handle(request: GetAllLibrariesRequest): GetAllLibrariesResponse =
+        runCatching {
+            val librariesResponse = getAllLibrariesInResponseFormat()
+            GetAllLibrariesResponse.newBuilder()
+                .setSuccess(
+                    Success.newBuilder().addAllLibraries(librariesResponse))
+                .build()
+        }.getOrElse { exception ->
+            GetAllLibrariesResponse.newBuilder()
+                .setFailure(exception.toFailureResponse())
+                .build()
+        }
+
+    private fun getAllLibrariesInResponseFormat(): List<LibraryOuterClass.Library> =
+        adminService.getAllLibraries().map(Library::toLibraryResponse)
 }
