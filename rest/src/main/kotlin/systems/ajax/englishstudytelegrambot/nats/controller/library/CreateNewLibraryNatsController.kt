@@ -6,7 +6,7 @@ import library.CreateNewLibrary.CreateNewLibraryResponse.Success
 import org.springframework.stereotype.Component
 import library.CreateNewLibrary.CreateNewLibraryRequest
 import library.CreateNewLibrary.CreateNewLibraryResponse
-import systems.ajax.NatsSubject
+import systems.ajax.NatsSubject.Library.CREATE_NEW_LIBRARY
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toFailureResponse
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
@@ -16,7 +16,7 @@ import systems.ajax.englishstudytelegrambot.service.LibraryService
 class CreateNewLibraryNatsController(private val libraryService: LibraryService) :
     NatsController<CreateNewLibraryRequest, CreateNewLibraryResponse> {
 
-    override val subject: String = NatsSubject.CREATE_NEW_LIBRARY
+    override val subject: String = CREATE_NEW_LIBRARY
 
     override val parser: Parser<CreateNewLibraryRequest> = CreateNewLibraryRequest.parser()
 

@@ -1,14 +1,12 @@
 package systems.ajax.englishstudytelegrambot.nats.controller.admin
 
-import admin.GetAllLibraries
 import com.google.protobuf.Parser
 import entity.LibraryOuterClass
 import org.springframework.stereotype.Component
 import admin.GetAllLibraries.GetAllLibrariesResponse
 import admin.GetAllLibraries.GetAllLibrariesResponse.Success
 import admin.GetAllLibraries.GetAllLibrariesRequest
-import exception.FailureOuterClass
-import systems.ajax.NatsSubject
+import systems.ajax.NatsSubject.Admin.GET_ALL_LIBRARIES_SUBJECT
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toFailureResponse
@@ -20,7 +18,7 @@ class GetAllLibrariesNatsController(
     private val adminService: AdminService
 ) : NatsController<GetAllLibrariesRequest, GetAllLibrariesResponse> {
 
-    override val subject: String = NatsSubject.GET_ALL_LIBRARIES_SUBJECT
+    override val subject: String = GET_ALL_LIBRARIES_SUBJECT
 
     override val parser: Parser<GetAllLibrariesRequest> = GetAllLibrariesRequest.parser()
 

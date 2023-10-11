@@ -5,8 +5,7 @@ import org.springframework.stereotype.Component
 import library.DeleteLibrary.DeleteLibraryRequest
 import library.DeleteLibrary.DeleteLibraryResponse
 import library.DeleteLibrary.DeleteLibraryResponse.Success
-import systems.ajax.NatsSubject.DELETE_LIBRARY
-import systems.ajax.englishstudytelegrambot.entity.Library
+import systems.ajax.NatsSubject.Library.DELETE_LIBRARY
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toFailureResponse
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse

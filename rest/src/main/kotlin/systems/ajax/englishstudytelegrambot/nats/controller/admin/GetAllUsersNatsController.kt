@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import admin.GetAllUsers.GetAllUsersRequest
 import admin.GetAllUsers.GetAllUsersResponse
 import admin.GetAllUsers.GetAllUsersResponse.Success
-import systems.ajax.NatsSubject.GET_ALL_USERS_SUBJECT
+import systems.ajax.NatsSubject.Admin.GET_ALL_USERS_SUBJECT
 import systems.ajax.englishstudytelegrambot.entity.User
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toFailureResponse

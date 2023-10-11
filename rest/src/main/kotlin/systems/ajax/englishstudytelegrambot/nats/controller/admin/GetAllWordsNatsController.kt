@@ -6,8 +6,7 @@ import admin.GetAllWords.GetAllWordsResponse
 import admin.GetAllWords.GetAllWordsResponse.Success
 import admin.GetAllWords.GetAllWordsRequest
 import entity.WordOuterClass
-import systems.ajax.NatsSubject.GET_ALL_WORDS_SUBJECT
-import systems.ajax.englishstudytelegrambot.controller.AdminController
+import systems.ajax.NatsSubject.Admin.GET_ALL_WORDS_SUBJECT
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toFailureResponse
