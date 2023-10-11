@@ -175,11 +175,11 @@ class NatsControllerTest {
 
     @Test
     fun testCreateSeveralNewLibraryNatsController() {
-        for (i in 1..3) {
+        repeat(3){
             doRequest(
                 CREATE_NEW_LIBRARY,
                 CreateNewLibraryRequest.newBuilder()
-                    .setLibraryName("testLibraryName$i")
+                    .setLibraryName("testLibraryName$it")
                     .setTelegramUserId("testTelegramUserId1")
                     .build().toByteArray()
             )
