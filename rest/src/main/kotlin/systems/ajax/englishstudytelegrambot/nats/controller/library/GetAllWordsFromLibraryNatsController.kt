@@ -38,7 +38,8 @@ class GetAllWordsFromLibraryNatsController(private val libraryService: LibrarySe
             .build()
 
     private fun createFailureResponse(exception: Throwable) =
-        GetAllWordsFromLibraryResponse.newBuilder().setFailure(
-            GetAllWordsFromLibraryResponse.Failure.newBuilder().setErrorMassage(exception.message).build()
-        ).build()
+        GetAllWordsFromLibraryResponse.newBuilder()
+            .setFailure(
+                GetAllWordsFromLibraryResponse.Failure.newBuilder().setErrorMassage(exception.message).build()
+            ).build()
 }
