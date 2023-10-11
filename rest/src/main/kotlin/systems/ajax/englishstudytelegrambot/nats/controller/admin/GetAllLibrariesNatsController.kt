@@ -3,9 +3,9 @@ package systems.ajax.englishstudytelegrambot.nats.controller.admin
 import com.google.protobuf.Parser
 import entity.LibraryOuterClass
 import org.springframework.stereotype.Component
-import admin.GetAllLibraries.GetAllLibrariesResponse
-import admin.GetAllLibraries.GetAllLibrariesResponse.Success
-import admin.GetAllLibraries.GetAllLibrariesRequest
+import admin.GetAllLibrariesResponse
+import admin.GetAllLibrariesResponse.Success
+import admin.GetAllLibrariesRequest
 import systems.ajax.NatsSubject.Admin.GET_ALL_LIBRARIES_SUBJECT
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController

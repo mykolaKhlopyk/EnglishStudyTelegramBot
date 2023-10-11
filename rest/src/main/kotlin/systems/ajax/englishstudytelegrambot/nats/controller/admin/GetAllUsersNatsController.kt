@@ -2,9 +2,9 @@ package systems.ajax.englishstudytelegrambot.nats.controller.admin
 
 import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
-import admin.GetAllUsers.GetAllUsersRequest
-import admin.GetAllUsers.GetAllUsersResponse
-import admin.GetAllUsers.GetAllUsersResponse.Success
+import admin.GetAllUsersRequest
+import admin.GetAllUsersResponse
+import admin.GetAllUsersResponse.Success
 import systems.ajax.NatsSubject.Admin.GET_ALL_USERS_SUBJECT
 import systems.ajax.englishstudytelegrambot.entity.User
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController

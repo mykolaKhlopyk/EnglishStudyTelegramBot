@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import library.GetAllWordsFromLibrary.GetAllWordsFromLibraryRequest
 import library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse
 import library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse.Success
-import systems.ajax.NatsSubject.Library.GET_ALL_WORDS_FROM_LIBRARY
+import systems.ajax.NatsSubject.Library.GET_ALL_WORDS_FROM_LIBRARY_SUBJECT
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toFailureResponse
@@ -16,7 +16,7 @@ import systems.ajax.englishstudytelegrambot.service.LibraryService
 class GetAllWordsFromLibraryNatsController(private val libraryService: LibraryService) :
     NatsController<GetAllWordsFromLibraryRequest, GetAllWordsFromLibraryResponse> {
 
-    override val subject: String = GET_ALL_WORDS_FROM_LIBRARY
+    override val subject: String = GET_ALL_WORDS_FROM_LIBRARY_SUBJECT
 
     override val parser: Parser<GetAllWordsFromLibraryRequest> = GetAllWordsFromLibraryRequest.parser()
 

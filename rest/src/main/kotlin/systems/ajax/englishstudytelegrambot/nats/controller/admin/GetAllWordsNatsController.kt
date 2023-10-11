@@ -2,9 +2,9 @@ package systems.ajax.englishstudytelegrambot.nats.controller.admin
 
 import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
-import admin.GetAllWords.GetAllWordsResponse
-import admin.GetAllWords.GetAllWordsResponse.Success
-import admin.GetAllWords.GetAllWordsRequest
+import admin.GetAllWordsResponse
+import admin.GetAllWordsResponse.Success
+import admin.GetAllWordsRequest
 import entity.WordOuterClass
 import systems.ajax.NatsSubject.Admin.GET_ALL_WORDS_SUBJECT
 import systems.ajax.englishstudytelegrambot.entity.Word

@@ -5,6 +5,8 @@ package admin;
 import "system/ajax/entity/word.proto";
 import "system/ajax/exception/failure.proto";
 
+option java_multiple_files = true;
+
 message GetAllWordsRequest{
 
 }
