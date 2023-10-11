@@ -2,7 +2,6 @@ package systems.ajax.englishstudytelegrambot.nats.mapper
 
 import entity.LibraryOuterClass
 import entity.WordOuterClass
-import exception.FailureOuterClass.Failure
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.entity.Word
 
@@ -28,6 +27,3 @@ fun Word.toWordResponse(): WordOuterClass.Word =
                     .setLinkToAudio(it.linkToAudio)
             })
         .build()
-
-fun Throwable.toFailureResponse(): Failure =
-    Failure.newBuilder().setErrorMessage(message).build()

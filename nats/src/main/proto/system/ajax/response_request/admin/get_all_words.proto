@@ -3,7 +3,6 @@ syntax = "proto3";
 package admin;
 
 import "system/ajax/entity/word.proto";
-import "system/ajax/exception/failure.proto";
 
 option java_multiple_files = true;
 
@@ -15,10 +14,14 @@ message GetAllWordsResponse{
 
   oneof response{
     Success success = 1;
-    exception.Failure failure = 2;
+    Failure failure = 2;
   }
 
   message Success {
     repeated entity.Word words = 1;
+  }
+
+  message Failure{
+    string error_massage = 1;
   }
 }

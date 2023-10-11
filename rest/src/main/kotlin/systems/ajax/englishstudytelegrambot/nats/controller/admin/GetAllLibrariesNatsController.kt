@@ -9,7 +9,6 @@ import admin.GetAllLibrariesRequest
 import systems.ajax.NatsSubject.Admin.GET_ALL_LIBRARIES_SUBJECT
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
-import systems.ajax.englishstudytelegrambot.nats.mapper.toFailureResponse
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.service.AdminService
 
@@ -25,16 +24,23 @@ class GetAllLibrariesNatsController(
     override fun handle(request: GetAllLibrariesRequest): GetAllLibrariesResponse =
         runCatching {
             val librariesResponse = getAllLibrariesInResponseFormat()
-            GetAllLibrariesResponse.newBuilder()
-                .setSuccess(
-                    Success.newBuilder().addAllLibraries(librariesResponse))
-                .build()
-        }.getOrElse { exception ->
-            GetAllLibrariesResponse.newBuilder()
-                .setFailure(exception.toFailureResponse())
-                .build()
+            createSuccessResponse(librariesResponse)
+        }.getOrElse {
+            createFailureResponse(it)
         }
 
     private fun getAllLibrariesInResponseFormat(): List<LibraryOuterClass.Library> =
         adminService.getAllLibraries().map(Library::toLibraryResponse)
+
+    private fun createSuccessResponse(librariesResponse: List<LibraryOuterClass.Library>) =
+        GetAllLibrariesResponse.newBuilder()
+            .setSuccess(
+                Success.newBuilder().addAllLibraries(librariesResponse)
+            )
+            .build()
+
+    private fun createFailureResponse(exception: Throwable) =
+        GetAllLibrariesResponse.newBuilder().setFailure(
+            GetAllLibrariesResponse.Failure.newBuilder().setErrorMassage(exception.message).build()
+        ).build()
 }

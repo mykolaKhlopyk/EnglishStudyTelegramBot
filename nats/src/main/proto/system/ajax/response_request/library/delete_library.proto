@@ -3,7 +3,6 @@ syntax = "proto3";
 package library;
 
 import "system/ajax/entity/library.proto";
-import "system/ajax/exception/failure.proto";
 
 message DeleteLibraryRequest{
   string library_name = 1;
@@ -14,10 +13,14 @@ message DeleteLibraryResponse{
 
   oneof response{
     Success success = 1;
-    exception.Failure failure = 2;
+    Failure failure = 2;
   }
 
   message Success {
     entity.Library deleted_library = 1;
+  }
+
+  message Failure{
+    string error_massage = 1;
   }
 }

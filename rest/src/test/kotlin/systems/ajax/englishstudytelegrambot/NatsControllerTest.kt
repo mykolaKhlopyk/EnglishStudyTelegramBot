@@ -2,7 +2,6 @@ package systems.ajax.englishstudytelegrambot
 
 import io.nats.client.Connection
 import io.nats.client.Message
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -100,12 +99,11 @@ class NatsControllerTest {
                 message.data
             ).success.librariesList
 
-        //testLibraryName1, testLibraryName2, testLibraryName3
         Assertions.assertIterableEquals(libraries.map(Library::toLibraryResponse), libraryList)
     }
 
     @Test
-    fun testGetAllWordsNatsController() = runBlocking {
+    fun testGetAllWordsNatsController() {
         val libraries = addLibrariesAndUsers()
         val words = addWords(libraries)
 
@@ -113,12 +111,11 @@ class NatsControllerTest {
 
         val wordsList = GetAllWordsResponse.parser().parseFrom(message.data).success.wordsList
 
-        //testLibraryName1, testLibraryName2, testLibraryName3
         Assertions.assertEquals(words.map(Word::toWordResponse), wordsList)
     }
 
     @Test
-    fun testGetAllWordsFromLibrariesNatsControllerEmptyLibrary() = runBlocking {
+    fun testGetAllWordsFromLibrariesNatsControllerEmptyLibrary() {
 
         val libraries = addLibrariesAndUsers()
         val words = addWords(libraries)
@@ -138,7 +135,7 @@ class NatsControllerTest {
     }
 
     @Test
-    fun testGetAllWordsFromLibrariesNatsControllerNotEmptyLibrary() = runBlocking {
+    fun testGetAllWordsFromLibrariesNatsControllerNotEmptyLibrary() {
         val libraries = addLibrariesAndUsers()
         val words = addWords(libraries)
 
@@ -190,7 +187,7 @@ class NatsControllerTest {
 
     @Test
     fun testDeleteLibraryNatsController() {
-        val libraries = addLibrariesAndUsers()
+        val libraries: List<Library> = addLibrariesAndUsers()
 
         val message = doRequest(
             DELETE_LIBRARY_SUBJECT,
@@ -204,10 +201,10 @@ class NatsControllerTest {
             DeleteLibraryResponse.parser().parseFrom(message.data).success.deletedLibrary.name
 
         Assertions.assertEquals(libraries[0].name, deletedLibraryName)
-        Assertions.assertEquals(2, adminService.getAllLibraries().size)
+        Assertions.assertFalse(adminService.getAllLibraries().contains(libraries[0]))
     }
 
-    private fun addWords(libraries: List<Library>): List<Word> = runBlocking {
+    private fun addWords(libraries: List<Library>): List<Word> =
         listOf(
             wordRepository.saveNewWord(
                 Word(
@@ -234,7 +231,6 @@ class NatsControllerTest {
                 )
             )
         )
-    }
 
     private fun doRequest(subject: String, byteArray: ByteArray) =
         natsConnection.requestWithTimeout(

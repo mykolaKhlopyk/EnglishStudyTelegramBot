@@ -1,13 +1,13 @@
 package systems.ajax.englishstudytelegrambot.nats.controller.library
 
 import com.google.protobuf.Parser
+import entity.LibraryOuterClass
 import org.springframework.stereotype.Component
 import library.DeleteLibrary.DeleteLibraryRequest
 import library.DeleteLibrary.DeleteLibraryResponse
 import library.DeleteLibrary.DeleteLibraryResponse.Success
 import systems.ajax.NatsSubject.Library.DELETE_LIBRARY_SUBJECT
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
-import systems.ajax.englishstudytelegrambot.nats.mapper.toFailureResponse
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.service.LibraryService
 
@@ -22,13 +22,21 @@ class DeleteLibraryNatsController(private val libraryService: LibraryService) :
     override fun handle(request: DeleteLibraryRequest): DeleteLibraryResponse =
         runCatching {
             val deletedLibraryResponse = deleteLibraryInResponseFormat(request)
-            DeleteLibraryResponse.newBuilder()
-                .setSuccess(Success.newBuilder().setDeletedLibrary(deletedLibraryResponse))
-                .build()
-        }.getOrElse { exception ->
-            DeleteLibraryResponse.newBuilder().setFailure(exception.toFailureResponse()).build()
+            createSuccessResponse(deletedLibraryResponse)
+        }.getOrElse {
+            createFailureResponse(it)
         }
 
     private fun deleteLibraryInResponseFormat(request: DeleteLibraryRequest) =
         libraryService.deleteLibrary(request.libraryName, request.telegramUserId).toLibraryResponse()
+
+    private fun createSuccessResponse(deletedLibraryResponse: LibraryOuterClass.Library) =
+        DeleteLibraryResponse.newBuilder()
+            .setSuccess(Success.newBuilder().setDeletedLibrary(deletedLibraryResponse))
+            .build()
+
+    private fun createFailureResponse(exception: Throwable) =
+        DeleteLibraryResponse.newBuilder().setFailure(
+            DeleteLibraryResponse.Failure.newBuilder().setErrorMassage(exception.message).build()
+        ).build()
 }

@@ -9,7 +9,6 @@ import entity.WordOuterClass
 import systems.ajax.NatsSubject.Admin.GET_ALL_WORDS_SUBJECT
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
-import systems.ajax.englishstudytelegrambot.nats.mapper.toFailureResponse
 import systems.ajax.englishstudytelegrambot.nats.mapper.toWordResponse
 import systems.ajax.englishstudytelegrambot.service.AdminService
 
@@ -25,15 +24,21 @@ class GetAllWordsNatsController(
     override fun handle(request: GetAllWordsRequest): GetAllWordsResponse =
         runCatching {
             val wordsResponse = getAllWordsInResponseFormat()
-            GetAllWordsResponse.newBuilder()
-                .setSuccess(Success.newBuilder().addAllWords(wordsResponse).build())
-                .build()
-        }.getOrElse { exception ->
-            GetAllWordsResponse.newBuilder().setFailure(
-                exception.toFailureResponse()
-            ).build()
+            createSuccessResponse(wordsResponse)
+        }.getOrElse {
+            createFailureResponse(it)
         }
 
     private fun getAllWordsInResponseFormat(): List<WordOuterClass.Word> =
         adminService.getAllWords().map(Word::toWordResponse)
+
+    private fun createSuccessResponse(wordsResponse: List<WordOuterClass.Word>) =
+        GetAllWordsResponse.newBuilder()
+            .setSuccess(Success.newBuilder().addAllWords(wordsResponse).build())
+            .build()
+
+    private fun createFailureResponse(exception: Throwable) =
+        GetAllWordsResponse.newBuilder().setFailure(
+            GetAllWordsResponse.Failure.newBuilder().setErrorMassage(exception.message).build()
+        ).build()
 }
