@@ -34,12 +34,12 @@ class CreateNewLibraryNatsController(private val libraryService: LibraryService)
     }
 
     private fun createSuccessResponse(createdLibrary: LibraryOuterClass.Library) =
-        CreateNewLibraryResponse.newBuilder()
-            .setSuccess(Success.newBuilder().setCreatedLibrary(createdLibrary).build())
-            .build()
+        CreateNewLibraryResponse.newBuilder().apply {
+            successBuilder.setCreatedLibrary(createdLibrary)
+        }.build()
 
     private fun createFailureResponse(exception: Throwable) =
-        CreateNewLibraryResponse.newBuilder().setFailure(
-            CreateNewLibraryResponse.Failure.newBuilder().setErrorMassage(exception.message).build()
-        ).build()
+        CreateNewLibraryResponse.newBuilder().apply {
+            failureBuilder.setErrorMassage(exception.message).build()
+        }.build()
 }

@@ -33,12 +33,12 @@ class GetAllWordsNatsController(
         adminService.getAllWords().map(Word::toWordResponse)
 
     private fun createSuccessResponse(wordsResponse: List<WordOuterClass.Word>) =
-        GetAllWordsResponse.newBuilder()
-            .setSuccess(Success.newBuilder().addAllWords(wordsResponse).build())
-            .build()
+        GetAllWordsResponse.newBuilder().apply {
+            successBuilder.addAllWords(wordsResponse)
+        }.build()
 
     private fun createFailureResponse(exception: Throwable) =
-        GetAllWordsResponse.newBuilder().setFailure(
-            GetAllWordsResponse.Failure.newBuilder().setErrorMassage(exception.message).build()
-        ).build()
+        GetAllWordsResponse.newBuilder().apply {
+            failureBuilder.setErrorMassage(exception.message).build()
+        }.build()
 }

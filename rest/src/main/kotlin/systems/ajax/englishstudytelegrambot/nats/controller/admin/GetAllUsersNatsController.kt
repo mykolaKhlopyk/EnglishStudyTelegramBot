@@ -8,7 +8,6 @@ import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.service.AdminService
 import systems.ajax.response_request.admin.GetAllUsersRequest
 import systems.ajax.response_request.admin.GetAllUsersResponse
-import systems.ajax.response_request.admin.GetAllUsersResponse.Success
 
 @Component
 class GetAllUsersNatsController(
@@ -21,21 +20,21 @@ class GetAllUsersNatsController(
 
     override fun handle(request: GetAllUsersRequest): GetAllUsersResponse =
         runCatching {
-            val userTelegramIds: List<String> = getTelegramUserIds()
-            createSuccessResponse(userTelegramIds)
+            val telegramUserIds: List<String> = getTelegramUserIds()
+            createSuccessResponse(telegramUserIds)
         }.getOrElse {
             createFailureResponse(it)
         }
 
     private fun getTelegramUserIds(): List<String> = adminService.getAllUsers().map(User::telegramUserId)
 
-    private fun createSuccessResponse(userTelegramIds: List<String>) =
-        GetAllUsersResponse.newBuilder()
-            .setSuccess(Success.newBuilder().addAllTelegramUserIds(userTelegramIds))
-            .build()
+    private fun createSuccessResponse(telegramUserIds: List<String>) =
+        GetAllUsersResponse.newBuilder().apply {
+            successBuilder.addAllTelegramUserIds(telegramUserIds)
+        }.build()
 
     private fun createFailureResponse(exception: Throwable) =
-        GetAllUsersResponse.newBuilder().setFailure(
-            GetAllUsersResponse.Failure.newBuilder().setErrorMassage(exception.message).build()
-        ).build()
+        GetAllUsersResponse.newBuilder().apply {
+            failureBuilder.setErrorMassage(exception.message).build()
+        }.build()
 }

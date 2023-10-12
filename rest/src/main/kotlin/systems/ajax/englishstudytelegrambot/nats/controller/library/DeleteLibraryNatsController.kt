@@ -31,12 +31,12 @@ class DeleteLibraryNatsController(private val libraryService: LibraryService) :
         libraryService.deleteLibrary(request.libraryName, request.telegramUserId).toLibraryResponse()
 
     private fun createSuccessResponse(deletedLibraryResponse: LibraryOuterClass.Library) =
-        DeleteLibraryResponse.newBuilder()
-            .setSuccess(Success.newBuilder().setDeletedLibrary(deletedLibraryResponse))
-            .build()
+        DeleteLibraryResponse.newBuilder().apply {
+            successBuilder.setDeletedLibrary(deletedLibraryResponse)
+        }.build()
 
     private fun createFailureResponse(exception: Throwable) =
-        DeleteLibraryResponse.newBuilder().setFailure(
-            DeleteLibraryResponse.Failure.newBuilder().setErrorMassage(exception.message).build()
-        ).build()
+        DeleteLibraryResponse.newBuilder().apply {
+            failureBuilder.setErrorMassage(exception.message).build()
+        }.build()
 }

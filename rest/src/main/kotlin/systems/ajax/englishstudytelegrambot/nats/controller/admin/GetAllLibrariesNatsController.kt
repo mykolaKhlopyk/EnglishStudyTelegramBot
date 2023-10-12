@@ -33,14 +33,12 @@ class GetAllLibrariesNatsController(
         adminService.getAllLibraries().map(Library::toLibraryResponse)
 
     private fun createSuccessResponse(librariesResponse: List<LibraryOuterClass.Library>) =
-        GetAllLibrariesResponse.newBuilder()
-            .setSuccess(
-                Success.newBuilder().addAllLibraries(librariesResponse)
-            )
-            .build()
+        GetAllLibrariesResponse.newBuilder().apply {
+            successBuilder.addAllLibraries(librariesResponse)
+        }.build()
 
     private fun createFailureResponse(exception: Throwable) =
-        GetAllLibrariesResponse.newBuilder().setFailure(
-            GetAllLibrariesResponse.Failure.newBuilder().setErrorMassage(exception.message).build()
-        ).build()
+        GetAllLibrariesResponse.newBuilder().apply {
+            failureBuilder.setErrorMassage(exception.message)
+        }.build()
 }

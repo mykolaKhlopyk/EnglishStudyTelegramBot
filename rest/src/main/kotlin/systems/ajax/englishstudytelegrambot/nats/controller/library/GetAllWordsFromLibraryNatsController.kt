@@ -33,13 +33,12 @@ class GetAllWordsFromLibraryNatsController(private val libraryService: LibrarySe
             .map(Word::toWordResponse)
 
     private fun createSuccessResponse(wordsFromLibrary: List<WordOuterClass.Word>) =
-        GetAllWordsFromLibraryResponse.newBuilder()
-            .setSuccess(Success.newBuilder().addAllWords(wordsFromLibrary))
-            .build()
+        GetAllWordsFromLibraryResponse.newBuilder().apply {
+            successBuilder.addAllWords(wordsFromLibrary)
+        }.build()
 
     private fun createFailureResponse(exception: Throwable) =
-        GetAllWordsFromLibraryResponse.newBuilder()
-            .setFailure(
-                GetAllWordsFromLibraryResponse.Failure.newBuilder().setErrorMassage(exception.message).build()
-            ).build()
+        GetAllWordsFromLibraryResponse.newBuilder().apply {
+            failureBuilder.setErrorMassage(exception.message).build()
+        }.build()
 }
