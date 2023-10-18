@@ -1,3 +1,0 @@
-spring:
-  config:
-    import: classpath:mongodb/mongodb.yml, classpath:wordnik/wordnik.yml

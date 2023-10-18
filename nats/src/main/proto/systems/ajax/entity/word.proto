@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package systems.ajax.entity;
+
+message AdditionalInfoAboutWord{
+  string link_to_audio = 1;
+  string definition_of_word = 2;
+  string example_in_sentences = 3;
+  string pronunciation_of_word = 4;
+}
+
+message Word{
+  optional string id = 1;
+  string spelling = 2;
+  string translating = 3;
+  string library_id = 4;
+  AdditionalInfoAboutWord addition_info_about_word = 5;
+}
