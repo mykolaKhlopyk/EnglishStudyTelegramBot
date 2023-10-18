@@ -7,7 +7,6 @@ import systems.ajax.englishstudytelegrambot.entity.MongoWord
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toWordResponse
 import systems.ajax.englishstudytelegrambot.service.LibraryService
-import systems.ajax.entity.Word
 import systems.ajax.entity.WordOuterClass
 import systems.ajax.response_request.library.GetAllWordsFromLibrary.GetAllWordsFromLibraryRequest
 import systems.ajax.response_request.library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse
@@ -32,7 +31,7 @@ class GetAllWordsFromLibraryNatsController(private val libraryService: LibrarySe
         libraryService.getAllWordsFromLibrary(request.libraryName, request.telegramUserId)
             .map(MongoWord::toWordResponse)
 
-    private fun createSuccessResponse(wordsFromLibrary: List<Word>) =
+    private fun createSuccessResponse(wordsFromLibrary: List<WordOuterClass.Word>) =
         GetAllWordsFromLibraryResponse.newBuilder().apply {
             successBuilder.addAllWords(wordsFromLibrary)
         }.build()
