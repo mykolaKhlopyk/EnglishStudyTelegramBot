@@ -6,14 +6,14 @@ import org.springframework.data.mongodb.core.index.CompoundIndex
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
 
-data class User(
+data class MongoUser(
     @Field("ownerId")
     val telegramUserId: String
 )
 
 @Document(value = "libraries")
 @CompoundIndex(name = "libraryName_owner", def = "{'name' : 1, 'ownerId': 1}", unique = true)
-data class Library(
+data class MongoLibrary(
     @Id val id: ObjectId = ObjectId(),
     val name: String,
     val ownerId: String
@@ -21,15 +21,15 @@ data class Library(
 
 @Document(value = "words")
 @CompoundIndex(name = "libraryId_spelling", def = "{'libraryId' : 1, 'spelling': 1}", unique = true)
-data class Word(
+data class MongoWord(
     @Id val id: ObjectId = ObjectId(),
     val spelling: String,
     val translate: String,
     val libraryId: ObjectId,
-    val additionalInfoAboutWord: AdditionalInfoAboutWord
+    val mongoAdditionalInfoAboutWord: MongoAdditionalInfoAboutWord
 )
 
-data class AdditionalInfoAboutWord(
+data class MongoAdditionalInfoAboutWord(
     val linkToAudio: String,
     val definitionOfWord: String,
     val exampleInSentences: String,

@@ -3,7 +3,7 @@ package systems.ajax.englishstudytelegrambot.nats.controller.admin
 import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
 import systems.ajax.NatsSubject.Admin.GET_ALL_USERS_SUBJECT
-import systems.ajax.englishstudytelegrambot.entity.User
+import systems.ajax.englishstudytelegrambot.entity.MongoUser
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.service.AdminService
 import systems.ajax.response_request.admin.GetAllUsersRequest
@@ -26,7 +26,7 @@ class GetAllUsersNatsController(
             createFailureResponse(it)
         }
 
-    private fun getTelegramUserIds(): List<String> = adminService.getAllUsers().map(User::telegramUserId)
+    private fun getTelegramUserIds(): List<String> = adminService.getAllUsers().map(MongoUser::telegramUserId)
 
     private fun createSuccessResponse(telegramUserIds: List<String>) =
         GetAllUsersResponse.newBuilder().apply {

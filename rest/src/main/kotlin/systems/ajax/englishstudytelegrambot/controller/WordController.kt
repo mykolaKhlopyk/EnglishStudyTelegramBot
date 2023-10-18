@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.DeleteMapping
 import systems.ajax.englishstudytelegrambot.annotation.LogMethodsByRequiredAnnotations
 import systems.ajax.englishstudytelegrambot.dto.WordDto
-import systems.ajax.englishstudytelegrambot.entity.Word
+import systems.ajax.englishstudytelegrambot.entity.MongoWord
 import systems.ajax.englishstudytelegrambot.service.WordService
 
 @RestController
@@ -27,7 +27,7 @@ class WordController(
         @PathVariable("libraryName") libraryName: String,
         @RequestHeader("telegramUserId") telegramUserId: String,
         @RequestHeader("wordSpelling") wordSpelling: String
-    ): Word =
+    ): MongoWord =
         wordService.getFullInfoAboutWord(libraryName, telegramUserId, wordSpelling)
 
     @PostMapping("/{libraryName}")
@@ -35,19 +35,19 @@ class WordController(
         @PathVariable("libraryName") libraryName: String,
         @RequestHeader("telegramUserId") telegramUserId: String,
         @RequestBody wordDto: WordDto
-    ): Word = wordService.saveNewWord(libraryName, telegramUserId, wordDto)
+    ): MongoWord = wordService.saveNewWord(libraryName, telegramUserId, wordDto)
 
     @PatchMapping("/{libraryName}")
     fun updateWordTranslateInLibrary(
         @PathVariable("libraryName") libraryName: String,
         @RequestHeader("telegramUserId") telegramUserId: String,
         @RequestBody wordDto: WordDto
-    ): Word = wordService.updateWordTranslate(libraryName, telegramUserId, wordDto)
+    ): MongoWord = wordService.updateWordTranslate(libraryName, telegramUserId, wordDto)
 
     @DeleteMapping("/{libraryName}")
     fun deleteWordFromLibrary(
         @PathVariable("libraryName") libraryName: String,
         @RequestHeader("telegramUserId") telegramUserId: String,
         @RequestHeader("wordSpelling") wordSpelling: String
-    ): Word = wordService.deleteWord(libraryName, telegramUserId, wordSpelling)
+    ): MongoWord = wordService.deleteWord(libraryName, telegramUserId, wordSpelling)
 }
