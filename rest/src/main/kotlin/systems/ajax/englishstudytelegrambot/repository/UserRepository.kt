@@ -1,19 +1,21 @@
 package systems.ajax.englishstudytelegrambot.repository
 
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.findDistinct
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
 import systems.ajax.englishstudytelegrambot.annotation.LogMethodsByRequiredAnnotations
-import systems.ajax.englishstudytelegrambot.entity.MongoLibrary
-import systems.ajax.englishstudytelegrambot.entity.MongoUser
+import systems.ajax.englishstudytelegrambot.entity.Library
+import systems.ajax.englishstudytelegrambot.entity.User
+import kotlin.math.log
 
 
 interface UserRepository {
 
-    fun getAllUsers(): List<MongoUser>
+    fun getAllUsers(): List<User>
 
-    fun getAllLibrariesOfUser(telegramUserId: String): List<MongoLibrary>
+    fun getAllLibrariesOfUser(telegramUserId: String): List<Library>
 }
 
 @Repository
@@ -21,13 +23,13 @@ interface UserRepository {
 class UserRepositoryImpl(val mongoTemplate: MongoTemplate) : UserRepository {
 
     @LogMethodsByRequiredAnnotations
-    override fun getAllUsers(): List<MongoUser> =
-        mongoTemplate.find(Query().apply { fields().include("ownerId").exclude("_id") }, MongoUser::class.java, "libraries")
+    override fun getAllUsers(): List<User> =
+        mongoTemplate.find(Query().apply { fields().include("ownerId").exclude("_id") }, User::class.java, "libraries")
             .distinct()
 
-    override fun getAllLibrariesOfUser(telegramUserId: String): List<MongoLibrary> =
+    override fun getAllLibrariesOfUser(telegramUserId: String): List<Library> =
         mongoTemplate.find(
             Query.query(Criteria.where("ownerId").`is`(telegramUserId)),
-            MongoLibrary::class.java
+            Library::class.java
         )
 }

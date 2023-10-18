@@ -15,11 +15,11 @@ import systems.ajax.NatsSubject.Admin.GET_ALL_USERS_SUBJECT
 import systems.ajax.NatsSubject.Admin.GET_ALL_WORDS_SUBJECT
 import systems.ajax.NatsSubject.Library.CREATE_NEW_LIBRARY_SUBJECT
 import systems.ajax.NatsSubject.Library.DELETE_LIBRARY_SUBJECT
-import systems.ajax.englishstudytelegrambot.entity.MongoLibrary
-import systems.ajax.englishstudytelegrambot.entity.MongoUser
-import systems.ajax.englishstudytelegrambot.entity.MongoWord
+import systems.ajax.englishstudytelegrambot.entity.Library
+import systems.ajax.englishstudytelegrambot.entity.User
+import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.NatsSubject.Library.GET_ALL_WORDS_FROM_LIBRARY_SUBJECT
-import systems.ajax.englishstudytelegrambot.entity.MongoAdditionalInfoAboutWord
+import systems.ajax.englishstudytelegrambot.entity.AdditionalInfoAboutWord
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.nats.mapper.toWordResponse
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
@@ -55,19 +55,19 @@ class NatsControllerTest {
 
     @BeforeEach
     fun clearDBs() {
-        mongoTemplate.remove<MongoUser>(Query())
-        mongoTemplate.remove<MongoLibrary>(Query())
-        mongoTemplate.remove<MongoWord>(Query())
+        mongoTemplate.remove<User>(Query())
+        mongoTemplate.remove<Library>(Query())
+        mongoTemplate.remove<Word>(Query())
     }
 
-    private fun addLibrariesAndUsers(): List<MongoLibrary> =
+    private fun addLibrariesAndUsers(): List<Library> =
         listOf(
             libraryRepository.saveNewLibrary("testLibraryName1", "testTelegramUserId1"),
             libraryRepository.saveNewLibrary("testLibraryName2", "testTelegramUserId2"),
             libraryRepository.saveNewLibrary("testLibraryName3", "testTelegramUserId1")
         )
 
-    private fun createEmptyAdditionalInfoAboutWord() = MongoAdditionalInfoAboutWord("", "", "", "")
+    private fun createEmptyAdditionalInfoAboutWord() = AdditionalInfoAboutWord("", "", "", "")
 
     @Test
     fun testGetAllUserNatsController() {
@@ -81,7 +81,7 @@ class NatsControllerTest {
 
         //testTelegramUserId1, testTelegramUserId2
         Assertions.assertIterableEquals(
-            adminService.getAllUsers().map(MongoUser::telegramUserId), telegramUserIdsList
+            adminService.getAllUsers().map(User::telegramUserId), telegramUserIdsList
         )
     }
 
@@ -95,7 +95,7 @@ class NatsControllerTest {
                 message.data
             ).success.librariesList
 
-        Assertions.assertIterableEquals(libraries.map(MongoLibrary::toLibraryResponse), libraryList)
+        Assertions.assertIterableEquals(libraries.map(Library::toLibraryResponse), libraryList)
     }
 
     @Test
@@ -107,7 +107,7 @@ class NatsControllerTest {
 
         val wordsList = GetAllWordsResponse.parser().parseFrom(message.data).success.wordsList
 
-        Assertions.assertEquals(words.map(MongoWord::toWordResponse), wordsList)
+        Assertions.assertEquals(words.map(Word::toWordResponse), wordsList)
     }
 
     @Test
@@ -126,7 +126,7 @@ class NatsControllerTest {
 
         val wordsFromLibraryList = GetAllWordsFromLibraryResponse.parser().parseFrom(message.data).success.wordsList
 
-         Assertions.assertEquals(listOf(words[0], words[1]).map(MongoWord::toWordResponse), wordsFromLibraryList)
+         Assertions.assertEquals(listOf(words[0], words[1]).map(Word::toWordResponse), wordsFromLibraryList)
     }
 
     @Test
@@ -161,7 +161,7 @@ class NatsControllerTest {
             CreateNewLibraryResponse.parser().parseFrom(message.data).success.createdLibrary.name
 
         Assertions.assertEquals("testLibraryName1", createdLibraryName)
-        Assertions.assertTrue(adminService.getAllLibraries().map(MongoLibrary::name).contains(createdLibraryName))
+        Assertions.assertTrue(adminService.getAllLibraries().map(Library::name).contains(createdLibraryName))
     }
 
     @Test
@@ -181,7 +181,7 @@ class NatsControllerTest {
 
     @Test
     fun testDeleteLibraryNatsController() {
-        val libraries: List<MongoLibrary> = addLibrariesAndUsers()
+        val libraries: List<Library> = addLibrariesAndUsers()
 
         val message = doRequest(
             DELETE_LIBRARY_SUBJECT,
@@ -198,30 +198,30 @@ class NatsControllerTest {
         Assertions.assertFalse(adminService.getAllLibraries().contains(libraries[0]))
     }
 
-    private fun addWords(libraries: List<MongoLibrary>): List<MongoWord> =
+    private fun addWords(libraries: List<Library>): List<Word> =
         listOf(
             wordRepository.saveNewWord(
-                MongoWord(
+                Word(
                     spelling = "word1",
                     translate = "слово1",
                     libraryId = libraries[0].id,
-                    mongoAdditionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
+                    additionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
                 )
             ),
             wordRepository.saveNewWord(
-                MongoWord(
+                Word(
                     spelling = "word2",
                     translate = "слово2",
                     libraryId = libraries[0].id,
-                    mongoAdditionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
+                    additionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
                 )
             ),
             wordRepository.saveNewWord(
-                MongoWord(
+                Word(
                     spelling = "word1",
                     translate = "слово2",
                     libraryId = libraries[1].id,
-                    mongoAdditionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
+                    additionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
                 )
             )
         )

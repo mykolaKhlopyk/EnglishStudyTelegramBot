@@ -1,25 +1,25 @@
 package systems.ajax.englishstudytelegrambot.nats.mapper
 
-import systems.ajax.englishstudytelegrambot.entity.MongoLibrary
-import systems.ajax.englishstudytelegrambot.entity.MongoWord
-import systems.ajax.entity.Library
+import systems.ajax.englishstudytelegrambot.entity.Library
+import systems.ajax.englishstudytelegrambot.entity.Word
+import systems.ajax.entity.LibraryOuterClass
 import systems.ajax.entity.WordOuterClass
 
-fun MongoLibrary.toLibraryResponse(): Library =
-    Library.newBuilder()
+fun Library.toLibraryResponse(): LibraryOuterClass.Library =
+    LibraryOuterClass.Library.newBuilder()
         .setId(id.toHexString())
         .setName(name)
         .setOwnerId(ownerId)
         .build()
 
-fun MongoWord.toWordResponse(): WordOuterClass.Word =
+fun Word.toWordResponse(): WordOuterClass.Word =
     WordOuterClass.Word.newBuilder()
         .setId(id.toHexString())
         .setLibraryId(libraryId.toHexString())
         .setSpelling(spelling)
         .setTranslating(translate)
         .setAdditionInfoAboutWord(
-            mongoAdditionalInfoAboutWord.let {
+            additionalInfoAboutWord.let {
                 WordOuterClass.AdditionalInfoAboutWord.newBuilder()
                     .setDefinitionOfWord(it.definitionOfWord)
                     .setPronunciationOfWord(it.pronunciationOfWord)

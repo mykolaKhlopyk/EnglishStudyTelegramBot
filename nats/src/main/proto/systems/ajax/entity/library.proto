@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package systems.ajax.entity;
 
-option java_multiple_files = true;
-
 message Library{
   optional string id = 1;
   string name = 2;

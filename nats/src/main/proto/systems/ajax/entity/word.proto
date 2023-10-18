@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package systems.ajax.entity;
 
-option java_multiple_files = true;
-
 message AdditionalInfoAboutWord{
   string link_to_audio = 1;
   string definition_of_word = 2;
