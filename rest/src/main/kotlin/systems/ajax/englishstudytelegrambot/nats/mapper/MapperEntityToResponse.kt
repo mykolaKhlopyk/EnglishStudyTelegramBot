@@ -2,9 +2,7 @@ package systems.ajax.englishstudytelegrambot.nats.mapper
 
 import systems.ajax.englishstudytelegrambot.entity.MongoLibrary
 import systems.ajax.englishstudytelegrambot.entity.MongoWord
-import systems.ajax.entity.AdditionalInfoAboutWord
 import systems.ajax.entity.Library
-import systems.ajax.entity.Word
 import systems.ajax.entity.WordOuterClass
 
 fun MongoLibrary.toLibraryResponse(): Library =
@@ -14,15 +12,15 @@ fun MongoLibrary.toLibraryResponse(): Library =
         .setOwnerId(ownerId)
         .build()
 
-fun MongoWord.toWordResponse(): Word =
-    Word.newBuilder()
+fun MongoWord.toWordResponse(): WordOuterClass.Word =
+    WordOuterClass.Word.newBuilder()
         .setId(id.toHexString())
         .setLibraryId(libraryId.toHexString())
         .setSpelling(spelling)
         .setTranslating(translate)
         .setAdditionInfoAboutWord(
             mongoAdditionalInfoAboutWord.let {
-                AdditionalInfoAboutWord.newBuilder()
+                WordOuterClass.AdditionalInfoAboutWord.newBuilder()
                     .setDefinitionOfWord(it.definitionOfWord)
                     .setPronunciationOfWord(it.pronunciationOfWord)
                     .setExampleInSentences(it.exampleInSentences)

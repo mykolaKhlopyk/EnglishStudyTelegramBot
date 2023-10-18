@@ -6,7 +6,6 @@ import systems.ajax.NatsSubject.Library.CREATE_NEW_LIBRARY_SUBJECT
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.service.LibraryService
-import systems.ajax.entity.Library
 import systems.ajax.entity.LibraryOuterClass
 import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryRequest
 import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryResponse
@@ -28,13 +27,13 @@ class CreateNewLibraryNatsController(private val libraryService: LibraryService)
             createFailureResponse(it)
         }
 
-    private fun createdLibrary(request: CreateNewLibraryRequest): Library {
+    private fun createdLibrary(request: CreateNewLibraryRequest): LibraryOuterClass.Library {
         val createdLibrary =
             libraryService.createNewLibrary(request.libraryName, request.telegramUserId).toLibraryResponse()
         return createdLibrary
     }
 
-    private fun createSuccessResponse(createdLibrary: Library) =
+    private fun createSuccessResponse(createdLibrary: LibraryOuterClass.Library) =
         CreateNewLibraryResponse.newBuilder().apply {
             successBuilder.setCreatedLibrary(createdLibrary)
         }.build()
