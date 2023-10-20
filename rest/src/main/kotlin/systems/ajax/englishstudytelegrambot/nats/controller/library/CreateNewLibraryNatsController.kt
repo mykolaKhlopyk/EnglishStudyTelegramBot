@@ -27,11 +27,9 @@ class CreateNewLibraryNatsController(private val libraryService: LibraryService)
             createFailureResponse(it)
         }
 
-    private fun createdLibrary(request: CreateNewLibraryRequest): Library {
-        val createdLibrary =
-            libraryService.createNewLibrary(request.libraryName, request.telegramUserId).toLibraryResponse()
-        return createdLibrary
-    }
+    private fun createdLibrary(request: CreateNewLibraryRequest): Library =
+        libraryService.createNewLibrary(request.libraryName, request.telegramUserId).toLibraryResponse()
+
 
     private fun createSuccessResponse(createdLibrary: Library) =
         CreateNewLibraryResponse.newBuilder().apply {
