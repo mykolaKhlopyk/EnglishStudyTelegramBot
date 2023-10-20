@@ -2,10 +2,10 @@ package systems.ajax.englishstudytelegrambot.service
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import systems.ajax.englishstudytelegrambot.dto.AudioForWordResponse
-import systems.ajax.englishstudytelegrambot.dto.DefinitionOfWordResponse
-import systems.ajax.englishstudytelegrambot.dto.ExampleOfWordResponse
-import systems.ajax.englishstudytelegrambot.dto.PronunciationOfWordResponse
+import systems.ajax.englishstudytelegrambot.dto.external.api.AudioForWordResponse
+import systems.ajax.englishstudytelegrambot.dto.external.api.DefinitionOfWordResponse
+import systems.ajax.englishstudytelegrambot.dto.external.api.ExampleOfWordResponse
+import systems.ajax.englishstudytelegrambot.dto.external.api.PronunciationOfWordResponse
 import systems.ajax.englishstudytelegrambot.entity.AdditionalInfoAboutWord
 import systems.ajax.englishstudytelegrambot.external.source.ExternalWordSource
 import systems.ajax.englishstudytelegrambot.property.WordnikProperties

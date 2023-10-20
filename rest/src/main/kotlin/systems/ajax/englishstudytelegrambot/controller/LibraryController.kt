@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.DeleteMapping
+import systems.ajax.englishstudytelegrambot.dto.entity.LibraryDtoResponse
+import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
+import systems.ajax.englishstudytelegrambot.dto.entity.toDtoResponse
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.service.LibraryService
@@ -21,20 +24,20 @@ class LibraryController(
     fun getAllWordsFromLibrary(
         @PathVariable("libraryName") libraryName: String,
         @RequestHeader("telegramUserId") telegramUserId: String
-    ): List<Word> =
+    ): List<WordDtoResponse> =
         libraryService.getAllWordsFromLibrary(libraryName, telegramUserId)
 
     @PostMapping("/{nameOfNewLibrary}")
     fun createLibrary(
         @PathVariable("nameOfNewLibrary") nameOfNewLibrary: String,
         @RequestHeader("telegramUserId") telegramUserId: String
-    ): Library =
+    ): LibraryDtoResponse =
         libraryService.createNewLibrary(nameOfNewLibrary, telegramUserId)
 
     @DeleteMapping("/{nameOfLibraryForDeleting}")
     fun deleteLibrary(
         @PathVariable("nameOfLibraryForDeleting") nameOfLibraryForDeleting: String,
         @RequestHeader("telegramUserId") telegramUserId: String
-    ): Library =
+    ): LibraryDtoResponse =
         libraryService.deleteLibrary(nameOfLibraryForDeleting, telegramUserId)
 }

@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.DeleteMapping
 import systems.ajax.englishstudytelegrambot.annotation.LogMethodsByRequiredAnnotations
-import systems.ajax.englishstudytelegrambot.dto.WordDto
+import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
+import systems.ajax.englishstudytelegrambot.dto.request.CreateWordDtoRequest
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.service.WordService
 
@@ -27,27 +28,27 @@ class WordController(
         @PathVariable("libraryName") libraryName: String,
         @RequestHeader("telegramUserId") telegramUserId: String,
         @RequestHeader("wordSpelling") wordSpelling: String
-    ): Word =
+    ): WordDtoResponse =
         wordService.getFullInfoAboutWord(libraryName, telegramUserId, wordSpelling)
 
     @PostMapping("/{libraryName}")
     suspend fun saveWordInLibrary(
         @PathVariable("libraryName") libraryName: String,
         @RequestHeader("telegramUserId") telegramUserId: String,
-        @RequestBody wordDto: WordDto
-    ): Word = wordService.saveNewWord(libraryName, telegramUserId, wordDto)
+        @RequestBody createWordDtoRequest: CreateWordDtoRequest
+    ): WordDtoResponse = wordService.saveNewWord(libraryName, telegramUserId, createWordDtoRequest)
 
     @PatchMapping("/{libraryName}")
     fun updateWordTranslateInLibrary(
         @PathVariable("libraryName") libraryName: String,
         @RequestHeader("telegramUserId") telegramUserId: String,
-        @RequestBody wordDto: WordDto
-    ): Word = wordService.updateWordTranslate(libraryName, telegramUserId, wordDto)
+        @RequestBody createWordDtoRequest: CreateWordDtoRequest
+    ): WordDtoResponse = wordService.updateWordTranslate(libraryName, telegramUserId, createWordDtoRequest)
 
     @DeleteMapping("/{libraryName}")
     fun deleteWordFromLibrary(
         @PathVariable("libraryName") libraryName: String,
         @RequestHeader("telegramUserId") telegramUserId: String,
         @RequestHeader("wordSpelling") wordSpelling: String
-    ): Word = wordService.deleteWord(libraryName, telegramUserId, wordSpelling)
+    ): WordDtoResponse = wordService.deleteWord(libraryName, telegramUserId, wordSpelling)
 }

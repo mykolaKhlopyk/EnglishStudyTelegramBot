@@ -5,5 +5,4 @@ package systems.ajax.entity;
 message Library{
   optional string id = 1;
   string name = 2;
-  string owner_id = 3;
 }

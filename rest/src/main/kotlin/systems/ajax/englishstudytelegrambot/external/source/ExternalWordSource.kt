@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.server.ResponseStatusException
-import systems.ajax.englishstudytelegrambot.dto.GettingPartOfAdditionalInfoAboutWord
+import systems.ajax.englishstudytelegrambot.dto.external.api.GettingPartOfAdditionalInfoAboutWord
 import systems.ajax.englishstudytelegrambot.property.WordnikProperties
 
 @Component

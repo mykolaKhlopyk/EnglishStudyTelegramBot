@@ -1,4 +1,4 @@
-package systems.ajax.englishstudytelegrambot.dto
+package systems.ajax.englishstudytelegrambot.dto.external.api
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
