@@ -1,5 +1,6 @@
 package systems.ajax.englishstudytelegrambot.nats.mapper
 
+import systems.ajax.englishstudytelegrambot.dto.entity.AdditionalInfoAboutWordDtoResponse
 import systems.ajax.englishstudytelegrambot.dto.entity.LibraryDtoResponse
 import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
 import systems.ajax.englishstudytelegrambot.dto.entity.toDtoResponse
@@ -20,14 +21,7 @@ fun WordDtoResponse.toWordResponse(): Word =
         .setId(id.toHexString())
         .setSpelling(spelling)
         .setTranslating(translate)
-        .setAdditionInfoAboutWord(
-            additionalInfoAboutWordDtoResponse.let {
-                AdditionalInfoAboutWord.newBuilder()
-                    .setDefinitionOfWord(it.definitionOfWord)
-                    .setPronunciationOfWord(it.pronunciationOfWord)
-                    .setExampleInSentences(it.exampleInSentences)
-                    .setLinkToAudio(it.linkToAudio)
-            })
+        .setAdditionInfoAboutWord(buildAdditionalInfoAboutWord(additionalInfoAboutWordDtoResponse))
         .build()
 
 fun MongoWord.toWordResponse(): Word =
@@ -35,3 +29,12 @@ fun MongoWord.toWordResponse(): Word =
 
 fun MongoLibrary.toLibraryResponse(): Library =
     toDtoResponse().toLibraryResponse()
+
+private fun buildAdditionalInfoAboutWord(additionalInfoAboutWordDtoResponse: AdditionalInfoAboutWordDtoResponse) =
+    additionalInfoAboutWordDtoResponse.let {
+        AdditionalInfoAboutWord.newBuilder()
+            .setDefinitionOfWord(it.definitionOfWord)
+            .setPronunciationOfWord(it.pronunciationOfWord)
+            .setExampleInSentences(it.exampleInSentences)
+            .setLinkToAudio(it.linkToAudio)
+    }
