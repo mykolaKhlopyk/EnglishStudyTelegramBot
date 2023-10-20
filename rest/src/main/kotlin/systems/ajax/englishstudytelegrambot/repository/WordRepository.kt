@@ -3,6 +3,7 @@ package systems.ajax.englishstudytelegrambot.repository
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.FindAndModifyOptions
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation
 import org.springframework.data.mongodb.core.aggregation.LookupOperation
@@ -10,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import org.springframework.stereotype.Repository
+import reactor.core.publisher.Mono
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.exception.WordIsMissing
 import systems.ajax.englishstudytelegrambot.exception.WordNotFoundBySpendingException
@@ -17,7 +19,7 @@ import systems.ajax.englishstudytelegrambot.exception.WordNotFoundBySpendingExce
 
 interface WordRepository {
 
-    fun saveNewWord(word: Word): Word
+    fun saveNewWord(word: Word): Mono<Word>
 
     fun updateWordTranslating(wordId: ObjectId, newWordTranslate: String): Word
 
@@ -48,10 +50,10 @@ interface WordRepository {
 
 @Repository
 class WordRepositoryImpl(
-    val mongoTemplate: MongoTemplate
+    val mongoTemplate: ReactiveMongoTemplate
 ) : WordRepository {
 
-    override fun saveNewWord(word: Word): Word =
+    override fun saveNewWord(word: Word): Mono<Word> =
         mongoTemplate.save(word)
 
     override fun updateWordTranslating(wordId: ObjectId, newWordTranslate: String): Word =

@@ -1,6 +1,7 @@
 package systems.ajax.englishstudytelegrambot.service
 
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
 import systems.ajax.englishstudytelegrambot.dto.entity.toDtoResponse
 import systems.ajax.englishstudytelegrambot.dto.request.CreateWordDtoRequest
@@ -15,7 +16,7 @@ interface WordService {
         libraryName: String,
         telegramUserId: String,
         createWordDtoRequest: CreateWordDtoRequest
-    ): WordDtoResponse
+    ): Mono<WordDtoResponse>
 
     fun updateWordTranslate(
         libraryName: String,
@@ -39,8 +40,10 @@ class WordServiceImpl(
         libraryName: String,
         telegramUserId: String,
         createWordDtoRequest: CreateWordDtoRequest
-    ): WordDtoResponse {
+    ): Mono<WordDtoResponse> {
         val libraryId = libraryRepository.getLibraryIdByLibraryNameAndTelegramUserId(libraryName, telegramUserId)
+        val isWordBelongsTolLibraryAlreadyOrElseThrowException = libraryId.filter{libraryId -> wordRepository.isWordBelongsToLibraryByWordSpelling(createWordDtoRequest.spelling, libraryId)}
+
         if (wordRepository.isWordBelongsToLibraryByWordSpelling(createWordDtoRequest.spelling, libraryId))
             throw WordAlreadyPresentInLibraryException()
 
