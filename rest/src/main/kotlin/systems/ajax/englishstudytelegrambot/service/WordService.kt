@@ -11,9 +11,17 @@ import systems.ajax.englishstudytelegrambot.repository.WordRepository
 
 interface WordService {
 
-    suspend fun saveNewWord(libraryName: String, telegramUserId: String, createWordDtoRequest: CreateWordDtoRequest): WordDtoResponse
+    suspend fun saveNewWord(
+        libraryName: String,
+        telegramUserId: String,
+        createWordDtoRequest: CreateWordDtoRequest
+    ): WordDtoResponse
 
-    fun updateWordTranslate(libraryName: String, telegramUserId: String, createWordDtoRequest: CreateWordDtoRequest): WordDtoResponse
+    fun updateWordTranslate(
+        libraryName: String,
+        telegramUserId: String,
+        createWordDtoRequest: CreateWordDtoRequest
+    ): WordDtoResponse
 
     fun deleteWord(libraryName: String, telegramUserId: String, wordSpelling: String): WordDtoResponse
 
@@ -27,7 +35,11 @@ class WordServiceImpl(
     val additionalInfoAboutWordService: AdditionalInfoAboutWordService
 ) : WordService {
 
-    override suspend fun saveNewWord(libraryName: String, telegramUserId: String, createWordDtoRequest: CreateWordDtoRequest): WordDtoResponse {
+    override suspend fun saveNewWord(
+        libraryName: String,
+        telegramUserId: String,
+        createWordDtoRequest: CreateWordDtoRequest
+    ): WordDtoResponse {
         val libraryId = libraryRepository.getLibraryIdByLibraryNameAndTelegramUserId(libraryName, telegramUserId)
         if (wordRepository.isWordBelongsToLibraryByWordSpelling(createWordDtoRequest.spelling, libraryId))
             throw WordAlreadyPresentInLibraryException()
@@ -43,21 +55,32 @@ class WordServiceImpl(
         ).toDtoResponse()
     }
 
-    override fun updateWordTranslate(libraryName: String, telegramUserId: String, createWordDtoRequest: CreateWordDtoRequest): WordDtoResponse {
+    override fun updateWordTranslate(
+        libraryName: String,
+        telegramUserId: String,
+        createWordDtoRequest: CreateWordDtoRequest
+    ): WordDtoResponse {
         val wordId = wordRepository.getWordIdByLibraryNameTelegramUserIdWordSpelling(
             libraryName,
             telegramUserId,
             createWordDtoRequest.spelling
         )
-        return wordRepository.updateWordTranslating(wordId, createWordDtoRequest.translate).toDtoResponse()
+        return wordRepository.updateWordTranslating(wordId, createWordDtoRequest.translate)
+            .toDtoResponse()
     }
 
     override fun deleteWord(libraryName: String, telegramUserId: String, wordSpelling: String): WordDtoResponse {
         val wordId =
             wordRepository.getWordIdByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling)
-        return wordRepository.deleteWord(wordId).toDtoResponse()
+        return wordRepository.deleteWord(wordId)
+            .toDtoResponse()
     }
 
-    override fun getFullInfoAboutWord(libraryName: String, telegramUserId: String, wordSpelling: String): WordDtoResponse =
-        wordRepository.getWordByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling).toDtoResponse()
+    override fun getFullInfoAboutWord(
+        libraryName: String,
+        telegramUserId: String,
+        wordSpelling: String
+    ): WordDtoResponse =
+        wordRepository.getWordByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling)
+            .toDtoResponse()
 }

@@ -28,9 +28,12 @@ class AdminServiceImpl(
     val wordRepository: WordRepository
 ) : AdminService {
 
-    override fun getAllUsers(): List<UserDtoResponse> = userRepository.getAllUsers().map(User::toDtoResponse)
+    override fun getAllUsers(): List<UserDtoResponse> =
+        userRepository.getAllUsers().map(User::toDtoResponse)
 
-    override fun getAllLibraries(): List<LibraryDtoResponse> = libraryRepository.getAllLibraries().map(Library::toDtoResponse)
+    override fun getAllLibraries(): List<LibraryDtoResponse> =
+        libraryRepository.getAllLibraries().map(Library::toDtoResponse)
 
-    override fun getAllWords(): List<WordDtoResponse> = wordRepository.getAllWords().map(Word::toDtoResponse)
+    override fun getAllWords(): List<WordDtoResponse> =
+        wordRepository.getAllWords().map(Word::toDtoResponse)
 }

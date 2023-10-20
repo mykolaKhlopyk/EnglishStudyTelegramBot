@@ -27,7 +27,12 @@ import systems.ajax.englishstudytelegrambot.nats.mapper.toWordResponse
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import systems.ajax.englishstudytelegrambot.service.AdminService
-import systems.ajax.response_request.admin.*
+import systems.ajax.response_request.admin.GetAllWordsRequest
+import systems.ajax.response_request.admin.GetAllLibrariesRequest
+import systems.ajax.response_request.admin.GetAllUsersRequest
+import systems.ajax.response_request.admin.GetAllUsersResponse
+import systems.ajax.response_request.admin.GetAllWordsResponse
+import systems.ajax.response_request.admin.GetAllLibrariesResponse
 import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryRequest
 import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryResponse
 import systems.ajax.response_request.library.DeleteLibrary.DeleteLibraryResponse
@@ -197,7 +202,9 @@ class NatsControllerTest {
             DeleteLibraryResponse.parser().parseFrom(message.data).success.deletedLibrary.name
 
         Assertions.assertEquals(libraries[0].name, deletedLibraryName)
-        Assertions.assertFalse(adminService.getAllLibraries().map(LibraryDtoResponse::toLibraryResponse).contains(libraries[0].toLibraryResponse()))
+        Assertions.assertFalse(adminService.getAllLibraries()
+            .map(LibraryDtoResponse::toLibraryResponse)
+            .contains(libraries[0].toLibraryResponse()))
     }
 
     private fun addWords(libraries: List<Library>): List<Word> =
