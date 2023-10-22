@@ -2,7 +2,6 @@ package systems.ajax.englishstudytelegrambot.repository
 
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.FindAndModifyOptions
-import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
 import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation
@@ -11,41 +10,40 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import org.springframework.stereotype.Repository
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import systems.ajax.englishstudytelegrambot.entity.Word
-import systems.ajax.englishstudytelegrambot.exception.WordIsMissing
-import systems.ajax.englishstudytelegrambot.exception.WordNotFoundBySpendingException
 
 
 interface WordRepository {
 
     fun saveNewWord(word: Word): Mono<Word>
 
-    fun updateWordTranslating(wordId: ObjectId, newWordTranslate: String): Word
+    fun updateWordTranslating(wordId: ObjectId, newWordTranslate: String): Mono<Word>
 
-    fun deleteWord(wordId: ObjectId): Word
+    fun deleteWord(wordId: ObjectId): Mono<Word>
 
-    fun isWordBelongsToLibraryByWordId(wordId: ObjectId, libraryId: ObjectId): Boolean
+    fun isWordBelongsToLibraryByWordId(wordId: ObjectId, libraryId: ObjectId): Mono<Boolean>
 
-    fun isWordBelongsToLibraryByWordSpelling(wordSpelling: String, libraryId: ObjectId): Boolean
+    fun isWordBelongsToLibrary(wordSpelling: String, libraryId: ObjectId): Mono<Boolean>
 
-    fun getWord(wordId: ObjectId): Word
+    fun getWord(wordId: ObjectId): Mono<Word>
 
-    fun getWordIdBySpellingAndLibraryId(wordSpelling: String, libraryId: ObjectId): ObjectId
+    fun getWordIdBySpellingAndLibraryId(wordSpelling: String, libraryId: ObjectId): Mono<ObjectId>
 
-    fun getAllWords(): List<Word>
+    fun getAllWords(): Flux<Word>
 
     fun getWordByLibraryNameTelegramUserIdWordSpelling(
         libraryName: String,
         telegramUserId: String,
         wordSpelling: String
-    ): Word
+    ): Mono<Word>
 
     fun getWordIdByLibraryNameTelegramUserIdWordSpelling(
         libraryName: String,
         telegramUserId: String,
         wordSpelling: String
-    ): ObjectId
+    ): Mono<ObjectId>
 }
 
 @Repository
@@ -56,49 +54,51 @@ class WordRepositoryImpl(
     override fun saveNewWord(word: Word): Mono<Word> =
         mongoTemplate.save(word)
 
-    override fun updateWordTranslating(wordId: ObjectId, newWordTranslate: String): Word =
+    override fun updateWordTranslating(wordId: ObjectId, newWordTranslate: String): Mono<Word> =
         mongoTemplate.findAndModify(
             Query.query(Criteria.where("_id").`is`(wordId)),
             Update.update("translate", newWordTranslate),
             FindAndModifyOptions().returnNew(true),
             Word::class.java
-        ) ?: throw WordNotFoundBySpendingException()
+        )
 
-    override fun deleteWord(wordId: ObjectId): Word =
+    override fun deleteWord(wordId: ObjectId): Mono<Word> =
         mongoTemplate.findAndRemove(
             Query.query(Criteria.where("_id").`is`(wordId)),
             Word::class.java
-        ) ?: throw WordNotFoundBySpendingException()
+        )
 
-    override fun isWordBelongsToLibraryByWordId(wordId: ObjectId, libraryId: ObjectId): Boolean =
+    override fun isWordBelongsToLibraryByWordId(wordId: ObjectId, libraryId: ObjectId): Mono<Boolean> =
         mongoTemplate.exists(
             Query.query(Criteria.where("libraryId").`is`(libraryId).and("id").`is`(wordId)),
             Word::class.java
         )
 
-    override fun isWordBelongsToLibraryByWordSpelling(wordSpelling: String, libraryId: ObjectId): Boolean =
+    override fun isWordBelongsToLibrary(wordSpelling: String, libraryId: ObjectId): Mono<Boolean> =
         mongoTemplate.exists(
             Query.query(Criteria.where("libraryId").`is`(libraryId).and("spelling").`is`(wordSpelling)),
             Word::class.java
         )
 
-    override fun getWord(wordId: ObjectId): Word =
-        mongoTemplate.findById(wordId, Word::class.java) ?: throw WordIsMissing()
+    override fun getWord(wordId: ObjectId): Mono<Word> =
+        mongoTemplate.findById(wordId, Word::class.java)
 
-    override fun getAllWords(): List<Word> =
+    override fun getAllWords(): Flux<Word> =
         mongoTemplate.findAll(Word::class.java)
 
-    override fun getWordIdBySpellingAndLibraryId(wordSpelling: String, libraryId: ObjectId): ObjectId =
-        mongoTemplate.findOne(
-            Query.query(Criteria.where("spelling").`is`(wordSpelling).and("libraryId").`is`(libraryId)),
-            Word::class.java
-        )?.id ?: throw WordIsMissing()
+    override fun getWordIdBySpellingAndLibraryId(wordSpelling: String, libraryId: ObjectId): Mono<ObjectId> =
+        mongoTemplate
+            .findOne(
+                Query.query(Criteria.where("spelling").`is`(wordSpelling).and("libraryId").`is`(libraryId)),
+                Word::class.java
+            )
+            .map(Word::id)
 
     override fun getWordByLibraryNameTelegramUserIdWordSpelling(
         libraryName: String,
         telegramUserId: String,
         wordSpelling: String
-    ): Word {
+    ): Mono<Word> {
         val matchLibraryByNameAndOwner = Aggregation.match(
             Criteria.where("name").`is`(libraryName).and("ownerId").`is`(telegramUserId)
         )
@@ -123,13 +123,13 @@ class WordRepositoryImpl(
             aggregation, "libraries",
             Word::class.java
         )
-        return result.mappedResults[0]
+        return result.next()
     }
 
     override fun getWordIdByLibraryNameTelegramUserIdWordSpelling(
         libraryName: String,
         telegramUserId: String,
         wordSpelling: String
-    ): ObjectId =
-        getWordByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling).id
+    ): Mono<ObjectId> =
+        getWordByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling).map(Word::id)
 }
