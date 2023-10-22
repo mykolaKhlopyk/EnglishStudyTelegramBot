@@ -40,5 +40,5 @@ data class PronunciationOfWordResponse(
 ) : GettingPartOfAdditionalInfoAboutWord {
 
     override val partOfAdditionalInfoAboutWord: String
-        get()= pronunciation
+        get() = pronunciation
 }
