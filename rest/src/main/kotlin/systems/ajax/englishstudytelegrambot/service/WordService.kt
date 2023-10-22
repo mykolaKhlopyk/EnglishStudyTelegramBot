@@ -86,7 +86,8 @@ class WordServiceImpl(
                 libraryName,
                 telegramUserId,
                 wordSpelling
-            ).flatMap(wordRepository::deleteWord)
+            )
+            .flatMap(wordRepository::deleteWord)
             .map(Word::toDtoResponse)
 
     override fun getFullInfoAboutWord(
