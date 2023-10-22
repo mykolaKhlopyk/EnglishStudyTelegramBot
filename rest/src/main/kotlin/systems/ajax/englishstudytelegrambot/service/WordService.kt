@@ -10,6 +10,8 @@ import systems.ajax.englishstudytelegrambot.dto.request.CreateWordDtoRequest
 import systems.ajax.englishstudytelegrambot.entity.AdditionalInfoAboutWord
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.exception.WordAlreadyPresentInLibraryException
+import systems.ajax.englishstudytelegrambot.exception.WordIsMissing
+import systems.ajax.englishstudytelegrambot.exception.WordNotFoundBySpendingException
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 
@@ -74,6 +76,7 @@ class WordServiceImpl(
             .flatMap { wordId ->
                 wordRepository.updateWordTranslating(wordId, createWordDtoRequest.translate)
             }
+            .onErrorMap { WordNotFoundBySpendingException() }
             .map(Word::toDtoResponse)
 
     override fun deleteWord(
@@ -88,6 +91,7 @@ class WordServiceImpl(
                 wordSpelling
             )
             .flatMap(wordRepository::deleteWord)
+            .onErrorMap{WordNotFoundBySpendingException()}
             .map(Word::toDtoResponse)
 
     override fun getFullInfoAboutWord(
@@ -97,6 +101,7 @@ class WordServiceImpl(
     ): Mono<WordDtoResponse> =
         wordRepository
             .getWordByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling)
+            .onErrorMap { WordIsMissing() }
             .map(Word::toDtoResponse)
 
     private fun findLibraryId(

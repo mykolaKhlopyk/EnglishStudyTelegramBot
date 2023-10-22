@@ -8,6 +8,7 @@ import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
 import systems.ajax.englishstudytelegrambot.dto.entity.toDtoResponse
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.entity.Word
+import systems.ajax.englishstudytelegrambot.exception.LibraryWithTheSameNameForUserAlreadyExistException
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 
 interface LibraryService {
@@ -27,6 +28,7 @@ class LibraryServiceImpl(
     override fun createNewLibrary(nameOfNewLibrary: String, telegramUserId: String): Mono<LibraryDtoResponse> =
         libraryRepository
             .saveNewLibrary(nameOfNewLibrary, telegramUserId)
+            .onErrorMap{LibraryWithTheSameNameForUserAlreadyExistException()}
             .map(Library::toDtoResponse)
 
     override fun deleteLibrary(nameOfLibraryForDeleting: String, telegramUserId: String): Mono<LibraryDtoResponse> =
