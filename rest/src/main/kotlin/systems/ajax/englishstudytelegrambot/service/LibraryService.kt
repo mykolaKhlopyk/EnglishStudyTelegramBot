@@ -14,11 +14,20 @@ import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 
 interface LibraryService {
 
-    fun createNewLibrary(nameOfNewLibrary: String, telegramUserId: String): Mono<LibraryDtoResponse>
+    fun createNewLibrary(
+        nameOfNewLibrary: String,
+        telegramUserId: String
+    ): Mono<LibraryDtoResponse>
 
-    fun deleteLibrary(nameOfLibraryForDeleting: String, telegramUserId: String): Mono<LibraryDtoResponse>
+    fun deleteLibrary(
+        nameOfLibraryForDeleting: String,
+        telegramUserId: String
+    ): Mono<LibraryDtoResponse>
 
-    fun getAllWordsFromLibrary(libraryName: String, telegramUserId: String): Flux<WordDtoResponse>
+    fun getAllWordsFromLibrary(
+        libraryName: String,
+        telegramUserId: String
+    ): Flux<WordDtoResponse>
 }
 
 @Service
@@ -26,29 +35,35 @@ class LibraryServiceImpl(
     val libraryRepository: LibraryRepository
 ) : LibraryService {
 
-    override fun createNewLibrary(nameOfNewLibrary: String, telegramUserId: String): Mono<LibraryDtoResponse> =
-        libraryRepository
-            .saveNewLibrary(nameOfNewLibrary, telegramUserId)
-            .onErrorMap{LibraryWithTheSameNameForUserAlreadyExistException()}
-            .map(Library::toDtoResponse)
+    override fun createNewLibrary(
+        nameOfNewLibrary: String,
+        telegramUserId: String
+    ): Mono<LibraryDtoResponse> = libraryRepository
+        .saveNewLibrary(nameOfNewLibrary, telegramUserId)
+        .onErrorMap { LibraryWithTheSameNameForUserAlreadyExistException() }
+        .map(Library::toDtoResponse)
 
-    override fun deleteLibrary(nameOfLibraryForDeleting: String, telegramUserId: String): Mono<LibraryDtoResponse> =
-        libraryRepository
-            .getLibraryIdByLibraryNameAndTelegramUserId(
-                nameOfLibraryForDeleting,
-                telegramUserId
-            )
-            .switchIfEmpty(Mono.error(LibraryIsMissingException()))
-            .flatMap(libraryRepository::deleteLibrary)
-            .map(Library::toDtoResponse)
+    override fun deleteLibrary(
+        nameOfLibraryForDeleting: String,
+        telegramUserId: String
+    ): Mono<LibraryDtoResponse> = libraryRepository
+        .getLibraryIdByLibraryNameAndTelegramUserId(
+            nameOfLibraryForDeleting,
+            telegramUserId
+        )
+        .switchIfEmpty(Mono.error(LibraryIsMissingException()))
+        .flatMap(libraryRepository::deleteLibrary)
+        .map(Library::toDtoResponse)
 
-    override fun getAllWordsFromLibrary(libraryName: String, telegramUserId: String): Flux<WordDtoResponse> =
-        libraryRepository
-            .getLibraryIdByLibraryNameAndTelegramUserId(
-                libraryName,
-                telegramUserId
-            )
-            .switchIfEmpty(Mono.error(LibraryIsMissingException()))
-            .flatMapMany(libraryRepository::getAllWordsFromLibrary)
-            .map(Word::toDtoResponse)
+    override fun getAllWordsFromLibrary(
+        libraryName: String,
+        telegramUserId: String
+    ): Flux<WordDtoResponse> = libraryRepository
+        .getLibraryIdByLibraryNameAndTelegramUserId(
+            libraryName,
+            telegramUserId
+        )
+        .switchIfEmpty(Mono.error(LibraryIsMissingException()))
+        .flatMapMany(libraryRepository::getAllWordsFromLibrary)
+        .map(Word::toDtoResponse)
 }

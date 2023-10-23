@@ -82,12 +82,9 @@ class WordRepositoryImpl(
         mongoTemplate.findAll<Word>()
 
     override fun getWordIdBySpellingAndLibraryId(wordSpelling: String, libraryId: ObjectId): Mono<ObjectId> =
-        mongoTemplate
-            .findOne(
-                Query.query(Criteria.where("spelling").`is`(wordSpelling).and("libraryId").`is`(libraryId)),
-                Word::class.java
-            )
-            .map(Word::id)
+        mongoTemplate.findOne<Word>(
+            Query.query(Criteria.where("spelling").`is`(wordSpelling).and("libraryId").`is`(libraryId))
+        ).map(Word::id)
 
     override fun getWordByLibraryNameTelegramUserIdWordSpelling(
         libraryName: String,

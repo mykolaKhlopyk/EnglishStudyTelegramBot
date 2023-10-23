@@ -24,13 +24,13 @@ class UserRepositoryImpl(val mongoTemplate: ReactiveMongoTemplate) : UserReposit
 
     @LogMethodsByRequiredAnnotations
     override fun getAllUsers(): Flux<User> =
-        mongoTemplate
-            .find<User>(Query().apply {
+        mongoTemplate.find<User>(
+            Query().apply {
                 fields()
                     .include("ownerId")
                     .exclude("_id")
-            }, "libraries")
-            .distinct()
+            }, "libraries"
+        ).distinct()
 
     override fun getAllLibrariesOfUser(telegramUserId: String): Flux<Library> =
         mongoTemplate.find<Library>(
