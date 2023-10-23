@@ -8,6 +8,7 @@ import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
 import systems.ajax.englishstudytelegrambot.dto.entity.toDtoResponse
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.entity.Word
+import systems.ajax.englishstudytelegrambot.exception.LibraryIsMissingException
 import systems.ajax.englishstudytelegrambot.exception.LibraryWithTheSameNameForUserAlreadyExistException
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 
@@ -37,6 +38,7 @@ class LibraryServiceImpl(
                 nameOfLibraryForDeleting,
                 telegramUserId
             )
+            .switchIfEmpty(Mono.error(LibraryIsMissingException()))
             .flatMap(libraryRepository::deleteLibrary)
             .map(Library::toDtoResponse)
 
@@ -46,6 +48,7 @@ class LibraryServiceImpl(
                 libraryName,
                 telegramUserId
             )
+            .switchIfEmpty(Mono.error(LibraryIsMissingException()))
             .flatMapMany(libraryRepository::getAllWordsFromLibrary)
             .map(Word::toDtoResponse)
 }

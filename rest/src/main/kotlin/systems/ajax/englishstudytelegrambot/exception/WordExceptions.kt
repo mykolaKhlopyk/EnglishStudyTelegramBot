@@ -4,4 +4,4 @@ class WordNotFoundBySpendingException : RuntimeException()
 
 class WordAlreadyPresentInLibraryException : RuntimeException()
 
-class WordIsMissing : RuntimeException()
+class WordIsMissingException : RuntimeException()

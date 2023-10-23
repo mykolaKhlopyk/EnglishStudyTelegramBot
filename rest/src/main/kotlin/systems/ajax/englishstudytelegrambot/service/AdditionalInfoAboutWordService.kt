@@ -9,6 +9,10 @@ import systems.ajax.englishstudytelegrambot.dto.external.api.PronunciationOfWord
 import systems.ajax.englishstudytelegrambot.entity.AdditionalInfoAboutWord
 import systems.ajax.englishstudytelegrambot.external.source.ExternalWordSource
 import systems.ajax.englishstudytelegrambot.property.WordnikProperties
+import reactor.kotlin.core.util.function.component1
+import reactor.kotlin.core.util.function.component2
+import reactor.kotlin.core.util.function.component3
+import reactor.kotlin.core.util.function.component4
 
 interface AdditionalInfoAboutWordService {
     fun findAdditionInfoAboutWord(wordSpelling: String): Mono<AdditionalInfoAboutWord>
@@ -26,7 +30,9 @@ class AdditionalInfoAboutWordServiceImpl(
             wordSpelling.findDefinitionOfWord(),
             wordSpelling.findExampleOfWord(),
             wordSpelling.findPronunciationOfWord()
-        ).map { additionalInfoAboutWord -> additionalInfoAboutWord.run { AdditionalInfoAboutWord(t1, t2, t3, t4) } }
+        ).map { (audio, definition, example, pronunciation) ->
+            AdditionalInfoAboutWord(audio, definition, example, pronunciation)
+        }
 
     private fun String.findAudioLink(): Mono<String> =
         externalWordSource.customGetInfoAboutWordFromWordnikAPI<AudioForWordResponse>(

@@ -3,6 +3,7 @@ package systems.ajax.englishstudytelegrambot.repository
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.FindAndModifyOptions
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate
+import org.springframework.data.mongodb.core.aggregate
 import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation
 import org.springframework.data.mongodb.core.aggregation.LookupOperation
@@ -119,9 +120,8 @@ class WordRepositoryImpl(
             replaceRoot,
             matchWordBySpelling
         )
-        val result = mongoTemplate.aggregate(
-            aggregation, "libraries",
-            Word::class.java
+        val result = mongoTemplate.aggregate<Word>(
+            aggregation, "libraries"
         )
         return result.next()
     }
