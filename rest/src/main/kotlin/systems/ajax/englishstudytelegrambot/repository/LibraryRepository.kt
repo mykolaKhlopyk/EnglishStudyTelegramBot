@@ -1,7 +1,7 @@
 package systems.ajax.englishstudytelegrambot.repository
 
 import org.bson.types.ObjectId
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate
+import org.springframework.data.mongodb.core.*
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
@@ -9,6 +9,8 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.entity.Word
+import reactor.kotlin.core.util.function.component1
+import reactor.kotlin.core.util.function.component2
 
 interface LibraryRepository {
 
@@ -31,7 +33,7 @@ class LibraryRepositoryImpl(val mongoTemplate: ReactiveMongoTemplate) : LibraryR
     override fun saveNewLibrary(nameOfNewLibrary: String, telegramUserId: String): Mono<Library> =
         mongoTemplate.insert(Library(name = nameOfNewLibrary, ownerId = telegramUserId))
 
-    override fun getAllLibraries(): Flux<Library> = mongoTemplate.findAll(Library::class.java)
+    override fun getAllLibraries(): Flux<Library> = mongoTemplate.findAll<Library>()
 
     override fun deleteLibrary(libraryId: ObjectId): Mono<Library> =
         Mono
@@ -42,13 +44,11 @@ class LibraryRepositoryImpl(val mongoTemplate: ReactiveMongoTemplate) : LibraryR
                     Library::class.java
                 )
             )
-            .map { result -> result.t2 }
-
+            .map { (_, result) -> result }
 
     override fun getLibraryByLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): Mono<Library> =
-        mongoTemplate.findOne(
-            queryToFindLibraryByNameAndTelegramUserId(telegramUserId, libraryName),
-            Library::class.java
+        mongoTemplate.findOne<Library>(
+            queryToFindLibraryByNameAndTelegramUserId(telegramUserId, libraryName)
         )
 
     override fun getLibraryIdByLibraryNameAndTelegramUserId(
@@ -77,11 +77,10 @@ class LibraryRepositoryImpl(val mongoTemplate: ReactiveMongoTemplate) : LibraryR
         )
 
     override fun getAllWordsFromLibrary(libraryId: ObjectId): Flux<Word> =
-        mongoTemplate.find(
-            Query.query(Criteria.where("libraryId").`is`(libraryId)),
-            Word::class.java
+        mongoTemplate.find<Word>(
+            Query.query(Criteria.where("libraryId").`is`(libraryId))
         )
 
     private fun deleteAllWordsFromLibrary(libraryId: ObjectId) =
-        mongoTemplate.remove(Query.query(Criteria.where("libraryId").`is`(libraryId)), Word::class.java)
+        mongoTemplate.remove<Word>(Query.query(Criteria.where("libraryId").`is`(libraryId)))
 }

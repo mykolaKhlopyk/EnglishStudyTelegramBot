@@ -1,9 +1,7 @@
 package systems.ajax.englishstudytelegrambot.repository
 
 import org.bson.types.ObjectId
-import org.springframework.data.mongodb.core.FindAndModifyOptions
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate
-import org.springframework.data.mongodb.core.aggregate
+import org.springframework.data.mongodb.core.*
 import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation
 import org.springframework.data.mongodb.core.aggregation.LookupOperation
@@ -56,36 +54,32 @@ class WordRepositoryImpl(
         mongoTemplate.save(word)
 
     override fun updateWordTranslating(wordId: ObjectId, newWordTranslate: String): Mono<Word> =
-        mongoTemplate.findAndModify(
+        mongoTemplate.findAndModify<Word>(
             Query.query(Criteria.where("_id").`is`(wordId)),
             Update.update("translate", newWordTranslate),
-            FindAndModifyOptions().returnNew(true),
-            Word::class.java
+            FindAndModifyOptions().returnNew(true)
         )
 
     override fun deleteWord(wordId: ObjectId): Mono<Word> =
-        mongoTemplate.findAndRemove(
-            Query.query(Criteria.where("_id").`is`(wordId)),
-            Word::class.java
+        mongoTemplate.findAndRemove<Word>(
+            Query.query(Criteria.where("_id").`is`(wordId))
         )
 
     override fun isWordBelongsToLibraryByWordId(wordId: ObjectId, libraryId: ObjectId): Mono<Boolean> =
-        mongoTemplate.exists(
-            Query.query(Criteria.where("libraryId").`is`(libraryId).and("id").`is`(wordId)),
-            Word::class.java
+        mongoTemplate.exists<Word>(
+            Query.query(Criteria.where("libraryId").`is`(libraryId).and("id").`is`(wordId))
         )
 
     override fun isWordBelongsToLibrary(wordSpelling: String, libraryId: ObjectId): Mono<Boolean> =
-        mongoTemplate.exists(
-            Query.query(Criteria.where("libraryId").`is`(libraryId).and("spelling").`is`(wordSpelling)),
-            Word::class.java
+        mongoTemplate.exists<Word>(
+            Query.query(Criteria.where("libraryId").`is`(libraryId).and("spelling").`is`(wordSpelling))
         )
 
     override fun getWord(wordId: ObjectId): Mono<Word> =
-        mongoTemplate.findById(wordId, Word::class.java)
+        mongoTemplate.findById<Word>(wordId)
 
     override fun getAllWords(): Flux<Word> =
-        mongoTemplate.findAll(Word::class.java)
+        mongoTemplate.findAll<Word>()
 
     override fun getWordIdBySpellingAndLibraryId(wordSpelling: String, libraryId: ObjectId): Mono<ObjectId> =
         mongoTemplate
