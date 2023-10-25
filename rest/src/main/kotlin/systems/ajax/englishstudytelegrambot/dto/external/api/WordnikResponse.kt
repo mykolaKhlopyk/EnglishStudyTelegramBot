@@ -1,4 +1,4 @@
-package systems.ajax.englishstudytelegrambot.dto
+package systems.ajax.englishstudytelegrambot.dto.external.api
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
@@ -40,5 +40,5 @@ data class PronunciationOfWordResponse(
 ) : GettingPartOfAdditionalInfoAboutWord {
 
     override val partOfAdditionalInfoAboutWord: String
-        get()= pronunciation
+        get() = pronunciation
 }

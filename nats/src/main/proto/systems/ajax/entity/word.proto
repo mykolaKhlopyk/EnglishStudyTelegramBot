@@ -13,6 +13,5 @@ message Word{
   optional string id = 1;
   string spelling = 2;
   string translating = 3;
-  string library_id = 4;
   AdditionalInfoAboutWord addition_info_about_word = 5;
 }

@@ -3,6 +3,7 @@ package systems.ajax.englishstudytelegrambot.nats.controller.library
 import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
 import systems.ajax.NatsSubject.Library.GET_ALL_WORDS_FROM_LIBRARY_SUBJECT
+import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toWordResponse
@@ -10,7 +11,6 @@ import systems.ajax.englishstudytelegrambot.service.LibraryService
 import systems.ajax.entity.WordOuterClass
 import systems.ajax.response_request.library.GetAllWordsFromLibrary.GetAllWordsFromLibraryRequest
 import systems.ajax.response_request.library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse
-import systems.ajax.response_request.library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse.Success
 
 @Component
 class GetAllWordsFromLibraryNatsController(private val libraryService: LibraryService) :
@@ -30,7 +30,7 @@ class GetAllWordsFromLibraryNatsController(private val libraryService: LibrarySe
 
     private fun getAllWordsFromLibraryInResponseFormat(request: GetAllWordsFromLibraryRequest) =
         libraryService.getAllWordsFromLibrary(request.libraryName, request.telegramUserId)
-            .map(Word::toWordResponse)
+            .map(WordDtoResponse::toWordResponse)
 
     private fun createSuccessResponse(wordsFromLibrary: List<WordOuterClass.Word>) =
         GetAllWordsFromLibraryResponse.newBuilder().apply {

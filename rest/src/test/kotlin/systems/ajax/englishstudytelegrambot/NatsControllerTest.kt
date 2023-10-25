@@ -19,13 +19,20 @@ import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.entity.User
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.NatsSubject.Library.GET_ALL_WORDS_FROM_LIBRARY_SUBJECT
+import systems.ajax.englishstudytelegrambot.dto.entity.LibraryDtoResponse
+import systems.ajax.englishstudytelegrambot.dto.entity.UserDtoResponse
 import systems.ajax.englishstudytelegrambot.entity.AdditionalInfoAboutWord
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.nats.mapper.toWordResponse
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import systems.ajax.englishstudytelegrambot.service.AdminService
-import systems.ajax.response_request.admin.*
+import systems.ajax.response_request.admin.GetAllWordsRequest
+import systems.ajax.response_request.admin.GetAllLibrariesRequest
+import systems.ajax.response_request.admin.GetAllUsersRequest
+import systems.ajax.response_request.admin.GetAllUsersResponse
+import systems.ajax.response_request.admin.GetAllWordsResponse
+import systems.ajax.response_request.admin.GetAllLibrariesResponse
 import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryRequest
 import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryResponse
 import systems.ajax.response_request.library.DeleteLibrary.DeleteLibraryResponse
@@ -81,7 +88,7 @@ class NatsControllerTest {
 
         //testTelegramUserId1, testTelegramUserId2
         Assertions.assertIterableEquals(
-            adminService.getAllUsers().map(User::telegramUserId), telegramUserIdsList
+            adminService.getAllUsers().map(UserDtoResponse::telegramUserId), telegramUserIdsList
         )
     }
 
@@ -161,7 +168,7 @@ class NatsControllerTest {
             CreateNewLibraryResponse.parser().parseFrom(message.data).success.createdLibrary.name
 
         Assertions.assertEquals("testLibraryName1", createdLibraryName)
-        Assertions.assertTrue(adminService.getAllLibraries().map(Library::name).contains(createdLibraryName))
+        Assertions.assertTrue(adminService.getAllLibraries().map(LibraryDtoResponse::name).contains(createdLibraryName))
     }
 
     @Test
@@ -195,7 +202,9 @@ class NatsControllerTest {
             DeleteLibraryResponse.parser().parseFrom(message.data).success.deletedLibrary.name
 
         Assertions.assertEquals(libraries[0].name, deletedLibraryName)
-        Assertions.assertFalse(adminService.getAllLibraries().contains(libraries[0]))
+        Assertions.assertFalse(adminService.getAllLibraries()
+            .map(LibraryDtoResponse::toLibraryResponse)
+            .contains(libraries[0].toLibraryResponse()))
     }
 
     private fun addWords(libraries: List<Library>): List<Word> =

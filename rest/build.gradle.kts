@@ -19,6 +19,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.3")
     implementation("org.springframework.boot:spring-boot-starter-validation:3.1.3")
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive:3.1.5")
+    implementation ("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
@@ -28,4 +30,22 @@ tasks.withType<Test> {
 
 noArg {
     annotation("systems.ajax.englishstudytelegrambot.annotation.LogMethodsByRequiredAnnotations")
+}
+
+/*
+    - for first version of integration reactor, nats parts are excluded
+    - in next pr, this excluding will be deleted
+ */
+sourceSets {
+    main {
+        kotlin {
+            exclude("**/systems/ajax/englishstudytelegrambot/nats/**")
+            exclude("**/systems/ajax/englishstudytelegrambot/bpp/NatsControllerHandlerBeanPostProcessor.kt")
+        }
+    }
+    test {
+        kotlin {
+            exclude("**/systems/ajax/englishstudytelegrambot/NatsControllerTest.kt")
+        }
+    }
 }

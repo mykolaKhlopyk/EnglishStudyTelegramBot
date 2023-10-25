@@ -1,6 +1,11 @@
 package systems.ajax.englishstudytelegrambot.service
 
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
+import systems.ajax.englishstudytelegrambot.dto.entity.LibraryDtoResponse
+import systems.ajax.englishstudytelegrambot.dto.entity.UserDtoResponse
+import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
+import systems.ajax.englishstudytelegrambot.dto.entity.toDtoResponse
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.entity.User
 import systems.ajax.englishstudytelegrambot.entity.Word
@@ -10,11 +15,11 @@ import systems.ajax.englishstudytelegrambot.repository.WordRepository
 
 interface AdminService {
 
-    fun getAllUsers(): List<User>
+    fun getAllUsers(): Flux<UserDtoResponse>
 
-    fun getAllLibraries(): List<Library>
+    fun getAllLibraries(): Flux<LibraryDtoResponse>
 
-    fun getAllWords(): List<Word>
+    fun getAllWords(): Flux<WordDtoResponse>
 }
 
 @Service
@@ -24,9 +29,12 @@ class AdminServiceImpl(
     val wordRepository: WordRepository
 ) : AdminService {
 
-    override fun getAllUsers(): List<User> = userRepository.getAllUsers()
+    override fun getAllUsers(): Flux<UserDtoResponse> =
+        userRepository.getAllUsers().map(User::toDtoResponse)
 
-    override fun getAllLibraries(): List<Library> = libraryRepository.getAllLibraries()
+    override fun getAllLibraries(): Flux<LibraryDtoResponse> =
+        libraryRepository.getAllLibraries().map(Library::toDtoResponse)
 
-    override fun getAllWords(): List<Word> = wordRepository.getAllWords()
+    override fun getAllWords(): Flux<WordDtoResponse> =
+        wordRepository.getAllWords().map(Word::toDtoResponse)
 }
