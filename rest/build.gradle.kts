@@ -32,6 +32,10 @@ noArg {
     annotation("systems.ajax.englishstudytelegrambot.annotation.LogMethodsByRequiredAnnotations")
 }
 
+/*
+    - for first version of integration reactor, nats parts are excluded
+    - in next pr, this excluding will be deleted
+ */
 sourceSets {
     main {
         kotlin {
@@ -45,5 +49,3 @@ sourceSets {
         }
     }
 }
-
-

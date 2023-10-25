@@ -40,7 +40,7 @@ class LibraryServiceImpl(
         telegramUserId: String
     ): Mono<LibraryDtoResponse> = libraryRepository
         .saveNewLibrary(nameOfNewLibrary, telegramUserId)
-        .onErrorMap { LibraryWithTheSameNameForUserAlreadyExistException() }
+        .onErrorMap { LibraryWithTheSameNameForUserAlreadyExistException("library $nameOfNewLibrary is created already") }
         .map(Library::toDtoResponse)
 
     override fun deleteLibrary(
@@ -51,7 +51,9 @@ class LibraryServiceImpl(
             nameOfLibraryForDeleting,
             telegramUserId
         )
-        .switchIfEmpty(Mono.error(LibraryIsMissingException()))
+        .switchIfEmpty(
+            Mono.error(LibraryIsMissingException("libraries id was not found when try to delete library"))
+        )
         .flatMap(libraryRepository::deleteLibrary)
         .map(Library::toDtoResponse)
 
@@ -63,7 +65,9 @@ class LibraryServiceImpl(
             libraryName,
             telegramUserId
         )
-        .switchIfEmpty(Mono.error(LibraryIsMissingException()))
+        .switchIfEmpty(
+            Mono.error(LibraryIsMissingException("library id was not found when try to get all words from it"))
+        )
         .flatMapMany(libraryRepository::getAllWordsFromLibrary)
         .map(Word::toDtoResponse)
 }

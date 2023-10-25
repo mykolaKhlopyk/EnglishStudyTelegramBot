@@ -10,12 +10,12 @@ import systems.ajax.englishstudytelegrambot.dto.request.CreateWordDtoRequest
 import systems.ajax.englishstudytelegrambot.entity.AdditionalInfoAboutWord
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.exception.LibraryIsMissingException
-import systems.ajax.englishstudytelegrambot.exception.WordAlreadyPresentInLibraryException
 import systems.ajax.englishstudytelegrambot.exception.WordIsMissingException
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import reactor.kotlin.core.util.function.component1
 import reactor.kotlin.core.util.function.component2
+import systems.ajax.englishstudytelegrambot.exception.WordAlreadyPresentInLibraryException
 
 interface WordService {
 
@@ -68,13 +68,17 @@ class WordServiceImpl(
         telegramUserId: String,
         createWordDtoRequest: CreateWordDtoRequest
     ): Mono<WordDtoResponse> = wordRepository
-        .getWordIdByLibraryNameTelegramUserIdWordSpelling(
+        .getWordByLibraryNameTelegramUserIdWordSpelling(
             libraryName,
             telegramUserId,
             createWordDtoRequest.spelling
         )
-        .switchIfEmpty(checkWordOrLibraryIsMissing(libraryName, telegramUserId))
-        .flatMap { wordId -> wordRepository.updateWordTranslating(wordId, createWordDtoRequest.translate) }
+        .switchIfEmpty(
+            findLibraryId(libraryName, telegramUserId)
+                .handle { id, sink ->
+                    sink.error(WordIsMissingException("word is missing in library"))
+                })
+        .flatMap { word -> wordRepository.updateWordTranslating(word.id, createWordDtoRequest.translate) }
         .map(Word::toDtoResponse)
 
     override fun deleteWord(
@@ -82,13 +86,18 @@ class WordServiceImpl(
         telegramUserId: String,
         wordSpelling: String
     ): Mono<WordDtoResponse> = wordRepository
-        .getWordIdByLibraryNameTelegramUserIdWordSpelling(
+        .getWordByLibraryNameTelegramUserIdWordSpelling(
             libraryName,
             telegramUserId,
             wordSpelling
         )
-        .switchIfEmpty(checkWordOrLibraryIsMissing(libraryName, telegramUserId))
+        .switchIfEmpty(
+            findLibraryId(libraryName, telegramUserId)
+                .handle { _, sink ->
+                    sink.error(WordIsMissingException("word is missing in library"))
+                })
         .doOnNext { id -> log.info("id of deleted word is {}", id) }
+        .map(Word::id)
         .flatMap(wordRepository::deleteWord)
         .map(Word::toDtoResponse)
 
@@ -98,7 +107,12 @@ class WordServiceImpl(
         wordSpelling: String
     ): Mono<WordDtoResponse> = wordRepository
         .getWordByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling)
-        .onErrorMap { WordIsMissingException() }
+        .switchIfEmpty(
+            findLibraryId(libraryName, telegramUserId)
+                .handle { _, sink ->
+                    sink.error(WordIsMissingException("word with spelling $wordSpelling was not found in library $libraryName"))
+                }
+        )
         .map(Word::toDtoResponse)
 
     private fun findLibraryIdWithoutCertainSpelling(
@@ -107,16 +121,24 @@ class WordServiceImpl(
         spelling: String
     ): Mono<ObjectId> = findLibraryId(libraryName, telegramUserId)
         .filterWhen { libraryId -> isWordNotBelongsToLibrary(libraryId, spelling) }
-        .switchIfEmpty(Mono.error(WordAlreadyPresentInLibraryException()))
+        .switchIfEmpty(
+            Mono.error(WordAlreadyPresentInLibraryException("word $spelling is already present in library $libraryName"))
+        )
+
 
     private fun findLibraryId(
         libraryName: String,
-        telegramUserId: String,
+        telegramUserId: String
     ): Mono<ObjectId> = libraryRepository
         .getLibraryIdByLibraryNameAndTelegramUserId(
             libraryName,
             telegramUserId
-        ).onErrorMap { LibraryIsMissingException() }
+        )
+        .switchIfEmpty(
+            Mono.error(
+                LibraryIsMissingException("Library id was not found by libraryName = $libraryName and telegramUserId = $telegramUserId")
+            )
+        )
 
     private fun collectAndSaveWordInDb(
         createWordDtoRequest: CreateWordDtoRequest,
@@ -132,13 +154,6 @@ class WordServiceImpl(
             )
         )
 
-    private fun checkWordOrLibraryIsMissing(
-        libraryName: String,
-        telegramUserId: String
-    ): Mono<ObjectId> = findLibraryId(libraryName, telegramUserId)
-        .switchIfEmpty(Mono.error(LibraryIsMissingException()))
-        .flatMap { Mono.error(WordIsMissingException()) }
-
     private fun isWordNotBelongsToLibrary(
         libraryId: ObjectId,
         wordSpelling: String
@@ -146,8 +161,7 @@ class WordServiceImpl(
         .isWordBelongsToLibrary(
             wordSpelling,
             libraryId
-        )
-        .map { isBelong -> !isBelong }
+        ).map { isBelong -> !isBelong }
 
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)

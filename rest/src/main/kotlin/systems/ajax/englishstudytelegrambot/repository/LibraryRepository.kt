@@ -36,15 +36,11 @@ class LibraryRepositoryImpl(val mongoTemplate: ReactiveMongoTemplate) : LibraryR
     override fun getAllLibraries(): Flux<Library> = mongoTemplate.findAll<Library>()
 
     override fun deleteLibrary(libraryId: ObjectId): Mono<Library> =
-        Mono
-            .zip(
-                deleteAllWordsFromLibrary(libraryId),
-                mongoTemplate.findAndRemove(
-                    Query.query(Criteria.where("_id").`is`(libraryId)),
-                    Library::class.java
-                )
+        deleteAllWordsFromLibrary(libraryId).then(
+            mongoTemplate.findAndRemove<Library>(
+                Query.query(Criteria.where("_id").`is`(libraryId))
             )
-            .map { (_, result) -> result }
+        )
 
     override fun getLibraryByLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): Mono<Library> =
         mongoTemplate.findOne<Library>(

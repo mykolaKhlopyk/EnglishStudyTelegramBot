@@ -1,5 +1,5 @@
 package systems.ajax.englishstudytelegrambot.exception
 
-class LibraryIsMissingException : RuntimeException()
+class LibraryIsMissingException(message: String) : RuntimeException(message)
 
-class LibraryWithTheSameNameForUserAlreadyExistException : RuntimeException()
+class LibraryWithTheSameNameForUserAlreadyExistException(message: String) : RuntimeException(message)

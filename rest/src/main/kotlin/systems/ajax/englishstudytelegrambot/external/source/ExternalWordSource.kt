@@ -1,5 +1,6 @@
 package systems.ajax.englishstudytelegrambot.external.source
 
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
@@ -19,7 +20,15 @@ class ExternalWordSource(val wordnikProperties: WordnikProperties, val webClient
             )
             .retrieve()
             .bodyToFlux(T::class.java)
+            .doOnNext { value -> log.info("class {}, value {}", T::class, value) }
             .next()
             .map(GettingPartOfAdditionalInfoAboutWord::partOfAdditionalInfoAboutWord)
+            .doOnError {
+                log.error("additional info for word {} wasn't found, by searching {}", wordSpelling, T::class.java.name)
+            }
             .onErrorReturn("Missing")
+
+    companion object {
+        val log = LoggerFactory.getLogger(this::class.java)
+    }
 }
