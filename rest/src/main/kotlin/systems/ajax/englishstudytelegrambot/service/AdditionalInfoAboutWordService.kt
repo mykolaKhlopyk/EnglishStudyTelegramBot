@@ -24,6 +24,7 @@ class AdditionalInfoAboutWordServiceImpl(
     private val externalWordSource: ExternalWordSource
 ) : AdditionalInfoAboutWordService {
 
+    @Suppress("DestructuringDeclarationWithTooManyEntries")
     override fun findAdditionInfoAboutWord(wordSpelling: String): Mono<AdditionalInfoAboutWord> =
         Mono.zip(
             wordSpelling.findAudioLink(),
