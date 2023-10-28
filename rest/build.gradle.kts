@@ -32,21 +32,3 @@ tasks.withType<Test> {
 noArg {
     annotation("systems.ajax.englishstudytelegrambot.annotation.LogMethodsByRequiredAnnotations")
 }
-
-/*
-    - for first version of integration reactor, nats parts are excluded
-    - in next pr, this excluding will be deleted
- */
-sourceSets {
-    main {
-        kotlin {
-            exclude("**/systems/ajax/englishstudytelegrambot/nats/**")
-            exclude("**/systems/ajax/englishstudytelegrambot/bpp/NatsControllerHandlerBeanPostProcessor.kt")
-        }
-    }
-    test {
-        kotlin {
-            exclude("**/systems/ajax/englishstudytelegrambot/NatsControllerTest.kt")
-        }
-    }
-}
