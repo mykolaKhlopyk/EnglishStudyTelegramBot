@@ -2,6 +2,7 @@ package systems.ajax.englishstudytelegrambot.nats.controller
 
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Parser
+import reactor.core.publisher.Mono
 
 interface NatsController<RequestType : GeneratedMessageV3, ResponseType : GeneratedMessageV3> {
 
@@ -9,5 +10,5 @@ interface NatsController<RequestType : GeneratedMessageV3, ResponseType : Genera
 
     val parser: Parser<RequestType>
 
-    fun handle(request: RequestType): ResponseType
+    fun handle(request: RequestType): Mono<ResponseType>
 }
