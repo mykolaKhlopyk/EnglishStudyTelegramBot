@@ -1,44 +1,41 @@
 package systems.ajax.englishstudytelegrambot
 
 import io.nats.client.Connection
-import io.nats.client.Message
+import org.bson.types.ObjectId
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.query.Query
-import org.springframework.data.mongodb.core.remove
+import reactor.test.StepVerifier
 import systems.ajax.NatsSubject.Admin.GET_ALL_LIBRARIES_SUBJECT
 import systems.ajax.NatsSubject.Admin.GET_ALL_USERS_SUBJECT
 import systems.ajax.NatsSubject.Admin.GET_ALL_WORDS_SUBJECT
 import systems.ajax.NatsSubject.Library.CREATE_NEW_LIBRARY_SUBJECT
 import systems.ajax.NatsSubject.Library.DELETE_LIBRARY_SUBJECT
-import systems.ajax.englishstudytelegrambot.entity.Library
-import systems.ajax.englishstudytelegrambot.entity.User
-import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.NatsSubject.Library.GET_ALL_WORDS_FROM_LIBRARY_SUBJECT
-import systems.ajax.englishstudytelegrambot.dto.entity.LibraryDtoResponse
-import systems.ajax.englishstudytelegrambot.dto.entity.UserDtoResponse
+import systems.ajax.englishstudytelegrambot.dto.entity.toDtoResponse
+import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.entity.AdditionalInfoAboutWord
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.nats.mapper.toWordResponse
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
+import systems.ajax.englishstudytelegrambot.repository.UserRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import systems.ajax.englishstudytelegrambot.service.AdminService
-import systems.ajax.response_request.admin.GetAllWordsRequest
+import systems.ajax.entity.LibraryOuterClass.Library
 import systems.ajax.response_request.admin.GetAllLibrariesRequest
+import systems.ajax.response_request.admin.GetAllLibrariesResponse
 import systems.ajax.response_request.admin.GetAllUsersRequest
 import systems.ajax.response_request.admin.GetAllUsersResponse
 import systems.ajax.response_request.admin.GetAllWordsResponse
-import systems.ajax.response_request.admin.GetAllLibrariesResponse
+import systems.ajax.response_request.admin.GetAllWordsRequest
 import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryRequest
 import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryResponse
 import systems.ajax.response_request.library.DeleteLibrary.DeleteLibraryResponse
 import systems.ajax.response_request.library.DeleteLibrary.DeleteLibraryRequest
-import systems.ajax.response_request.library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse
 import systems.ajax.response_request.library.GetAllWordsFromLibrary.GetAllWordsFromLibraryRequest
+import systems.ajax.response_request.library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse
 
 import java.time.Duration
 
@@ -52,188 +49,271 @@ class NatsControllerTest {
     private lateinit var libraryRepository: LibraryRepository
 
     @Autowired
+    private lateinit var userRepository: UserRepository
+
+    @Autowired
     private lateinit var wordRepository: WordRepository
 
     @Autowired
     private lateinit var adminService: AdminService
 
-    @Autowired
-    private lateinit var mongoTemplate: MongoTemplate
-
-    @BeforeEach
-    fun clearDBs() {
-        mongoTemplate.remove<User>(Query())
-        mongoTemplate.remove<Library>(Query())
-        mongoTemplate.remove<Word>(Query())
-    }
-
-    private fun addLibrariesAndUsers(): List<Library> =
-        listOf(
-            libraryRepository.saveNewLibrary("testLibraryName1", "testTelegramUserId1"),
-            libraryRepository.saveNewLibrary("testLibraryName2", "testTelegramUserId2"),
-            libraryRepository.saveNewLibrary("testLibraryName3", "testTelegramUserId1")
-        )
-
     private fun createEmptyAdditionalInfoAboutWord() = AdditionalInfoAboutWord("", "", "", "")
 
     @Test
     fun testGetAllUserNatsController() {
+        // GIVEN
+        val nanoTime = System.nanoTime().toString()
+        val libraryName1 = "$nanoTime libraryName1"
+        val libraryName2 = "$nanoTime libraryName2"
+        val telegramUserId1 = "$nanoTime userIdName1"
+        val telegramUserId2 = "$nanoTime userIdName2"
 
-        val libraries = addLibrariesAndUsers()
+        val library1 = libraryRepository.saveNewLibrary(libraryName1, telegramUserId1).block()
+        val library2 = libraryRepository.saveNewLibrary(libraryName2, telegramUserId2).block()
 
-        val message: Message = doRequest(GET_ALL_USERS_SUBJECT, GetAllUsersRequest.getDefaultInstance().toByteArray())
-
+        // WHEN
+        val message = doRequest(GET_ALL_USERS_SUBJECT, GetAllUsersRequest.getDefaultInstance().toByteArray())
         val telegramUserIdsList: List<String> =
             GetAllUsersResponse.parser().parseFrom(message.data).success.telegramUserIdsList
 
-        //testTelegramUserId1, testTelegramUserId2
-        Assertions.assertIterableEquals(
-            adminService.getAllUsers().map(UserDtoResponse::telegramUserId), telegramUserIdsList
-        )
+        //THEN
+        StepVerifier.create(adminService.getAllUsers().map { it.telegramUserId }.filter { it.contains(nanoTime) })
+            .expectNext(telegramUserId1)
+            .expectNext(telegramUserId2)
+            .verifyComplete()
     }
 
     @Test
     fun testGetAllLibrariesNatsController() {
-        val libraries = addLibrariesAndUsers()
+        // GIVEN
+        val nanoTime = System.nanoTime().toString()
+        val libraryName1 = "$nanoTime libraryName1"
+        val libraryName2 = "$nanoTime libraryName2"
+        val telegramUserId = "$nanoTime userIdName"
 
+        val library1 = libraryRepository.saveNewLibrary(libraryName1, telegramUserId).block()
+        val library2 = libraryRepository.saveNewLibrary(libraryName2, telegramUserId).block()
+
+        // WHEN
         val message = doRequest(GET_ALL_LIBRARIES_SUBJECT, GetAllLibrariesRequest.getDefaultInstance().toByteArray())
         val libraryList =
             GetAllLibrariesResponse.parser().parseFrom(
                 message.data
             ).success.librariesList
 
-        Assertions.assertIterableEquals(libraries.map(Library::toLibraryResponse), libraryList)
+        //THEN
+        Assertions.assertTrue(libraryList.filter { it.name.contains(nanoTime) }.size == 2)
+        StepVerifier.create(adminService.getAllLibraries().filter { it.name.contains(nanoTime) }.map { it })
+            .expectNext(library1!!.toDtoResponse())
+            .expectNext(library2!!.toDtoResponse())
+            .verifyComplete()
     }
 
     @Test
     fun testGetAllWordsNatsController() {
-        val libraries = addLibrariesAndUsers()
-        val words = addWords(libraries)
+        // GIVEN
+        val nanoTime = System.nanoTime().toString()
+        val libraryName1 = "$nanoTime libraryName1"
+        val libraryName2 = "$nanoTime libraryName2"
+        val telegramUserId = "$nanoTime userIdName"
+        val wordSpelling1 = "$nanoTime spelling1"
+        val wordSpelling2 = "$nanoTime spelling2"
+        val wordSpelling3 = "$nanoTime spelling3"
 
+        val library = libraryRepository.saveNewLibrary(libraryName1, telegramUserId).block()
+        val word1 = wordRepository.saveNewWord(
+            Word(
+                spelling = wordSpelling1,
+                translate = "translate",
+                libraryId = library!!.id,
+                additionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
+            )
+        ).block()
+        val word2 = wordRepository.saveNewWord(
+            Word(
+                spelling = wordSpelling2,
+                translate = "translate",
+                libraryId = library!!.id,
+                additionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
+            )
+        ).block()
+        val word3 = wordRepository.saveNewWord(
+            Word(
+                spelling = wordSpelling3,
+                translate = "translate",
+                libraryId = library!!.id,
+                additionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
+            )
+        ).block()
+
+        // WHEN
         val message = doRequest(GET_ALL_WORDS_SUBJECT, GetAllWordsRequest.getDefaultInstance().toByteArray())
+        val wordsFromLibrary = GetAllWordsResponse.parser().parseFrom(message.data).success.wordsList
 
-        val wordsList = GetAllWordsResponse.parser().parseFrom(message.data).success.wordsList
-
-        Assertions.assertEquals(words.map(Word::toWordResponse), wordsList)
+        // THEN
+        StepVerifier.create(adminService.getAllWords().filter { it.spelling.contains(nanoTime) })
+            .expectNext(word1!!.toDtoResponse())
+            .expectNext(word2!!.toDtoResponse())
+            .expectNext(word3!!.toDtoResponse())
+            .verifyComplete()
     }
 
     @Test
-    fun testGetAllWordsFromLibrariesNatsControllerEmptyLibrary() {
+    fun `should return empty list when library doesnt contain words`() {
+        // GIVEN
+        val nanoTime = System.nanoTime().toString()
+        val libraryName = "$nanoTime libraryName"
+        val telegramUserId = "$nanoTime userIdName"
 
-        val libraries = addLibrariesAndUsers()
-        val words = addWords(libraries)
+        val library = libraryRepository.saveNewLibrary(libraryName, telegramUserId).block()
+
+        // WHEN
+        val message = doRequest(
+            GET_ALL_WORDS_FROM_LIBRARY_SUBJECT,
+            GetAllWordsFromLibraryRequest.newBuilder()
+                .setLibraryName(libraryName)
+                .setTelegramUserId(telegramUserId)
+                .build().toByteArray()
+        )
+        val wordsFromLibrary = GetAllWordsFromLibraryResponse.parser().parseFrom(message.data).success.wordsList
+
+        // THEN
+        Assertions.assertEquals(0, wordsFromLibrary.size)
+        StepVerifier.create(adminService.getAllWords().filter { it.spelling.contains(nanoTime) }.map { it })
+            .verifyComplete()
+    }
+
+    @Test
+    fun `should return all words from library`() {
+        // GIVEN
+        val nanoTime = System.nanoTime().toString()
+        val libraryName = "$nanoTime libraryName"
+        val telegramUserId = "$nanoTime userIdName"
+        val wordSpelling1 = "$nanoTime spelling1"
+        val wordSpelling2 = "$nanoTime spelling2"
+
+        val library = libraryRepository.saveNewLibrary(libraryName, telegramUserId).block()
+        val word1 = wordRepository.saveNewWord(
+            Word(
+                spelling = wordSpelling1,
+                translate = "translate",
+                libraryId = library!!.id,
+                additionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
+            )
+        ).block()
+        val word2 = wordRepository.saveNewWord(
+            Word(
+                spelling = wordSpelling2,
+                translate = "translate",
+                libraryId = library!!.id,
+                additionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
+            )
+        ).block()
+        // WHEN
 
         val message = doRequest(
             GET_ALL_WORDS_FROM_LIBRARY_SUBJECT,
             GetAllWordsFromLibraryRequest.newBuilder()
-                .setLibraryName(libraries[0].name)
-                .setTelegramUserId(libraries[0].ownerId)
+                .setLibraryName(libraryName)
+                .setTelegramUserId(telegramUserId)
                 .build().toByteArray()
         )
+        val wordsFromLibrary = GetAllWordsFromLibraryResponse.parser().parseFrom(message.data).success.wordsList
 
-        val wordsFromLibraryList = GetAllWordsFromLibraryResponse.parser().parseFrom(message.data).success.wordsList
-
-         Assertions.assertEquals(listOf(words[0], words[1]).map(Word::toWordResponse), wordsFromLibraryList)
+        // THEN
+        Assertions.assertEquals(2, wordsFromLibrary.size)
+        StepVerifier.create(adminService.getAllWords().filter { it.spelling.contains(nanoTime) }.map { it })
+            .expectNext(word1!!.toDtoResponse())
+            .expectNext(word2!!.toDtoResponse())
+            .verifyComplete()
     }
 
     @Test
-    fun testGetAllWordsFromLibrariesNatsControllerNotEmptyLibrary() {
-        val libraries = addLibrariesAndUsers()
-        val words = addWords(libraries)
+    fun `should create new library`() {
+        // GIVEN
+        val nanoTime = System.nanoTime().toString()
+        val libraryName = "$nanoTime libraryName"
+        val userIdName = "$nanoTime userIdName"
 
-        val message = doRequest(
-            GET_ALL_WORDS_FROM_LIBRARY_SUBJECT,
-            GetAllWordsFromLibraryRequest.newBuilder()
-                .setLibraryName(libraries[0].name)
-                .setTelegramUserId(libraries[0].ownerId)
-                .build().toByteArray()
-        )
-
-        val wordsFromLibraryList = GetAllWordsFromLibraryResponse.parser().parseFrom(message.data).success.wordsList
-
-        Assertions.assertEquals(2, wordsFromLibraryList.size)
-    }
-
-    @Test
-    fun testCreateNewLibraryNatsController() {
+        // WHEN
         val message = doRequest(
             CREATE_NEW_LIBRARY_SUBJECT,
             CreateNewLibraryRequest.newBuilder()
-                .setLibraryName("testLibraryName1")
-                .setTelegramUserId("testTelegramUserId1")
+                .setLibraryName(libraryName)
+                .setTelegramUserId(userIdName)
                 .build().toByteArray()
         )
+        val createdLibrary: Library =
+            CreateNewLibraryResponse.parser().parseFrom(message.data).success.createdLibrary
 
-        val createdLibraryName: String =
-            CreateNewLibraryResponse.parser().parseFrom(message.data).success.createdLibrary.name
-
-        Assertions.assertEquals("testLibraryName1", createdLibraryName)
-        Assertions.assertTrue(adminService.getAllLibraries().map(LibraryDtoResponse::name).contains(createdLibraryName))
+        // THEN
+        Assertions.assertEquals(libraryName, createdLibrary.name)
+        StepVerifier.create(
+            libraryRepository.getLibraryById(ObjectId(createdLibrary.id))
+                .map { it.toLibraryResponse() }
+        )
+            .expectNext(createdLibrary)
+            .verifyComplete()
     }
 
     @Test
-    fun testCreateSeveralNewLibraryNatsController() {
-        repeat(3) {
-            doRequest(
-                CREATE_NEW_LIBRARY_SUBJECT,
-                CreateNewLibraryRequest.newBuilder()
-                    .setLibraryName("testLibraryName$it")
-                    .setTelegramUserId("testTelegramUserId1")
-                    .build().toByteArray()
+    fun `should delete library with its words`() {
+        // GIVEN
+        val nanoTime = System.nanoTime().toString()
+        val nameOfDeleteLibrary = "$nanoTime deletelibraryName"
+        val nameOfSaveLibrary = "$nanoTime savelibraryName"
+        val telegramUserId = "$nanoTime userIdName"
+        val wordSpelling1 = "$nanoTime spelling1"
+        val wordSpelling2 = "$nanoTime spelling2"
+        val wordSpelling3 = "$nanoTime spelling3"
+
+        val libraryForDeleting = libraryRepository.saveNewLibrary(nameOfDeleteLibrary, telegramUserId).block()
+        val libraryForSaving = libraryRepository.saveNewLibrary(nameOfSaveLibrary, telegramUserId).block()
+        wordRepository.saveNewWord(
+            Word(
+                spelling = wordSpelling1,
+                translate = "translate",
+                libraryId = libraryForDeleting!!.id,
+                additionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
             )
-        }
+        ).block()
+        wordRepository.saveNewWord(
+            Word(
+                spelling = wordSpelling2,
+                translate = "translate",
+                libraryId = libraryForDeleting!!.id,
+                additionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
+            )
+        ).block()
+        val wordWhichShouldBeForSaving = wordRepository.saveNewWord(
+            Word(
+                spelling = wordSpelling3,
+                translate = "translate",
+                libraryId = libraryForSaving!!.id,
+                additionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
+            )
+        ).block()
 
-        Assertions.assertEquals(3, adminService.getAllLibraries().size)
-    }
-
-    @Test
-    fun testDeleteLibraryNatsController() {
-        val libraries: List<Library> = addLibrariesAndUsers()
-
+        // WHEN
         val message = doRequest(
             DELETE_LIBRARY_SUBJECT,
             DeleteLibraryRequest.newBuilder()
-                .setLibraryName(libraries[0].name)
-                .setTelegramUserId(libraries[0].ownerId)
+                .setLibraryName(nameOfDeleteLibrary)
+                .setTelegramUserId(telegramUserId)
                 .build().toByteArray()
         )
+        val deletedLibrary: Library =
+            DeleteLibraryResponse.parser().parseFrom(message.data).success.deletedLibrary
 
-        val deletedLibraryName: String =
-            DeleteLibraryResponse.parser().parseFrom(message.data).success.deletedLibrary.name
-
-        Assertions.assertEquals(libraries[0].name, deletedLibraryName)
-        Assertions.assertFalse(adminService.getAllLibraries()
-            .map(LibraryDtoResponse::toLibraryResponse)
-            .contains(libraries[0].toLibraryResponse()))
+        // THEN
+        Assertions.assertEquals(libraryForDeleting.toLibraryResponse(), deletedLibrary)
+        StepVerifier.create(userRepository.getAllLibrariesOfUser(telegramUserId).filter { it.name.contains(nanoTime) })
+            .expectNext(libraryForSaving)
+            .verifyComplete()
+        StepVerifier.create(adminService.getAllWords().filter { it.spelling.contains(nanoTime) }.map { it })
+            .expectNext(wordWhichShouldBeForSaving!!.toDtoResponse())
+            .verifyComplete()
     }
-
-    private fun addWords(libraries: List<Library>): List<Word> =
-        listOf(
-            wordRepository.saveNewWord(
-                Word(
-                    spelling = "word1",
-                    translate = "слово1",
-                    libraryId = libraries[0].id,
-                    additionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
-                )
-            ),
-            wordRepository.saveNewWord(
-                Word(
-                    spelling = "word2",
-                    translate = "слово2",
-                    libraryId = libraries[0].id,
-                    additionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
-                )
-            ),
-            wordRepository.saveNewWord(
-                Word(
-                    spelling = "word1",
-                    translate = "слово2",
-                    libraryId = libraries[1].id,
-                    additionalInfoAboutWord = createEmptyAdditionalInfoAboutWord()
-                )
-            )
-        )
 
     private fun doRequest(subject: String, byteArray: ByteArray) =
         natsConnection.requestWithTimeout(
