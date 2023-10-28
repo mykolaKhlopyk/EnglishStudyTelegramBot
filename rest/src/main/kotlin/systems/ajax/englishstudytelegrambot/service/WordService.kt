@@ -94,7 +94,7 @@ class WordServiceImpl(
         .switchIfEmpty(
             findLibraryId(libraryName, telegramUserId)
                 .handle { _, sink ->
-                    sink.error(WordIsMissingException("word is missing in library"))
+                    sink.error(WordIsMissingException("spelling = $wordSpelling"))
                 })
         .doOnNext { id -> log.info("id of deleted word is {}", id) }
         .map(Word::id)
@@ -110,7 +110,7 @@ class WordServiceImpl(
         .switchIfEmpty(
             findLibraryId(libraryName, telegramUserId)
                 .handle { _, sink ->
-                    sink.error(WordIsMissingException("word with spelling $wordSpelling was not found in library $libraryName"))
+                    sink.error(WordIsMissingException("spelling = $wordSpelling"))
                 }
         )
         .map(Word::toDtoResponse)
@@ -122,7 +122,7 @@ class WordServiceImpl(
     ): Mono<ObjectId> = findLibraryId(libraryName, telegramUserId)
         .filterWhen { libraryId -> isWordNotBelongsToLibrary(libraryId, spelling) }
         .switchIfEmpty(
-            Mono.error(WordAlreadyPresentInLibraryException("word $spelling is already present in library $libraryName"))
+            Mono.error(WordAlreadyPresentInLibraryException("word $spelling is present in library $libraryName"))
         )
 
 
@@ -135,9 +135,7 @@ class WordServiceImpl(
             telegramUserId
         )
         .switchIfEmpty(
-            Mono.error(
-                LibraryIsMissingException("Library id was not found by libraryName = $libraryName and telegramUserId = $telegramUserId")
-            )
+            Mono.error(LibraryIsMissingException("libraryName = $libraryName and telegramUserId = $telegramUserId"))
         )
 
     private fun collectAndSaveWordInDb(
