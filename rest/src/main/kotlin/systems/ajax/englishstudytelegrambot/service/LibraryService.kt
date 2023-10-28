@@ -1,5 +1,6 @@
 package systems.ajax.englishstudytelegrambot.service
 
+import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -10,6 +11,7 @@ import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.exception.LibraryIsMissingException
 import systems.ajax.englishstudytelegrambot.exception.LibraryWithTheSameNameForUserAlreadyExistException
+import systems.ajax.englishstudytelegrambot.nats.controller.library.GetAllWordsFromLibraryNatsController
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 
 interface LibraryService {
@@ -28,6 +30,10 @@ interface LibraryService {
         libraryName: String,
         telegramUserId: String
     ): Flux<WordDtoResponse>
+
+    fun getLibraryById(
+        id: ObjectId
+    ): Mono<LibraryDtoResponse>
 }
 
 @Service
@@ -40,7 +46,9 @@ class LibraryServiceImpl(
         telegramUserId: String
     ): Mono<LibraryDtoResponse> = libraryRepository
         .saveNewLibrary(nameOfNewLibrary, telegramUserId)
-        .onErrorMap { LibraryWithTheSameNameForUserAlreadyExistException("library $nameOfNewLibrary is created already") }
+        .onErrorMap {
+            LibraryWithTheSameNameForUserAlreadyExistException("library $nameOfNewLibrary is created")
+        }
         .map(Library::toDtoResponse)
 
     override fun deleteLibrary(
@@ -69,5 +77,11 @@ class LibraryServiceImpl(
             Mono.error(LibraryIsMissingException("library id was not found when try to get all words from it"))
         )
         .flatMapMany(libraryRepository::getAllWordsFromLibrary)
+        .doOnNext { GetAllWordsFromLibraryNatsController.log.info("get words {}", it) }
         .map(Word::toDtoResponse)
+
+    override fun getLibraryById(
+        id: ObjectId
+    ): Mono<LibraryDtoResponse> = libraryRepository
+        .getLibraryById(id).map(Library::toDtoResponse)
 }
