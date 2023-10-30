@@ -4,6 +4,8 @@ import org.bson.types.ObjectId
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
+import reactor.kotlin.core.publisher.toMono
 import systems.ajax.englishstudytelegrambot.dto.entity.LibraryDtoResponse
 import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
 import systems.ajax.englishstudytelegrambot.dto.entity.toDtoResponse
@@ -82,4 +84,5 @@ class LibraryServiceImpl(
 
     override fun getLibraryById(id: ObjectId): Mono<LibraryDtoResponse> =
         libraryRepository.getLibraryById(id).map(Library::toDtoResponse)
+            .switchIfEmpty { Mono.error(LibraryIsMissingException("library with id $id is missing")) }
 }
