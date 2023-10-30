@@ -3,6 +3,7 @@ package systems.ajax.englishstudytelegrambot.nats.controller.admin
 import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import systems.ajax.NatsSubject.Admin.GET_ALL_USERS_SUBJECT
 import systems.ajax.englishstudytelegrambot.dto.entity.UserDtoResponse
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
@@ -22,7 +23,7 @@ class GetAllUsersNatsController(
     override fun handle(request: GetAllUsersRequest): Mono<GetAllUsersResponse> =
         getTelegramUserIds()
             .map { createSuccessResponse(it) }
-            .onErrorResume { Mono.just(createFailureResponse(it)) }
+            .onErrorResume { createFailureResponse(it).toMono() }
 
     private fun getTelegramUserIds(): Mono<List<String>> =
         adminService.getAllUsers().map(UserDtoResponse::telegramUserId).collectList()

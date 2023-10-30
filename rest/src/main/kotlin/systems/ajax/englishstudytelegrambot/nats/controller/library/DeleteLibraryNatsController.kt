@@ -3,6 +3,7 @@ package systems.ajax.englishstudytelegrambot.nats.controller.library
 import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import systems.ajax.NatsSubject.Library.DELETE_LIBRARY_SUBJECT
 import systems.ajax.englishstudytelegrambot.dto.entity.LibraryDtoResponse
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
@@ -23,7 +24,7 @@ class DeleteLibraryNatsController(private val libraryService: LibraryService) :
     override fun handle(request: DeleteLibraryRequest): Mono<DeleteLibraryResponse> =
         deleteLibraryInResponseFormat(request)
             .map { createSuccessResponse(it) }
-            .onErrorResume { Mono.just(createFailureResponse(it)) }
+            .onErrorResume { createFailureResponse(it).toMono() }
 
     private fun deleteLibraryInResponseFormat(request: DeleteLibraryRequest) =
         libraryService.deleteLibrary(request.libraryName, request.telegramUserId)

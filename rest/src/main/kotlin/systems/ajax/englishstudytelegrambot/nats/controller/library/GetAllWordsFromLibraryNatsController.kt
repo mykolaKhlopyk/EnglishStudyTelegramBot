@@ -4,6 +4,7 @@ import com.google.protobuf.Parser
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import systems.ajax.NatsSubject.Library.GET_ALL_WORDS_FROM_LIBRARY_SUBJECT
 import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
 import systems.ajax.entity.WordOuterClass.Word
@@ -24,11 +25,11 @@ class GetAllWordsFromLibraryNatsController(private val libraryService: LibrarySe
     override fun handle(request: GetAllWordsFromLibraryRequest): Mono<GetAllWordsFromLibraryResponse> =
         getAllWordsFromLibraryInResponseFormat(request)
             .map { createSuccessResponse(it) }
-            .onErrorResume { Mono.just(createFailureResponse(it)) }
+            .onErrorResume { createFailureResponse(it).toMono() }
 
     private fun getAllWordsFromLibraryInResponseFormat(request: GetAllWordsFromLibraryRequest): Mono<List<Word>> =
         libraryService.getAllWordsFromLibrary(request.libraryName, request.telegramUserId)
-            .doOnNext{ log.info("get words {}", it)}
+            .doOnNext { log.info("get words {}", it) }
             .map(WordDtoResponse::toWordResponse).collectList()
 
     private fun createSuccessResponse(wordsFromLibrary: List<Word>) =
