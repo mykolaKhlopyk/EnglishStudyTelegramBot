@@ -2,7 +2,9 @@ package systems.ajax.englishstudytelegrambot.nats.controller.admin
 
 import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import systems.ajax.NatsSubject.Admin.GET_ALL_LIBRARIES_SUBJECT
 import systems.ajax.englishstudytelegrambot.dto.entity.LibraryDtoResponse
 import systems.ajax.entity.LibraryOuterClass.Library
@@ -24,7 +26,7 @@ class GetAllLibrariesNatsController(
     override fun handle(request: GetAllLibrariesRequest): Mono<GetAllLibrariesResponse> =
         getAllLibrariesInResponseFormat()
             .map { createSuccessResponse(it) }
-            .onErrorResume { Mono.just(createFailureResponse(it)) }
+            .onErrorResume { createFailureResponse(it).toMono() }
 
     private fun getAllLibrariesInResponseFormat(): Mono<List<Library>> =
         adminService.getAllLibraries().map(LibraryDtoResponse::toLibraryResponse).collectList()
