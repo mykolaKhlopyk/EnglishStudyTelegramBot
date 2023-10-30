@@ -80,8 +80,6 @@ class LibraryServiceImpl(
         .doOnNext { GetAllWordsFromLibraryNatsController.log.info("get words {}", it) }
         .map(Word::toDtoResponse)
 
-    override fun getLibraryById(
-        id: ObjectId
-    ): Mono<LibraryDtoResponse> = libraryRepository
-        .getLibraryById(id).map(Library::toDtoResponse)
+    override fun getLibraryById(id: ObjectId): Mono<LibraryDtoResponse> =
+        libraryRepository.getLibraryById(id).map(Library::toDtoResponse)
 }
