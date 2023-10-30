@@ -74,10 +74,10 @@ class WordServiceImpl(
             createWordDtoRequest.spelling
         )
         .switchIfEmpty(
-            findLibraryId(libraryName, telegramUserId)
-                .handle { id, sink ->
-                    sink.error(WordIsMissingException("word is missing in library"))
-                })
+            findLibraryId(libraryName, telegramUserId).handle { _, sink ->
+                sink.error(WordIsMissingException("word is missing in library"))
+            }
+        )
         .flatMap { word -> wordRepository.updateWordTranslating(word.id, createWordDtoRequest.translate) }
         .map(Word::toDtoResponse)
 
@@ -95,7 +95,8 @@ class WordServiceImpl(
             findLibraryId(libraryName, telegramUserId)
                 .handle { _, sink ->
                     sink.error(WordIsMissingException("spelling = $wordSpelling"))
-                })
+                }
+        )
         .doOnNext { id -> log.info("id of deleted word is {}", id) }
         .map(Word::id)
         .flatMap(wordRepository::deleteWord)
