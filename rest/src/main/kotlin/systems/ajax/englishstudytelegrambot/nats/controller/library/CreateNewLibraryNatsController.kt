@@ -2,14 +2,16 @@ package systems.ajax.englishstudytelegrambot.nats.controller.library
 
 import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import systems.ajax.NatsSubject.Library.CREATE_NEW_LIBRARY_SUBJECT
+import systems.ajax.englishstudytelegrambot.dto.entity.LibraryDtoResponse
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.service.LibraryService
 import systems.ajax.entity.LibraryOuterClass.Library
 import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryRequest
 import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryResponse
-import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryResponse.Success
 
 @Component
 class CreateNewLibraryNatsController(private val libraryService: LibraryService) :
@@ -19,16 +21,14 @@ class CreateNewLibraryNatsController(private val libraryService: LibraryService)
 
     override val parser: Parser<CreateNewLibraryRequest> = CreateNewLibraryRequest.parser()
 
-    override fun handle(request: CreateNewLibraryRequest): CreateNewLibraryResponse =
-        runCatching {
-            val createdLibrary = createdLibrary(request)
-            createSuccessResponse(createdLibrary)
-        }.getOrElse {
-            createFailureResponse(it)
-        }
+    override fun handle(request: CreateNewLibraryRequest): Mono<CreateNewLibraryResponse> =
+        createdLibrary(request)
+            .map { createSuccessResponse(it) }
+            .onErrorResume { createFailureResponse(it).toMono() }
 
-    private fun createdLibrary(request: CreateNewLibraryRequest): Library =
-        libraryService.createNewLibrary(request.libraryName, request.telegramUserId).toLibraryResponse()
+    private fun createdLibrary(request: CreateNewLibraryRequest): Mono<Library> =
+        libraryService.createNewLibrary(request.libraryName, request.telegramUserId)
+            .map(LibraryDtoResponse::toLibraryResponse)
 
 
     private fun createSuccessResponse(createdLibrary: Library) =

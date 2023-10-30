@@ -2,6 +2,9 @@ package systems.ajax.englishstudytelegrambot.nats.controller.admin
 
 import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import systems.ajax.NatsSubject.Admin.GET_ALL_LIBRARIES_SUBJECT
 import systems.ajax.englishstudytelegrambot.dto.entity.LibraryDtoResponse
 import systems.ajax.entity.LibraryOuterClass.Library
@@ -20,18 +23,15 @@ class GetAllLibrariesNatsController(
 
     override val parser: Parser<GetAllLibrariesRequest> = GetAllLibrariesRequest.parser()
 
-    override fun handle(request: GetAllLibrariesRequest): GetAllLibrariesResponse =
-        runCatching {
-            val librariesResponse = getAllLibrariesInResponseFormat()
-            createSuccessResponse(librariesResponse)
-        }.getOrElse {
-            createFailureResponse(it)
-        }
+    override fun handle(request: GetAllLibrariesRequest): Mono<GetAllLibrariesResponse> =
+        getAllLibrariesInResponseFormat()
+            .map { createSuccessResponse(it) }
+            .onErrorResume { createFailureResponse(it).toMono() }
 
-    private fun getAllLibrariesInResponseFormat(): List<Library> =
-        adminService.getAllLibraries().map(LibraryDtoResponse::toLibraryResponse)
+    private fun getAllLibrariesInResponseFormat(): Mono<List<Library>> =
+        adminService.getAllLibraries().map(LibraryDtoResponse::toLibraryResponse).collectList()
 
-    private fun createSuccessResponse(librariesResponse: List<Library>) =
+    private fun createSuccessResponse(librariesResponse: List<Library>): GetAllLibrariesResponse =
         GetAllLibrariesResponse.newBuilder().apply {
             successBuilder.addAllLibraries(librariesResponse)
         }.build()

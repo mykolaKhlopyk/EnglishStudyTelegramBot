@@ -1,14 +1,16 @@
 package systems.ajax.englishstudytelegrambot.nats.controller.library
 
 import com.google.protobuf.Parser
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import systems.ajax.NatsSubject.Library.GET_ALL_WORDS_FROM_LIBRARY_SUBJECT
 import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
-import systems.ajax.englishstudytelegrambot.entity.Word
+import systems.ajax.entity.WordOuterClass.Word
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toWordResponse
 import systems.ajax.englishstudytelegrambot.service.LibraryService
-import systems.ajax.entity.WordOuterClass
 import systems.ajax.response_request.library.GetAllWordsFromLibrary.GetAllWordsFromLibraryRequest
 import systems.ajax.response_request.library.GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse
 
@@ -20,19 +22,17 @@ class GetAllWordsFromLibraryNatsController(private val libraryService: LibrarySe
 
     override val parser: Parser<GetAllWordsFromLibraryRequest> = GetAllWordsFromLibraryRequest.parser()
 
-    override fun handle(request: GetAllWordsFromLibraryRequest): GetAllWordsFromLibraryResponse =
-        runCatching {
-            val wordsFromLibrary = getAllWordsFromLibraryInResponseFormat(request)
-            createSuccessResponse(wordsFromLibrary)
-        }.getOrElse {
-            createFailureResponse(it)
-        }
+    override fun handle(request: GetAllWordsFromLibraryRequest): Mono<GetAllWordsFromLibraryResponse> =
+        getAllWordsFromLibraryInResponseFormat(request)
+            .map { createSuccessResponse(it) }
+            .onErrorResume { createFailureResponse(it).toMono() }
 
-    private fun getAllWordsFromLibraryInResponseFormat(request: GetAllWordsFromLibraryRequest) =
+    private fun getAllWordsFromLibraryInResponseFormat(request: GetAllWordsFromLibraryRequest): Mono<List<Word>> =
         libraryService.getAllWordsFromLibrary(request.libraryName, request.telegramUserId)
-            .map(WordDtoResponse::toWordResponse)
+            .doOnNext { log.info("get words {}", it) }
+            .map(WordDtoResponse::toWordResponse).collectList()
 
-    private fun createSuccessResponse(wordsFromLibrary: List<WordOuterClass.Word>) =
+    private fun createSuccessResponse(wordsFromLibrary: List<Word>) =
         GetAllWordsFromLibraryResponse.newBuilder().apply {
             successBuilder.addAllWords(wordsFromLibrary)
         }.build()
@@ -41,4 +41,8 @@ class GetAllWordsFromLibraryNatsController(private val libraryService: LibrarySe
         GetAllWordsFromLibraryResponse.newBuilder().apply {
             failureBuilder.setErrorMassage(exception.message).build()
         }.build()
+
+    companion object {
+        val log = LoggerFactory.getLogger(this::class.java)
+    }
 }

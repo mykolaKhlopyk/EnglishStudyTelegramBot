@@ -1,16 +1,20 @@
 package systems.ajax.englishstudytelegrambot.repository
 
 import org.bson.types.ObjectId
-import org.springframework.data.mongodb.core.*
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate
+import org.springframework.data.mongodb.core.find
+import org.springframework.data.mongodb.core.findById
+import org.springframework.data.mongodb.core.findAll
+import org.springframework.data.mongodb.core.findAndRemove
+import org.springframework.data.mongodb.core.findOne
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.mongodb.core.remove
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.entity.Word
-import reactor.kotlin.core.util.function.component1
-import reactor.kotlin.core.util.function.component2
 
 interface LibraryRepository {
 
@@ -25,6 +29,8 @@ interface LibraryRepository {
     fun getLibraryIdByLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): Mono<ObjectId>
 
     fun getAllWordsFromLibrary(libraryId: ObjectId): Flux<Word>
+
+    fun getLibraryById(id: ObjectId): Mono<Library>
 }
 
 @Repository
@@ -76,6 +82,9 @@ class LibraryRepositoryImpl(val mongoTemplate: ReactiveMongoTemplate) : LibraryR
         mongoTemplate.find<Word>(
             Query.query(Criteria.where("libraryId").`is`(libraryId))
         )
+
+    override fun getLibraryById(id: ObjectId): Mono<Library> =
+        mongoTemplate.findById<Library>(id)
 
     private fun deleteAllWordsFromLibrary(libraryId: ObjectId) =
         mongoTemplate.remove<Word>(Query.query(Criteria.where("libraryId").`is`(libraryId)))

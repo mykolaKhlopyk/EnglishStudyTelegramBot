@@ -6,6 +6,7 @@ import io.nats.client.Dispatcher
 import io.nats.client.Message
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 
 @Component
@@ -26,21 +27,23 @@ class NatsControllerDecorator<RequestType : GeneratedMessageV3, ResponseType : G
 
     fun decorate() {
         val dispatcher = createDispatcherForNatsController()
-        addSubscribeToNutsController(dispatcher)
+        subscribeNatsController(dispatcher)
     }
 
     private fun createDispatcherForNatsController(): Dispatcher =
         natsConnection.createDispatcher { message: Message ->
-            val response = createResponse(message)
-            natsConnection.publish(message.replyTo, response.toByteArray())
+            createResponse(message)
+                .subscribe {
+                    natsConnection.publish(message.replyTo, it.toByteArray())
+                }
         }
 
-    private fun createResponse(message: Message): ResponseType {
+    private fun createResponse(message: Message): Mono<ResponseType> {
         val parsedData = natsController.parser.parseFrom(message.data)
         return natsController.handle(parsedData)
     }
 
-    private fun addSubscribeToNutsController(dispatcher: Dispatcher) {
+    private fun subscribeNatsController(dispatcher: Dispatcher) {
         dispatcher.subscribe(natsController.subject)
     }
 }
