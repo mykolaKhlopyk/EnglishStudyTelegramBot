@@ -160,7 +160,7 @@ class WordServiceImpl(
         .isWordBelongsToLibrary(
             wordSpelling,
             libraryId
-        ).map { isBelong -> !isBelong }
+        ).map { it.not() }
 
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)
