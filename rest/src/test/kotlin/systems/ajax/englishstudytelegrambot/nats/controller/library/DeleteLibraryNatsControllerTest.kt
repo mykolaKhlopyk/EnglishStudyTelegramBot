@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import systems.ajax.NatsSubject
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.nats.NatsRequestFactory
-import systems.ajax.englishstudytelegrambot.nats.controller.LibrarySaverInDbForTesting.saveLibraryForTesting
-import systems.ajax.englishstudytelegrambot.nats.controller.WordSaverInDbForTesting.saveWordForTesting
+import LibrarySaverInMongoDbForTesting.saveLibraryForTesting
+import WordSaverInMongoDbForTesting.saveWordForTesting
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository

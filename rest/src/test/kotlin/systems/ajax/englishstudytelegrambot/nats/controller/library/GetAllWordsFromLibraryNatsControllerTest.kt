@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import systems.ajax.NatsSubject
 import systems.ajax.englishstudytelegrambot.nats.NatsRequestFactory
-import systems.ajax.englishstudytelegrambot.nats.controller.LibrarySaverInDbForTesting.saveLibraryForTesting
-import systems.ajax.englishstudytelegrambot.nats.controller.WordSaverInDbForTesting.saveWordForTesting
+import LibrarySaverInMongoDbForTesting.saveLibraryForTesting
+import WordSaverInMongoDbForTesting.saveWordForTesting
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import systems.ajax.response_request.library.GetAllWordsFromLibrary

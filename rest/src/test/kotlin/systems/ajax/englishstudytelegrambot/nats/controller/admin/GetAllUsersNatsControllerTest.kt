@@ -6,10 +6,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import reactor.kotlin.test.test
-import reactor.test.StepVerifier
 import systems.ajax.NatsSubject
 import systems.ajax.englishstudytelegrambot.nats.NatsRequestFactory
-import systems.ajax.englishstudytelegrambot.nats.controller.LibrarySaverInDbForTesting.saveLibraryForTesting
+import LibrarySaverInMongoDbForTesting.saveLibraryForTesting
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.UserRepository
 import systems.ajax.response_request.admin.GetAllUsersRequest
@@ -28,7 +27,7 @@ class GetAllUsersNatsControllerTest {
     private lateinit var userRepository: UserRepository
 
     @Test
-    fun testGetAllUserNatsController() {
+    fun `should return all users`() {
         // GIVEN
         val nanoTime = System.nanoTime().toString()
         val libraryName1 = "$nanoTime libraryName1"
