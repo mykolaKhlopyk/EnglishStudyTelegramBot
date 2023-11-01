@@ -49,7 +49,7 @@ class GetAllWordsFromLibraryNatsControllerTest {
         val wordsFromLibrary =
             GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse.parser().parseFrom(message.data).success.wordsList
         assertEquals(2, wordsFromLibrary.size)
-        assertTrue(libraryRepository.getAllWordsFromLibrary(library.id).collectList().block()!!.let {
+        assertTrue(wordRepository.getAllWordsFromLibrary(library.id).collectList().block()!!.let {
             it.size == 2 && it.containsAll(listOf(word1, word2))
         })
 

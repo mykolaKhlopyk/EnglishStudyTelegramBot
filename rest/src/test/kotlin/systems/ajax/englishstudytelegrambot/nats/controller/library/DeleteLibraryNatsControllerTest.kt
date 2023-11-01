@@ -59,9 +59,9 @@ class DeleteLibraryNatsControllerTest {
         )
 
         assertTrue(libraryRepository.getLibraryById(libraryForDeleting.id).block() == null)
-        assertTrue(libraryRepository.getAllWordsFromLibrary(libraryForDeleting.id).collectList().block()!!.isEmpty())
+        assertTrue(wordRepository.getAllWordsFromLibrary(libraryForDeleting.id).collectList().block()!!.isEmpty())
 
         assertTrue(libraryRepository.getLibraryById(libraryForSaving.id).block() != null)
-        assertFalse(libraryRepository.getAllWordsFromLibrary(libraryForSaving.id).collectList().block()!!.isEmpty())
+        assertFalse(wordRepository.getAllWordsFromLibrary(libraryForSaving.id).collectList().block()!!.isEmpty())
     }
 }

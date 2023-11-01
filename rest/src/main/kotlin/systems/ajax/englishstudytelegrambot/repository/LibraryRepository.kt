@@ -28,8 +28,6 @@ interface LibraryRepository {
 
     fun getLibraryIdByLibraryNameAndTelegramUserId(libraryName: String, telegramUserId: String): Mono<ObjectId>
 
-    fun getAllWordsFromLibrary(libraryId: ObjectId): Flux<Word>
-
     fun getLibraryById(id: ObjectId): Mono<Library>
 }
 
@@ -76,11 +74,6 @@ class LibraryRepositoryImpl(val mongoTemplate: ReactiveMongoTemplate) : LibraryR
                 Criteria.where("ownerId").`is`(telegramUserId),
                 Criteria.where("name").`is`(nameOfLibraryForDeleting)
             )
-        )
-
-    override fun getAllWordsFromLibrary(libraryId: ObjectId): Flux<Word> =
-        mongoTemplate.find<Word>(
-            Query.query(Criteria.where("libraryId").`is`(libraryId))
         )
 
     override fun getLibraryById(id: ObjectId): Mono<Library> =

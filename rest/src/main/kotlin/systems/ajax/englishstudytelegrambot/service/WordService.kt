@@ -12,10 +12,10 @@ import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.exception.LibraryIsMissingException
 import systems.ajax.englishstudytelegrambot.exception.WordIsMissingException
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
-import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import reactor.kotlin.core.util.function.component1
 import reactor.kotlin.core.util.function.component2
 import systems.ajax.englishstudytelegrambot.exception.WordAlreadyPresentInLibraryException
+import systems.ajax.englishstudytelegrambot.repository.WordCashableRepository
 
 interface WordService {
 
@@ -46,7 +46,7 @@ interface WordService {
 
 @Service
 class WordServiceImpl(
-    val wordRepository: WordRepository,
+    val wordCashableRepository: WordCashableRepository,
     val libraryRepository: LibraryRepository,
     val additionalInfoAboutWordService: AdditionalInfoAboutWordService
 ) : WordService {
@@ -67,7 +67,7 @@ class WordServiceImpl(
         libraryName: String,
         telegramUserId: String,
         createWordDtoRequest: CreateWordDtoRequest
-    ): Mono<WordDtoResponse> = wordRepository
+    ): Mono<WordDtoResponse> = wordCashableRepository
         .getWordByLibraryNameTelegramUserIdWordSpelling(
             libraryName,
             telegramUserId,
@@ -78,14 +78,14 @@ class WordServiceImpl(
                 sink.error(WordIsMissingException("word is missing in library"))
             }
         )
-        .flatMap { word -> wordRepository.updateWordTranslating(word.id, createWordDtoRequest.translate) }
+        .flatMap { word -> wordCashableRepository.updateWordTranslating(word.id, createWordDtoRequest.translate) }
         .map(Word::toDtoResponse)
 
     override fun deleteWord(
         libraryName: String,
         telegramUserId: String,
         wordSpelling: String
-    ): Mono<WordDtoResponse> = wordRepository
+    ): Mono<WordDtoResponse> = wordCashableRepository
         .getWordByLibraryNameTelegramUserIdWordSpelling(
             libraryName,
             telegramUserId,
@@ -99,14 +99,14 @@ class WordServiceImpl(
         )
         .doOnNext { id -> log.info("id of deleted word is {}", id) }
         .map(Word::id)
-        .flatMap(wordRepository::deleteWord)
+        .flatMap(wordCashableRepository::deleteWord)
         .map(Word::toDtoResponse)
 
     override fun getFullInfoAboutWord(
         libraryName: String,
         telegramUserId: String,
         wordSpelling: String
-    ): Mono<WordDtoResponse> = wordRepository
+    ): Mono<WordDtoResponse> = wordCashableRepository
         .getWordByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling)
         .switchIfEmpty(
             findLibraryId(libraryName, telegramUserId)
@@ -121,7 +121,11 @@ class WordServiceImpl(
         telegramUserId: String,
         spelling: String
     ): Mono<ObjectId> = findLibraryId(libraryName, telegramUserId)
-        .filterWhen { libraryId -> isWordNotBelongsToLibrary(libraryId, spelling) }
+        .doOnNext{ log.info("library id = {}", it)}
+       // .doOnNext{ log.info("is word not belongs = {}", isWordNotBelongsToLibrary(it, spelling).block()!!)}
+        .filterWhen {
+            libraryId -> isWordNotBelongsToLibrary(libraryId, spelling)
+        }
         .switchIfEmpty(
             Mono.error(WordAlreadyPresentInLibraryException("word $spelling is present in library $libraryName"))
         )
@@ -143,7 +147,7 @@ class WordServiceImpl(
         createWordDtoRequest: CreateWordDtoRequest,
         libraryId: ObjectId,
         additionalInfoAboutWord: AdditionalInfoAboutWord
-    ): Mono<Word> = wordRepository
+    ): Mono<Word> = wordCashableRepository
         .saveNewWord(
             Word(
                 spelling = createWordDtoRequest.spelling,
@@ -156,11 +160,13 @@ class WordServiceImpl(
     private fun isWordNotBelongsToLibrary(
         libraryId: ObjectId,
         wordSpelling: String
-    ): Mono<Boolean> = wordRepository
+    ): Mono<Boolean> = wordCashableRepository
         .isWordBelongsToLibrary(
             wordSpelling,
             libraryId
-        ).map { it.not() }
+        ).map {
+            it.not()
+        }
 
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)

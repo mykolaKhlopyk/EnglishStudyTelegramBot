@@ -14,6 +14,7 @@ import systems.ajax.englishstudytelegrambot.exception.LibraryIsMissingException
 import systems.ajax.englishstudytelegrambot.exception.LibraryWithTheSameNameForUserAlreadyExistException
 import systems.ajax.englishstudytelegrambot.nats.controller.library.GetAllWordsFromLibraryNatsController
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
+import systems.ajax.englishstudytelegrambot.repository.WordRepository
 
 interface LibraryService {
 
@@ -39,7 +40,8 @@ interface LibraryService {
 
 @Service
 class LibraryServiceImpl(
-    val libraryRepository: LibraryRepository
+    val libraryRepository: LibraryRepository,
+    val wordRepository: WordRepository
 ) : LibraryService {
 
     override fun createNewLibrary(
@@ -77,7 +79,7 @@ class LibraryServiceImpl(
         .switchIfEmpty(
             Mono.error(LibraryIsMissingException("library id was not found when try to get all words from it"))
         )
-        .flatMapMany(libraryRepository::getAllWordsFromLibrary)
+        .flatMapMany(wordRepository::getAllWordsFromLibrary)
         .doOnNext { GetAllWordsFromLibraryNatsController.log.info("get words {}", it) }
         .map(Word::toDtoResponse)
 
