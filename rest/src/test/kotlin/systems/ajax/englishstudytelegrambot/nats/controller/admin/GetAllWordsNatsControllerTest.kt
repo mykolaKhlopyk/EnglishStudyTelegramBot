@@ -1,7 +1,6 @@
 package systems.ajax.englishstudytelegrambot.nats.controller.admin
 
 import io.nats.client.Message
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,6 +10,7 @@ import systems.ajax.NatsSubject
 import systems.ajax.englishstudytelegrambot.nats.NatsRequestFactory
 import LibrarySaverInMongoDbForTesting.saveLibraryForTesting
 import WordSaverInMongoDbForTesting.saveWordForTesting
+import org.junit.jupiter.api.Assertions.assertEquals
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import systems.ajax.response_request.admin.GetAllWordsRequest

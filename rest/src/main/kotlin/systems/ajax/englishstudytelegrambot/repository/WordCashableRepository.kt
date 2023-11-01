@@ -10,6 +10,7 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
 import systems.ajax.englishstudytelegrambot.entity.Word
 
+@Suppress("TooManyFunctions")
 interface WordCashableRepository {
 
     fun saveNewWord(word: Word): Mono<Word>

@@ -77,7 +77,7 @@ class WordCashableRepositoryImplUnitTest {
     }
 
     @Test
-    fun `should execute method from wordRepository method when redis doesn't contains word by id`() {
+    fun `should execute method from wordRepository method when redis doesn't contains word`() {
         // GIVEN
         val word = mockk<Word> {
             every { id } returns ObjectId()
@@ -104,7 +104,7 @@ class WordCashableRepositoryImplUnitTest {
     }
 
     @Test
-    fun `should not execute method for searching word from wordRepository  when redis contains word by id`() {
+    fun `should not execute method for searching word from wordRepository  when redis contains word`() {
         // GIVEN
         val word = mockk<Word> {
             every { id } returns ObjectId()
@@ -128,7 +128,7 @@ class WordCashableRepositoryImplUnitTest {
     }
 
     @Test
-    fun `should execute method for searching word from wordRepository when redis doesn't contains word by parameters`() {
+    fun `should execute method for searching word from wordRepository when redis doesn't contains word`() {
         // GIVEN
         val word = mockk<Word> {
             every { id } returns ObjectId()
@@ -157,17 +157,15 @@ class WordCashableRepositoryImplUnitTest {
     }
 
     @Test
-    fun `should not execute method from wordRepository method when redis doesn't contains word by parameters`() {
+    fun `should not execute method from wordRepository method when redis doesn't contains word`() {
         // GIVEN
         val word = mockk<Word> {
             every { id } returns ObjectId()
         }
-        //every { wordRepository.getWordByLibraryNameTelegramUserIdWordSpelling(any(), any(),any()) } returns Mono.just(word)
 
         val redisOpsMock = mockk<ReactiveValueOperations<String, Word>>()
 
         every { redisOpsMock.get(any()) } returns Mono.just(word)
-        //  every { redisOpsMock.set(any(), word) } returns Mono.just(true)
 
         every { redisTemplate.opsForValue() } returns redisOpsMock
 
