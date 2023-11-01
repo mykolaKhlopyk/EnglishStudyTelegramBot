@@ -23,6 +23,17 @@ services:
       interval: 1s
       timeout: 1s
       retries: 5
+  nats:
+    image: nats
+    container_name: nats
+    ports:
+      - "4222:4222"
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
 volumes:
   data:
+
 
