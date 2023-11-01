@@ -14,7 +14,7 @@ import LibrarySaverInMongoDbForTesting.saveLibraryForTesting
 import WordFactory
 
 @SpringBootTest
-class WordCashableRepositoryImplTest {
+class WordCashableRepositoryImplIntegrationTest {
 
     @Autowired
     lateinit var libraryRepository: LibraryRepository
@@ -33,6 +33,13 @@ class WordCashableRepositoryImplTest {
         // GIVEN
         val library = libraryRepository.saveLibraryForTesting()
         val word: Word = WordFactory.createWord(library.id)
+        val key = buildString {
+            append(
+                WordCashableRepositoryImpl.KEY_FIND_WORD_BY_ID,
+                ":",
+                word.id
+            )
+        }
 
         // WHEN // THEN
         wordCashableRepository.saveNewWord(word)
@@ -49,18 +56,45 @@ class WordCashableRepositoryImplTest {
         Assertions.assertThat(actualWordFromDb).isEqualTo(word)
 
         // AND THEN
-        val actualWordFromRedis = redisTemplate.opsForValue().get("WORDS_REDIS_KEY" + word.id.toHexString()).block()
+        val actualWordFromRedis = redisTemplate.opsForValue().get(key).block()
         Assertions.assertThat(actualWordFromRedis).isNotNull
         Assertions.assertThat(actualWordFromRedis).isEqualTo(word)
     }
 
     @Test
-    fun `should when`(){
-    // GIVEN
+    fun `should return word by parameters from cash when methods is called second time`() {
+        // GIVEN
+        val library = libraryRepository.saveLibraryForTesting()
+        val word: Word = WordFactory.createWord(library.id)
+        val key = buildString {
+            append(
+                WordCashableRepositoryImpl.KEY_FIND_WORD_BY_PARAMETERS,
+                ":",
+                library.name,
+                ":",
+                library.ownerId,
+                ":",
+                word.spelling
+            )
+        }
 
-    // WHEN
+        // WHEN THEN
+        wordCashableRepository.saveNewWord(word).block()
+        val firstRequestToRedis = redisTemplate.opsForValue().get(key).block()
+        wordCashableRepository.getWordByLibraryNameTelegramUserIdWordSpelling(
+            library.name,
+            library.ownerId,
+            word.spelling
+        )
+            .test()
+            .expectNext(word)
+            .verifyComplete()
+        val secondRequestToRedis = redisTemplate.opsForValue().get(key).block()
 
-    // THEN
+        //THEN
+        Assertions.assertThat(firstRequestToRedis).isNull()
 
+        Assertions.assertThat(secondRequestToRedis).isNotNull
+        Assertions.assertThat(secondRequestToRedis).isEqualTo(word)
     }
 }
