@@ -4,7 +4,7 @@ services:
     build: .
     container_name: telegram-bot
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -12,7 +12,7 @@ services:
     image: mongo:6.0
     container_name: mongodb
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
       - data:/data
     environment:
@@ -27,12 +27,12 @@ services:
     image: nats
     container_name: nats
     ports:
-      - "4222:4222"
+      - "4223:4222"
   redis:
     image: redis
     container_name: redis
     ports:
-      - "6379:6379"
+      - "6380:6379"
 volumes:
   data:
 
