@@ -10,6 +10,7 @@ import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.service.LibraryService
 import systems.ajax.entity.LibraryOuterClass.Library
+import systems.ajax.englishstudytelegrambot.entity.Library as MongoLibrary
 import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryRequest
 import systems.ajax.response_request.library.CreateNewLibrary.CreateNewLibraryResponse
 
@@ -28,7 +29,7 @@ class CreateNewLibraryNatsController(private val libraryService: LibraryService)
 
     private fun createdLibrary(request: CreateNewLibraryRequest): Mono<Library> =
         libraryService.createNewLibrary(request.libraryName, request.telegramUserId)
-            .map(LibraryDtoResponse::toLibraryResponse)
+            .map(MongoLibrary::toLibraryResponse)
 
 
     private fun createSuccessResponse(createdLibrary: Library) =

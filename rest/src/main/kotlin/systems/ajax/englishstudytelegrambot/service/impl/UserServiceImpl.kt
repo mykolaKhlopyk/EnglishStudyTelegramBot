@@ -13,6 +13,6 @@ class UserServiceImpl(
     val userRepository: UserRepository,
 ) : UserService {
 
-    override fun getAllLibrariesOfUser(telegramUserId: String): Flux<LibraryDtoResponse> =
-        userRepository.getAllLibrariesOfUser(telegramUserId).map(Library::toDtoResponse)
+    override fun getAllLibrariesOfUser(telegramUserId: String): Flux<Library> =
+        userRepository.getAllLibrariesOfUser(telegramUserId)
 }

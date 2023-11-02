@@ -6,11 +6,11 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import systems.ajax.NatsSubject.Admin.GET_ALL_LIBRARIES_SUBJECT
-import systems.ajax.englishstudytelegrambot.dto.entity.LibraryDtoResponse
-import systems.ajax.entity.LibraryOuterClass.Library
+import systems.ajax.englishstudytelegrambot.entity.Library as MongoLibrary
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.service.AdminService
+import systems.ajax.entity.LibraryOuterClass.Library
 import systems.ajax.response_request.admin.GetAllLibrariesRequest
 import systems.ajax.response_request.admin.GetAllLibrariesResponse
 
@@ -29,7 +29,7 @@ class GetAllLibrariesNatsController(
             .onErrorResume { createFailureResponse(it).toMono() }
 
     private fun getAllLibrariesInResponseFormat(): Mono<List<Library>> =
-        adminService.getAllLibraries().map(LibraryDtoResponse::toLibraryResponse).collectList()
+        adminService.getAllLibraries().map(MongoLibrary::toLibraryResponse).collectList()
 
     private fun createSuccessResponse(librariesResponse: List<Library>): GetAllLibrariesResponse =
         GetAllLibrariesResponse.newBuilder().apply {

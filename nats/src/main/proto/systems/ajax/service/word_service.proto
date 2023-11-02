@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package systems.ajax.service;
+
+service WordService{
+//  rpc saveNewWord(SaveNewWordRequest)
+}
+
+message SaveNewWordRequest{
+  string library_name = 1;
+  string telegram_user_id = 2;
+  CreateWordDtoRequest create_word_dto_request = 3;
+
+  message CreateWordDtoRequest{
+    string spelling = 1;
+    string translate = 2;
+  }
+}

@@ -8,6 +8,7 @@ import reactor.kotlin.core.publisher.toMono
 import systems.ajax.NatsSubject.Library.GET_ALL_WORDS_FROM_LIBRARY_SUBJECT
 import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
 import systems.ajax.entity.WordOuterClass.Word
+import systems.ajax.englishstudytelegrambot.entity.Word as MongoWord
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.nats.mapper.toWordResponse
 import systems.ajax.englishstudytelegrambot.service.LibraryService
@@ -30,7 +31,7 @@ class GetAllWordsFromLibraryNatsController(private val libraryService: LibrarySe
     private fun getAllWordsFromLibraryInResponseFormat(request: GetAllWordsFromLibraryRequest): Mono<List<Word>> =
         libraryService.getAllWordsFromLibrary(request.libraryName, request.telegramUserId)
             .doOnNext { log.info("get words {}", it) }
-            .map(WordDtoResponse::toWordResponse).collectList()
+            .map(MongoWord::toWordResponse).collectList()
 
     private fun createSuccessResponse(wordsFromLibrary: List<Word>) =
         GetAllWordsFromLibraryResponse.newBuilder().apply {

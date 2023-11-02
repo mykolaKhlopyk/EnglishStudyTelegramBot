@@ -1,8 +1,8 @@
 package systems.ajax.englishstudytelegrambot.service
 
 import reactor.core.publisher.Mono
-import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
 import systems.ajax.englishstudytelegrambot.dto.request.CreateWordDtoRequest
+import systems.ajax.englishstudytelegrambot.entity.Word
 
 interface WordService {
 
@@ -10,23 +10,23 @@ interface WordService {
         libraryName: String,
         telegramUserId: String,
         createWordDtoRequest: CreateWordDtoRequest
-    ): Mono<WordDtoResponse>
+    ): Mono<Word>
 
     fun updateWordTranslate(
         libraryName: String,
         telegramUserId: String,
         createWordDtoRequest: CreateWordDtoRequest
-    ): Mono<WordDtoResponse>
+    ): Mono<Word>
 
     fun deleteWord(
         libraryName: String,
         telegramUserId: String,
         wordSpelling: String
-    ): Mono<WordDtoResponse>
+    ): Mono<Word>
 
     fun getFullInfoAboutWord(
         libraryName: String,
         telegramUserId: String,
         wordSpelling: String
-    ): Mono<WordDtoResponse>
+    ): Mono<Word>
 }

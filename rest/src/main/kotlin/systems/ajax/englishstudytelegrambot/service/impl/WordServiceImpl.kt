@@ -32,19 +32,19 @@ class WordServiceImpl(
         libraryName: String,
         telegramUserId: String,
         createWordDtoRequest: CreateWordDtoRequest
-    ): Mono<WordDtoResponse> =
+    ): Mono<Word> =
         Mono.zip(
             findLibraryIdWithoutCertainSpelling(libraryName, telegramUserId, createWordDtoRequest.spelling),
             additionalInfoAboutWordService.findAdditionInfoAboutWord(createWordDtoRequest.spelling)
         ).flatMap { (libraryId, additionalInfoAboutWord) ->
             collectAndSaveWordInDb(createWordDtoRequest, libraryId, additionalInfoAboutWord)
-        }.map(Word::toDtoResponse)
+        }
 
     override fun updateWordTranslate(
         libraryName: String,
         telegramUserId: String,
         createWordDtoRequest: CreateWordDtoRequest
-    ): Mono<WordDtoResponse> = wordRepository
+    ): Mono<Word> = wordRepository
         .getWordByLibraryNameTelegramUserIdWordSpelling(
             libraryName,
             telegramUserId,
@@ -56,13 +56,12 @@ class WordServiceImpl(
             }
         )
         .flatMap { word -> wordRepository.updateWordTranslating(word.id, createWordDtoRequest.translate) }
-        .map(Word::toDtoResponse)
 
     override fun deleteWord(
         libraryName: String,
         telegramUserId: String,
         wordSpelling: String
-    ): Mono<WordDtoResponse> = wordRepository
+    ): Mono<Word> = wordRepository
         .getWordByLibraryNameTelegramUserIdWordSpelling(
             libraryName,
             telegramUserId,
@@ -77,13 +76,12 @@ class WordServiceImpl(
         .doOnNext { id -> log.info("id of deleted word is {}", id) }
         .map(Word::id)
         .flatMap(wordRepository::deleteWord)
-        .map(Word::toDtoResponse)
 
     override fun getFullInfoAboutWord(
         libraryName: String,
         telegramUserId: String,
         wordSpelling: String
-    ): Mono<WordDtoResponse> = wordRepository
+    ): Mono<Word> = wordRepository
         .getWordByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling)
         .switchIfEmpty(
             findLibraryId(libraryName, telegramUserId)
@@ -91,7 +89,6 @@ class WordServiceImpl(
                     sink.error(WordIsMissingException("spelling = $wordSpelling"))
                 }
         )
-        .map(Word::toDtoResponse)
 
     private fun findLibraryIdWithoutCertainSpelling(
         libraryName: String,

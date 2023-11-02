@@ -27,17 +27,16 @@ class LibraryServiceImpl(
     override fun createNewLibrary(
         nameOfNewLibrary: String,
         telegramUserId: String
-    ): Mono<LibraryDtoResponse> = libraryRepository
+    ): Mono<Library> = libraryRepository
         .saveNewLibrary(nameOfNewLibrary, telegramUserId)
         .onErrorMap {
             LibraryWithTheSameNameForUserAlreadyExistException("library $nameOfNewLibrary is created")
         }
-        .map(Library::toDtoResponse)
 
     override fun deleteLibrary(
         nameOfLibraryForDeleting: String,
         telegramUserId: String
-    ): Mono<LibraryDtoResponse> = libraryRepository
+    ): Mono<Library> = libraryRepository
         .getLibraryIdByLibraryNameAndTelegramUserId(
             nameOfLibraryForDeleting,
             telegramUserId
@@ -46,12 +45,11 @@ class LibraryServiceImpl(
             Mono.error(LibraryIsMissingException("libraries id was not found when try to delete library"))
         )
         .flatMap(libraryRepository::deleteLibrary)
-        .map(Library::toDtoResponse)
 
     override fun getAllWordsFromLibrary(
         libraryName: String,
         telegramUserId: String
-    ): Flux<WordDtoResponse> = libraryRepository
+    ): Flux<Word> = libraryRepository
         .getLibraryIdByLibraryNameAndTelegramUserId(
             libraryName,
             telegramUserId
@@ -61,9 +59,8 @@ class LibraryServiceImpl(
         )
         .flatMapMany(wordRepository::getAllWordsFromLibrary)
         .doOnNext { GetAllWordsFromLibraryNatsController.log.info("get words {}", it) }
-        .map(Word::toDtoResponse)
 
-    override fun getLibraryById(id: ObjectId): Mono<LibraryDtoResponse> =
-        libraryRepository.getLibraryById(id).map(Library::toDtoResponse)
+    override fun getLibraryById(id: ObjectId): Mono<Library> =
+        libraryRepository.getLibraryById(id)
             .switchIfEmpty { Mono.error(LibraryIsMissingException("library with id $id is missing")) }
 }

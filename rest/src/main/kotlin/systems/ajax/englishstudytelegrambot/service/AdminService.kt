@@ -1,15 +1,15 @@
 package systems.ajax.englishstudytelegrambot.service
 
 import reactor.core.publisher.Flux
-import systems.ajax.englishstudytelegrambot.dto.entity.LibraryDtoResponse
-import systems.ajax.englishstudytelegrambot.dto.entity.UserDtoResponse
-import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
+import systems.ajax.englishstudytelegrambot.entity.Library
+import systems.ajax.englishstudytelegrambot.entity.User
+import systems.ajax.englishstudytelegrambot.entity.Word
 
 interface AdminService {
 
-    fun getAllUsers(): Flux<UserDtoResponse>
+    fun getAllUsers(): Flux<User>
 
-    fun getAllLibraries(): Flux<LibraryDtoResponse>
+    fun getAllLibraries(): Flux<Library>
 
-    fun getAllWords(): Flux<WordDtoResponse>
+    fun getAllWords(): Flux<Word>
 }

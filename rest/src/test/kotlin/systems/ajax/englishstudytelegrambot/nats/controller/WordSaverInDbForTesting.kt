@@ -5,7 +5,6 @@ import systems.ajax.englishstudytelegrambot.entity.AdditionalInfoAboutWord
 import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 
-
 object WordSaverInDbForTesting {
     fun WordRepository.saveWordForTesting(
         libraryId: ObjectId,
@@ -26,5 +25,4 @@ object WordSaverInDbForTesting {
     )
 
     private fun createEmptyAdditionalInfoAboutWord() = AdditionalInfoAboutWord("", "", "", "")
-
 }

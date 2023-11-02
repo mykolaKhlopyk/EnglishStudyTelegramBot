@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import reactor.core.publisher.Mono
 import systems.ajax.englishstudytelegrambot.annotation.LogMethodsByRequiredAnnotations
 import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
+import systems.ajax.englishstudytelegrambot.dto.entity.toDtoResponse
 import systems.ajax.englishstudytelegrambot.dto.request.CreateWordDtoRequest
+import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.service.WordService
 
 @RestController
@@ -29,26 +31,29 @@ class WordController(
         @RequestHeader("telegramUserId") telegramUserId: String,
         @RequestHeader("wordSpelling") wordSpelling: String
     ): Mono<WordDtoResponse> =
-        wordService.getFullInfoAboutWord(libraryName, telegramUserId, wordSpelling)
+        wordService.getFullInfoAboutWord(libraryName, telegramUserId, wordSpelling).map(Word::toDtoResponse)
 
     @PostMapping("/{libraryName}")
     suspend fun saveWordInLibrary(
         @PathVariable("libraryName") libraryName: String,
         @RequestHeader("telegramUserId") telegramUserId: String,
         @RequestBody createWordDtoRequest: CreateWordDtoRequest
-    ): Mono<WordDtoResponse> = wordService.saveNewWord(libraryName, telegramUserId, createWordDtoRequest)
+    ): Mono<WordDtoResponse> =
+        wordService.saveNewWord(libraryName, telegramUserId, createWordDtoRequest).map(Word::toDtoResponse)
 
     @PatchMapping("/{libraryName}")
     fun updateWordTranslateInLibrary(
         @PathVariable("libraryName") libraryName: String,
         @RequestHeader("telegramUserId") telegramUserId: String,
         @RequestBody createWordDtoRequest: CreateWordDtoRequest
-    ): Mono<WordDtoResponse> = wordService.updateWordTranslate(libraryName, telegramUserId, createWordDtoRequest)
+    ): Mono<WordDtoResponse> =
+        wordService.updateWordTranslate(libraryName, telegramUserId, createWordDtoRequest).map(Word::toDtoResponse)
 
     @DeleteMapping("/{libraryName}")
     fun deleteWordFromLibrary(
         @PathVariable("libraryName") libraryName: String,
         @RequestHeader("telegramUserId") telegramUserId: String,
         @RequestHeader("wordSpelling") wordSpelling: String
-    ): Mono<WordDtoResponse> = wordService.deleteWord(libraryName, telegramUserId, wordSpelling)
+    ): Mono<WordDtoResponse> =
+        wordService.deleteWord(libraryName, telegramUserId, wordSpelling).map(Word::toDtoResponse)
 }

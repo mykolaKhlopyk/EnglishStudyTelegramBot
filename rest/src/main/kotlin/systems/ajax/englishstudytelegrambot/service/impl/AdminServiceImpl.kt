@@ -22,12 +22,12 @@ class AdminServiceImpl(
     @Qualifier("wordRepositoryImpl") val wordRepository: WordRepository
 ) : AdminService {
 
-    override fun getAllUsers(): Flux<UserDtoResponse> =
-        userRepository.getAllUsers().map(User::toDtoResponse)
+    override fun getAllUsers(): Flux<User> =
+        userRepository.getAllUsers()
 
-    override fun getAllLibraries(): Flux<LibraryDtoResponse> =
-        libraryRepository.getAllLibraries().map(Library::toDtoResponse)
+    override fun getAllLibraries(): Flux<Library> =
+        libraryRepository.getAllLibraries()
 
-    override fun getAllWords(): Flux<WordDtoResponse> =
-        wordRepository.getAllWords().map(Word::toDtoResponse)
+    override fun getAllWords(): Flux<Word> =
+        wordRepository.getAllWords()
 }
