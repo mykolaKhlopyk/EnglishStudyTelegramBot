@@ -12,6 +12,7 @@ import WordSaverInMongoDbForTesting.saveWordForTesting
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.springframework.beans.factory.annotation.Qualifier
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
@@ -27,6 +28,7 @@ class DeleteLibraryNatsControllerTest {
     private lateinit var libraryRepository: LibraryRepository
 
     @Autowired
+    @Qualifier("wordRepositoryImpl")
     private lateinit var wordRepository: WordRepository
 
     @Test

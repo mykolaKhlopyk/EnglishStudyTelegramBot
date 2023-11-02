@@ -10,6 +10,7 @@ import LibrarySaverInMongoDbForTesting.saveLibraryForTesting
 import WordSaverInMongoDbForTesting.saveWordForTesting
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.springframework.beans.factory.annotation.Qualifier
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import systems.ajax.response_request.library.GetAllWordsFromLibrary
@@ -24,6 +25,7 @@ class GetAllWordsFromLibraryNatsControllerTest {
     private lateinit var libraryRepository: LibraryRepository
 
     @Autowired
+    @Qualifier("wordRepositoryImpl")
     private lateinit var wordRepository: WordRepository
 
     @Test
