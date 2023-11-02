@@ -1,15 +1,18 @@
 package systems.ajax.englishstudytelegrambot.nats.controller.library
 
 import io.nats.client.Message
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import systems.ajax.NatsSubject
 import systems.ajax.englishstudytelegrambot.entity.Library
 import systems.ajax.englishstudytelegrambot.nats.NatsRequestFactory
-import systems.ajax.englishstudytelegrambot.nats.controller.LibrarySaverInDbForTesting.saveLibraryForTesting
-import systems.ajax.englishstudytelegrambot.nats.controller.WordSaverInDbForTesting.saveWordForTesting
+import LibrarySaverInMongoDbForTesting.saveLibraryForTesting
+import WordSaverInMongoDbForTesting.saveWordForTesting
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.springframework.beans.factory.annotation.Qualifier
 import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
@@ -25,6 +28,7 @@ class DeleteLibraryNatsControllerTest {
     private lateinit var libraryRepository: LibraryRepository
 
     @Autowired
+    @Qualifier("wordRepositoryImpl")
     private lateinit var wordRepository: WordRepository
 
     @Test
@@ -59,9 +63,9 @@ class DeleteLibraryNatsControllerTest {
         )
 
         assertTrue(libraryRepository.getLibraryById(libraryForDeleting.id).block() == null)
-        assertTrue(libraryRepository.getAllWordsFromLibrary(libraryForDeleting.id).collectList().block()!!.isEmpty())
+        assertTrue(wordRepository.getAllWordsFromLibrary(libraryForDeleting.id).collectList().block()!!.isEmpty())
 
         assertTrue(libraryRepository.getLibraryById(libraryForSaving.id).block() != null)
-        assertFalse(libraryRepository.getAllWordsFromLibrary(libraryForSaving.id).collectList().block()!!.isEmpty())
+        assertFalse(wordRepository.getAllWordsFromLibrary(libraryForSaving.id).collectList().block()!!.isEmpty())
     }
 }
