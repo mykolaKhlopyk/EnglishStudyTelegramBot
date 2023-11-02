@@ -36,13 +36,7 @@ class WordCashableRepositoryImpl(
     override fun isWordBelongsToLibraryByWordId(wordId: ObjectId, libraryId: ObjectId): Mono<Boolean> =
         getWord(wordId)
             .map { it.libraryId == libraryId }
-            .flatMap {
-                if (it) {
-                    it.toMono()
-                } else {
-                    Mono.empty()
-                }
-            }
+            .filter{it}
             .switchIfEmpty {
                 wordRepository.isWordBelongsToLibraryByWordId(wordId, libraryId)
             }
@@ -52,9 +46,6 @@ class WordCashableRepositoryImpl(
 
     override fun getWord(wordId: ObjectId): Mono<Word> =
         redisTemplate.opsForValue().get(wordId.createKeyFindWordById())
-            .doOnNext {
-                println(it)
-            }
             .switchIfEmpty {
                 wordRepository.getWord(wordId).flatMap {
                     redisTemplate.opsForValue().set(it.createKeyFindWordById(), it).thenReturn(it)
