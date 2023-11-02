@@ -6,13 +6,10 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import reactor.kotlin.test.test
-import reactor.test.StepVerifier
 import systems.ajax.NatsSubject
-import systems.ajax.englishstudytelegrambot.dto.entity.toDtoResponse
 import systems.ajax.englishstudytelegrambot.nats.NatsRequestFactory
-import systems.ajax.englishstudytelegrambot.nats.controller.LibrarySaverInDbForTesting.saveLibraryForTesting
+import LibrarySaverInMongoDbForTesting.saveLibraryForTesting
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
-import systems.ajax.englishstudytelegrambot.repository.UserRepository
 import systems.ajax.response_request.admin.GetAllLibrariesRequest
 import systems.ajax.response_request.admin.GetAllLibrariesResponse
 
@@ -26,7 +23,7 @@ class GetAllLibrariesNatsControllerTest {
     private lateinit var natsRequestFactory: NatsRequestFactory
 
     @Test
-    fun testGetAllLibrariesNatsController() {
+    fun `should return all libraries`() {
         // GIVEN
         val nanoTime = System.nanoTime().toString()
         val libraryName1 = "$nanoTime libraryName1"
@@ -55,5 +52,4 @@ class GetAllLibrariesNatsControllerTest {
             .expectNext(library2)
             .verifyComplete()
     }
-
 }

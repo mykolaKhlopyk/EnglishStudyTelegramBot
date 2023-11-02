@@ -1,3 +1,10 @@
 spring:
   config:
-    import: classpath:mongodb/mongodb.yml, classpath:wordnik/wordnik.yml, classpath:nats/nats.yml
+    import: classpath:mongodb/mongodb.yml, classpath:wordnik/wordnik.yml
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+nats:
+  serverPath: nats://localhost:4222

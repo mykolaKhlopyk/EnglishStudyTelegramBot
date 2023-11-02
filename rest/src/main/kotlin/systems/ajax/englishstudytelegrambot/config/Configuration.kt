@@ -18,8 +18,4 @@ class Configuration {
     fun webClient(builder: Builder, wordnikProperties: WordnikProperties): WebClient = builder
         .baseUrl(wordnikProperties.baseUrl)
         .build()
-
-    @Bean
-    fun natsConnection(natsProperties: NatsProperties): Connection =
-        Nats.connect(natsProperties.serverPath)
 }

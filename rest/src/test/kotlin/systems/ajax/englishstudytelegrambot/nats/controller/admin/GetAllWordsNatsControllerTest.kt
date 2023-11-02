@@ -1,15 +1,17 @@
 package systems.ajax.englishstudytelegrambot.nats.controller.admin
 
 import io.nats.client.Message
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import reactor.kotlin.test.test
 import systems.ajax.NatsSubject
 import systems.ajax.englishstudytelegrambot.nats.NatsRequestFactory
-import systems.ajax.englishstudytelegrambot.nats.controller.LibrarySaverInDbForTesting.saveLibraryForTesting
-import systems.ajax.englishstudytelegrambot.nats.controller.WordSaverInDbForTesting.saveWordForTesting
+import LibrarySaverInMongoDbForTesting.saveLibraryForTesting
+import WordSaverInMongoDbForTesting.saveWordForTesting
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.springframework.beans.factory.annotation.Qualifier
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import systems.ajax.response_request.admin.GetAllWordsRequest
@@ -25,10 +27,11 @@ class GetAllWordsNatsControllerTest {
     private lateinit var libraryRepository: LibraryRepository
 
     @Autowired
+    @Qualifier("wordRepositoryImpl")
     private lateinit var wordRepository: WordRepository
 
     @Test
-    fun testGetAllWordsNatsController() {
+    fun `should return all words`() {
         // GIVEN
         val nanoTime = System.nanoTime().toString()
         val libraryName1 = "$nanoTime libraryName1"
@@ -50,6 +53,9 @@ class GetAllWordsNatsControllerTest {
                 GetAllWordsRequest.getDefaultInstance().toByteArray()
             )
 
+        println("time "+nanoTime)
+        println("size "+ GetAllWordsResponse.parser().parseFrom(message.data).success.wordsList.size)
+
         // THEN
         val words = GetAllWordsResponse.parser().parseFrom(message.data).success.wordsList
             .filter { it.spelling.contains(nanoTime) }
@@ -59,5 +65,9 @@ class GetAllWordsNatsControllerTest {
             .expectNext(word2)
             .expectNext(word3)
             .verifyComplete()
+    }
+
+    companion object {
+        val log = LoggerFactory.getLogger(this::class.java)
     }
 }

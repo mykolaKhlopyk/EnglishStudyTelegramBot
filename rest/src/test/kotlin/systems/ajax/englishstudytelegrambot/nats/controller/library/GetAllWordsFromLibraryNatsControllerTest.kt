@@ -1,14 +1,16 @@
 package systems.ajax.englishstudytelegrambot.nats.controller.library
 
 import io.nats.client.Message
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import systems.ajax.NatsSubject
 import systems.ajax.englishstudytelegrambot.nats.NatsRequestFactory
-import systems.ajax.englishstudytelegrambot.nats.controller.LibrarySaverInDbForTesting.saveLibraryForTesting
-import systems.ajax.englishstudytelegrambot.nats.controller.WordSaverInDbForTesting.saveWordForTesting
+import LibrarySaverInMongoDbForTesting.saveLibraryForTesting
+import WordSaverInMongoDbForTesting.saveWordForTesting
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.springframework.beans.factory.annotation.Qualifier
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import systems.ajax.response_request.library.GetAllWordsFromLibrary
@@ -23,6 +25,7 @@ class GetAllWordsFromLibraryNatsControllerTest {
     private lateinit var libraryRepository: LibraryRepository
 
     @Autowired
+    @Qualifier("wordRepositoryImpl")
     private lateinit var wordRepository: WordRepository
 
     @Test
@@ -49,9 +52,8 @@ class GetAllWordsFromLibraryNatsControllerTest {
         val wordsFromLibrary =
             GetAllWordsFromLibrary.GetAllWordsFromLibraryResponse.parser().parseFrom(message.data).success.wordsList
         assertEquals(2, wordsFromLibrary.size)
-        assertTrue(libraryRepository.getAllWordsFromLibrary(library.id).collectList().block()!!.let {
+        assertTrue(wordRepository.getAllWordsFromLibrary(library.id).collectList().block()!!.let {
             it.size == 2 && it.containsAll(listOf(word1, word2))
         })
-
     }
 }

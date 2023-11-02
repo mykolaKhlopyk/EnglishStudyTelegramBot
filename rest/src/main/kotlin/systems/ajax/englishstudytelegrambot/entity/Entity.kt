@@ -1,5 +1,8 @@
 package systems.ajax.englishstudytelegrambot.entity
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
+import kotlinx.serialization.Serializable
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.CompoundIndex
@@ -22,13 +25,17 @@ data class Library(
 @Document(value = "words")
 @CompoundIndex(name = "libraryId_spelling", def = "{'libraryId' : 1, 'spelling': 1}", unique = true)
 data class Word(
-    @Id val id: ObjectId = ObjectId(),
+    @Id
+    @JsonSerialize(using = ToStringSerializer::class)   // TODO add separate model for Redis
+    val id: ObjectId = ObjectId(),
     val spelling: String,
     val translate: String,
+    @JsonSerialize(using = ToStringSerializer::class)   // TODO add separate model for Redis
     val libraryId: ObjectId,
     val additionalInfoAboutWord: AdditionalInfoAboutWord
 )
 
+@Serializable
 data class AdditionalInfoAboutWord(
     val linkToAudio: String,
     val definitionOfWord: String,
