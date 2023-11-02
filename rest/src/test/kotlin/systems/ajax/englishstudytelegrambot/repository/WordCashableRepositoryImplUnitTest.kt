@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import reactor.kotlin.test.test
 import systems.ajax.englishstudytelegrambot.entity.Word
+import systems.ajax.englishstudytelegrambot.repository.impl.WordCashableRepositoryImpl
 
 @ExtendWith(MockKExtension::class)
 class WordCashableRepositoryImplUnitTest {

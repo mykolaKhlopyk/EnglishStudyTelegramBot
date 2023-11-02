@@ -1,7 +1,8 @@
-package systems.ajax.englishstudytelegrambot.repository
+package systems.ajax.englishstudytelegrambot.repository.impl
 
 import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
@@ -9,47 +10,14 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
 import systems.ajax.englishstudytelegrambot.entity.Word
-
-@Suppress("TooManyFunctions")
-interface WordCashableRepository {
-
-    fun saveNewWord(word: Word): Mono<Word>
-
-    fun updateWordTranslating(wordId: ObjectId, newWordTranslate: String): Mono<Word>
-
-    fun deleteWord(wordId: ObjectId): Mono<Word>
-
-    fun isWordBelongsToLibraryByWordId(wordId: ObjectId, libraryId: ObjectId): Mono<Boolean>
-
-    fun isWordBelongsToLibrary(wordSpelling: String, libraryId: ObjectId): Mono<Boolean>
-
-    fun getWord(wordId: ObjectId): Mono<Word>
-
-    fun getWordIdBySpellingAndLibraryId(wordSpelling: String, libraryId: ObjectId): Mono<ObjectId>
-
-    fun getAllWords(): Flux<Word>
-
-    fun getWordByLibraryNameTelegramUserIdWordSpelling(
-        libraryName: String,
-        telegramUserId: String,
-        wordSpelling: String
-    ): Mono<Word>
-
-    fun getWordIdByLibraryNameTelegramUserIdWordSpelling(
-        libraryName: String,
-        telegramUserId: String,
-        wordSpelling: String
-    ): Mono<ObjectId>
-
-    fun getAllWordsFromLibrary(libraryId: ObjectId): Flux<Word>
-}
+import systems.ajax.englishstudytelegrambot.repository.WordRepository
 
 @Repository
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions" )
 class WordCashableRepositoryImpl(
     val redisTemplate: ReactiveRedisTemplate<String, Word>,
-    val wordRepository: WordRepository
-) : WordCashableRepository {
+    @Qualifier("wordRepositoryImpl") val wordRepository: WordRepository
+) : WordRepository {
 
     override fun saveNewWord(word: Word): Mono<Word> =
         wordRepository.saveNewWord(word)

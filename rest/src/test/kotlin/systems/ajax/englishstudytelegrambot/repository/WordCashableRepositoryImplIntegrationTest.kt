@@ -12,6 +12,8 @@ import reactor.kotlin.test.test
 import systems.ajax.englishstudytelegrambot.entity.Word
 import LibrarySaverInMongoDbForTesting.saveLibraryForTesting
 import WordFactory
+import org.springframework.beans.factory.annotation.Qualifier
+import systems.ajax.englishstudytelegrambot.repository.impl.WordCashableRepositoryImpl
 
 @SpringBootTest
 class WordCashableRepositoryImplIntegrationTest {
@@ -26,7 +28,8 @@ class WordCashableRepositoryImplIntegrationTest {
     lateinit var mongoTemplate: ReactiveMongoTemplate
 
     @Autowired
-    lateinit var wordCashableRepository: WordCashableRepository
+    @Qualifier("wordCashableRepositoryImpl")
+    lateinit var wordRepository: WordRepository
 
     @Test
     fun `should return word from cash when saving is done`() {
@@ -42,7 +45,7 @@ class WordCashableRepositoryImplIntegrationTest {
         }
 
         // WHEN // THEN
-        wordCashableRepository.saveNewWord(word)
+        wordRepository.saveNewWord(word)
             .test()
             .expectNext(word)
             .verifyComplete()
@@ -79,9 +82,9 @@ class WordCashableRepositoryImplIntegrationTest {
         }
 
         // WHEN THEN
-        wordCashableRepository.saveNewWord(word).block()
+        wordRepository.saveNewWord(word).block()
         val firstRequestToRedis = redisTemplate.opsForValue().get(key).block()
-        wordCashableRepository.getWordByLibraryNameTelegramUserIdWordSpelling(
+        wordRepository.getWordByLibraryNameTelegramUserIdWordSpelling(
             library.name,
             library.ownerId,
             word.spelling
