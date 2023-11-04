@@ -8,3 +8,7 @@ spring:
 
 nats:
   serverPath: nats://localhost:4222
+
+grpc:
+  server:
+    port: 9090
