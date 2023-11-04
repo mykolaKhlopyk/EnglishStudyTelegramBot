@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import reactor.kotlin.test.test
 import systems.ajax.NatsSubject
+import systems.ajax.englishstudytelegrambot.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.nats.NatsRequestFactory
-import systems.ajax.englishstudytelegrambot.nats.mapper.toLibraryResponse
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.entity.LibraryOuterClass
 import systems.ajax.response_request.library.CreateNewLibrary

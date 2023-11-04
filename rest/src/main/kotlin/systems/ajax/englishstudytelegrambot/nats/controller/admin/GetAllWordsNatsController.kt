@@ -5,11 +5,10 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import systems.ajax.NatsSubject.Admin.GET_ALL_WORDS_SUBJECT
-import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
+import systems.ajax.englishstudytelegrambot.mapper.toWordResponse
 import systems.ajax.englishstudytelegrambot.entity.Word as MongoWord
 import systems.ajax.entity.WordOuterClass.Word
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
-import systems.ajax.englishstudytelegrambot.nats.mapper.toWordResponse
 import systems.ajax.englishstudytelegrambot.service.AdminService
 import systems.ajax.response_request.admin.GetAllWordsRequest
 import systems.ajax.response_request.admin.GetAllWordsResponse
