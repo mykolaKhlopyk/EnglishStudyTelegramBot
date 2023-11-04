@@ -1,11 +1,12 @@
-package systems.ajax.englishstudytelegrambot.nats.mapper
+package systems.ajax.englishstudytelegrambot.mapper
 
+import systems.ajax.englishstudytelegrambot.entity.AdditionalInfoAboutWord as MongoAdditionalInfoAboutWord
 import systems.ajax.englishstudytelegrambot.entity.Library as MongoLibrary
 import systems.ajax.englishstudytelegrambot.entity.Word as MongoWord
-import systems.ajax.englishstudytelegrambot.entity.AdditionalInfoAboutWord as MongoAdditionalInfoAboutWord
 import systems.ajax.entity.LibraryOuterClass.Library
 import systems.ajax.entity.WordOuterClass.AdditionalInfoAboutWord
 import systems.ajax.entity.WordOuterClass.Word
+
 
 fun MongoWord.toWordResponse(): Word =
     Word.newBuilder()
