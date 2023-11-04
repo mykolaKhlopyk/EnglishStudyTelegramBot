@@ -5,10 +5,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.util.function.component1
 import reactor.kotlin.core.util.function.component2
-import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
-import systems.ajax.englishstudytelegrambot.dto.entity.toDtoResponse
 import systems.ajax.englishstudytelegrambot.dto.request.CreateWordDtoRequest
 import systems.ajax.englishstudytelegrambot.entity.AdditionalInfoAboutWord
 import systems.ajax.englishstudytelegrambot.entity.Word
@@ -50,11 +49,11 @@ class WordServiceImpl(
             telegramUserId,
             createWordDtoRequest.spelling
         )
-        .switchIfEmpty(
+        .switchIfEmpty {
             findLibraryId(libraryName, telegramUserId).handle { _, sink ->
                 sink.error(WordIsMissingException("word is missing in library"))
             }
-        )
+        }
         .flatMap { word -> wordRepository.updateWordTranslating(word.id, createWordDtoRequest.translate) }
 
     override fun deleteWord(
@@ -83,22 +82,22 @@ class WordServiceImpl(
         wordSpelling: String
     ): Mono<Word> = wordRepository
         .getWordByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling)
-        .switchIfEmpty(
+        .switchIfEmpty {
             findLibraryId(libraryName, telegramUserId)
                 .handle { _, sink ->
                     sink.error(WordIsMissingException("spelling = $wordSpelling"))
                 }
-        )
+        }
 
     private fun findLibraryIdWithoutCertainSpelling(
         libraryName: String,
         telegramUserId: String,
         spelling: String
     ): Mono<ObjectId> = findLibraryId(libraryName, telegramUserId)
-        .doOnNext{ log.info("library id = {}", it)}
+        .doOnNext { log.info("library id = {}", it) }
         // .doOnNext{ log.info("is word not belongs = {}", isWordNotBelongsToLibrary(it, spelling).block()!!)}
-        .filterWhen {
-                libraryId -> isWordNotBelongsToLibrary(libraryId, spelling)
+        .filterWhen { libraryId ->
+            isWordNotBelongsToLibrary(libraryId, spelling)
         }
         .switchIfEmpty(
             Mono.error(WordAlreadyPresentInLibraryException("word $spelling is present in library $libraryName"))
