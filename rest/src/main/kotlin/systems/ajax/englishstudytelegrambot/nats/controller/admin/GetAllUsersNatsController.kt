@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import systems.ajax.NatsSubject.Admin.GET_ALL_USERS_SUBJECT
-import systems.ajax.englishstudytelegrambot.dto.entity.UserDtoResponse
+import systems.ajax.englishstudytelegrambot.entity.User
 import systems.ajax.englishstudytelegrambot.nats.controller.NatsController
 import systems.ajax.englishstudytelegrambot.service.AdminService
 import systems.ajax.response_request.admin.GetAllUsersRequest
@@ -26,7 +26,7 @@ class GetAllUsersNatsController(
             .onErrorResume { createFailureResponse(it).toMono() }
 
     private fun getTelegramUserIds(): Mono<List<String>> =
-        adminService.getAllUsers().map(UserDtoResponse::telegramUserId).collectList()
+        adminService.getAllUsers().map(User::telegramUserId).collectList()
 
     private fun createSuccessResponse(telegramUserIds: List<String>) =
         GetAllUsersResponse.newBuilder().apply {

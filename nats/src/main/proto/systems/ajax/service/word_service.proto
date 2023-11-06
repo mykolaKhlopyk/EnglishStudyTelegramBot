@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+package systems.ajax.service;
+
+import "systems/ajax/entity/word.proto";
+
+option java_multiple_files = true;
+
+service WordService{
+
+  rpc saveNewWord(SaveNewWordRequest) returns (SaveNewWordResponse);
+
+  rpc updateWordTranslate(UpdateWordTranslateRequest) returns (UpdateWordTranslateResponse);
+
+  rpc deleteWord(DeleteWordRequest) returns (DeleteWordResponse);
+
+  rpc getFullInfoAboutWord(GetFullInfoAboutWordRequest) returns (GetFullInfoAboutWordResponse);
+}
+
+message SaveNewWordRequest{
+  string library_name = 1;
+  string telegram_user_id = 2;
+  CreateWordDtoRequest create_word_dto_request = 3;
+}
+
+message SaveNewWordResponse{
+
+  oneof response{
+    Success success = 1;
+    Failure failure = 2;
+  }
+
+  message Success {
+    entity.Word word = 1;
+  }
+
+  message Failure{
+    string error_massage = 1;
+  }
+}
+
+message UpdateWordTranslateRequest{
+  string library_name = 1;
+  string telegram_user_id = 2;
+  CreateWordDtoRequest create_word_dto_request = 3;
+}
+
+message UpdateWordTranslateResponse{
+
+  oneof response{
+    Success success = 1;
+    Failure failure = 2;
+  }
+
+  message Success {
+    entity.Word word = 1;
+  }
+
+  message Failure{
+    string error_massage = 1;
+  }
+}
+
+message DeleteWordRequest{
+  string library_name = 1;
+  string telegram_user_id = 2;
+  string word_spelling = 3;
+}
+
+message DeleteWordResponse{
+
+  oneof response{
+    Success success = 1;
+    Failure failure = 2;
+  }
+
+  message Success {
+    entity.Word word = 1;
+  }
+
+  message Failure{
+    string error_massage = 1;
+  }
+}
+
+message GetFullInfoAboutWordRequest{
+  string library_name = 1;
+  string telegram_user_id = 2;
+  string word_spelling = 3;
+}
+
+message GetFullInfoAboutWordResponse{
+
+  oneof response{
+    Success success = 1;
+    Failure failure = 2;
+  }
+
+  message Success {
+    entity.Word word = 1;
+  }
+
+  message Failure{
+    string error_massage = 1;
+  }
+}
+
+message CreateWordDtoRequest{
+  string spelling = 1;
+  string translate = 2;
+}

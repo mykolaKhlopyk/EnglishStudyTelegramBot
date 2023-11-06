@@ -11,6 +11,9 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import systems.ajax.englishstudytelegrambot.dto.entity.LibraryDtoResponse
 import systems.ajax.englishstudytelegrambot.dto.entity.WordDtoResponse
+import systems.ajax.englishstudytelegrambot.dto.entity.toDtoResponse
+import systems.ajax.englishstudytelegrambot.entity.Library
+import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.service.LibraryService
 
 @RestController
@@ -24,19 +27,19 @@ class LibraryController(
         @PathVariable("libraryName") libraryName: String,
         @RequestHeader("telegramUserId") telegramUserId: String
     ): Flux<WordDtoResponse> =
-        libraryService.getAllWordsFromLibrary(libraryName, telegramUserId)
+        libraryService.getAllWordsFromLibrary(libraryName, telegramUserId).map(Word::toDtoResponse)
 
     @PostMapping("/{nameOfNewLibrary}")
     fun createLibrary(
         @PathVariable("nameOfNewLibrary") nameOfNewLibrary: String,
         @RequestHeader("telegramUserId") telegramUserId: String
     ): Mono<LibraryDtoResponse> =
-        libraryService.createNewLibrary(nameOfNewLibrary, telegramUserId)
+        libraryService.createNewLibrary(nameOfNewLibrary, telegramUserId).map(Library::toDtoResponse)
 
     @DeleteMapping("/{nameOfLibraryForDeleting}")
     fun deleteLibrary(
         @PathVariable("nameOfLibraryForDeleting") nameOfLibraryForDeleting: String,
         @RequestHeader("telegramUserId") telegramUserId: String
     ): Mono<LibraryDtoResponse> =
-        libraryService.deleteLibrary(nameOfLibraryForDeleting, telegramUserId)
+        libraryService.deleteLibrary(nameOfLibraryForDeleting, telegramUserId).map(Library::toDtoResponse)
 }
