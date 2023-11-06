@@ -1,7 +1,6 @@
 package systems.ajax.englishstudytelegrambot.grpc
 
 import net.devh.boot.grpc.server.service.GrpcService
-import org.slf4j.LoggerFactory
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import systems.ajax.englishstudytelegrambot.mapper.toWordResponse
@@ -36,13 +35,6 @@ class GrpcWordService(
             }.build().toMono()
         }
 
-    override fun saveNewWord(request: SaveNewWordRequest): Mono<SaveNewWordResponse> =
-        saveNewWord(request.toMono())
-
-    companion object {
-        val log = LoggerFactory.getLogger(this::class.java)
-    }
-
     override fun updateWordTranslate(request: Mono<UpdateWordTranslateRequest>): Mono<UpdateWordTranslateResponse> =
         request.flatMap {
             wordService.updateWordTranslate(it.libraryName, it.telegramUserId, it.createWordDtoRequest.toServiceDto())
@@ -55,9 +47,6 @@ class GrpcWordService(
                 failureBuilder.setErrorMassage(it.message)
             }.build().toMono()
         }
-
-    override fun updateWordTranslate(request: UpdateWordTranslateRequest): Mono<UpdateWordTranslateResponse> =
-        updateWordTranslate(request.toMono())
 
     override fun deleteWord(request: Mono<DeleteWordRequest>): Mono<DeleteWordResponse> =
         request.flatMap {
@@ -72,9 +61,6 @@ class GrpcWordService(
             }.build().toMono()
         }
 
-    override fun deleteWord(request: DeleteWordRequest?): Mono<DeleteWordResponse> =
-        deleteWord(request.toMono())
-
     override fun getFullInfoAboutWord(request: Mono<GetFullInfoAboutWordRequest>): Mono<GetFullInfoAboutWordResponse> =
         request.flatMap {
             wordService.getFullInfoAboutWord(it.libraryName, it.telegramUserId, it.wordSpelling)
@@ -87,9 +73,6 @@ class GrpcWordService(
                 failureBuilder.setErrorMassage(it.message)
             }.build().toMono()
         }
-
-    override fun getFullInfoAboutWord(request: GetFullInfoAboutWordRequest): Mono<GetFullInfoAboutWordResponse> =
-        getFullInfoAboutWord(request.toMono())
 
     private fun CreateWordDtoRequest.toServiceDto(): ServiceCreateWordDtoRequest =
         ServiceCreateWordDtoRequest(spelling, translate)
