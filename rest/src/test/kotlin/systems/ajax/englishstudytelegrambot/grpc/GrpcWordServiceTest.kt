@@ -7,7 +7,6 @@ import org.bson.types.ObjectId
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
@@ -31,9 +30,7 @@ import systems.ajax.service.UpdateWordTranslateRequest
 import systems.ajax.service.UpdateWordTranslateResponse
 import systems.ajax.service.UpdateWordTranslateResponse.Success as UpdateWordSuccess
 
-
 @SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GrpcWordServiceTest {
 
     @Autowired
