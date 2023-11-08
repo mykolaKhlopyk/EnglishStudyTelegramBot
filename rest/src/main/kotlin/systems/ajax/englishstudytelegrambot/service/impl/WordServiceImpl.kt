@@ -22,7 +22,7 @@ import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import systems.ajax.englishstudytelegrambot.service.AdditionalInfoAboutWordService
 import systems.ajax.englishstudytelegrambot.service.WordService
-import systems.ajax.response_request.word.EventUpdateWordOuterClass.EventUpdateWord
+import systems.ajax.response_request.word.UpdateWordEventOuterClass.UpdateWordEvent
 
 
 @Service
@@ -30,8 +30,7 @@ class WordServiceImpl(
     @Qualifier("wordCashableRepositoryImpl") val wordRepository: WordRepository,
     val libraryRepository: LibraryRepository,
     val additionalInfoAboutWordService: AdditionalInfoAboutWordService,
-    val producer: Producer<String, EventUpdateWord>,
-    val template: KafkaTemplate<String, EventUpdateWord>
+    val producer: Producer<String, UpdateWordEvent>
 ) : WordService {
 
     override fun saveNewWord(
@@ -63,17 +62,7 @@ class WordServiceImpl(
         }
         .flatMap { word -> wordRepository.updateWordTranslating(word.id, createWordDtoRequest.translate) }
         .doOnSuccess {
-            producer.send(
-                ProducerRecord(
-                    KafkaTopics.UPDATED_WORD, it.libraryId.toHexString(),
-                    EventUpdateWord.newBuilder()
-                        .setLibraryName(libraryName)
-                        .setTelegramUserId(telegramUserId)
-                        .setWordSpelling(it.spelling)
-                        .setNewWordTranslate(it.translate)
-                        .build()
-                )
-            )
+            sendUpdateWordEventToKafka(it, libraryName, telegramUserId)
         }
 
     override fun deleteWord(
@@ -160,6 +149,25 @@ class WordServiceImpl(
         ).map {
             it.not()
         }
+
+
+    private fun sendUpdateWordEventToKafka(
+        word: Word,
+        libraryName: String,
+        telegramUserId: String
+    ) {
+        producer.send(
+            ProducerRecord(
+                KafkaTopics.UPDATED_WORD, word.libraryId.toHexString(),
+                UpdateWordEvent.newBuilder()
+                    .setLibraryName(libraryName)
+                    .setTelegramUserId(telegramUserId)
+                    .setWordSpelling(word.spelling)
+                    .setNewWordTranslate(word.translate)
+                    .build()
+            )
+        )
+    }
 
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)

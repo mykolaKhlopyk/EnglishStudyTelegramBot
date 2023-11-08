@@ -12,7 +12,7 @@ import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
-import systems.ajax.response_request.word.EventUpdateWordOuterClass.EventUpdateWord
+import systems.ajax.response_request.word.UpdateWordEventOuterClass.UpdateWordEvent
 
 
 @EnableKafka
@@ -25,13 +25,13 @@ class KafkaConsumerConfig(
 ) {
 
     @Bean
-    fun consumerFactory(): ConsumerFactory<String, EventUpdateWord> {
+    fun consumerFactory(): ConsumerFactory<String, UpdateWordEvent> {
         return DefaultKafkaConsumerFactory(getMapProperties())
     }
 
     @Bean
-    fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, EventUpdateWord> {
-        val factory = ConcurrentKafkaListenerContainerFactory<String, EventUpdateWord>()
+    fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, UpdateWordEvent> {
+        val factory = ConcurrentKafkaListenerContainerFactory<String, UpdateWordEvent>()
         factory.consumerFactory = consumerFactory()
         return factory
     }
@@ -44,6 +44,6 @@ class KafkaConsumerConfig(
             ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
             ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to KafkaProtobufDeserializer::class.java,
             KafkaProtobufDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG to schemaRegistryUrl,
-            KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE to EventUpdateWord::class.java
+            KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE to UpdateWordEvent::class.java
         )
 }

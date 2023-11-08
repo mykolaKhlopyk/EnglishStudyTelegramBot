@@ -19,6 +19,4 @@ object NatsSubject {
         const val CREATE_NEW_LIBRARY_SUBJECT = "$LIBRARY_PATH.create_new_library"
         const val DELETE_LIBRARY_SUBJECT = "$LIBRARY_PATH.delete_all_words_from_library"
     }
-
-
 }

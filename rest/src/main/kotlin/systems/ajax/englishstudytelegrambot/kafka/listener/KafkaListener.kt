@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
 import systems.ajax.englishstudytelegrambot.kafka.config.KafkaTopics
-import systems.ajax.response_request.word.EventUpdateWordOuterClass.EventUpdateWord
+import systems.ajax.response_request.word.UpdateWordEventOuterClass.UpdateWordEvent
 
 @Component
 class KafkaListener {
@@ -14,7 +14,7 @@ class KafkaListener {
         topics = [KafkaTopics.UPDATED_WORD],
         groupId = "group_id"
     )
-    fun listener(record: ConsumerRecord<String, EventUpdateWord>) {
+    fun listener(record: ConsumerRecord<String, UpdateWordEvent>) {
         val message = record.value()
         log.info("word with spelling '{}', was updated, new translate '{}'", message.wordSpelling, message.newWordTranslate)
     }
