@@ -17,6 +17,7 @@ import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.exception.LibraryIsMissingException
 import systems.ajax.englishstudytelegrambot.exception.WordAlreadyPresentInLibraryException
 import systems.ajax.englishstudytelegrambot.exception.WordIsMissingException
+import systems.ajax.englishstudytelegrambot.kafka.config.KafkaTopics
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import systems.ajax.englishstudytelegrambot.service.AdditionalInfoAboutWordService
@@ -29,7 +30,8 @@ class WordServiceImpl(
     @Qualifier("wordCashableRepositoryImpl") val wordRepository: WordRepository,
     val libraryRepository: LibraryRepository,
     val additionalInfoAboutWordService: AdditionalInfoAboutWordService,
-    val producer: Producer<String, EventUpdateWord>
+    val producer: Producer<String, EventUpdateWord>,
+    val template: KafkaTemplate<String, EventUpdateWord>
 ) : WordService {
 
     override fun saveNewWord(
@@ -62,7 +64,8 @@ class WordServiceImpl(
         .flatMap { word -> wordRepository.updateWordTranslating(word.id, createWordDtoRequest.translate) }
         .doOnSuccess {
             producer.send(
-                ProducerRecord<String, EventUpdateWord>("mytopic", "updated",
+                ProducerRecord(
+                    KafkaTopics.UPDATED_WORD, it.libraryId.toHexString(),
                     EventUpdateWord.newBuilder()
                         .setLibraryName(libraryName)
                         .setTelegramUserId(telegramUserId)
