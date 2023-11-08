@@ -11,6 +11,12 @@ plugins {
     kotlin("plugin.spring") version "1.9.0"
 }
 
+repositories{
+    maven {
+        url = uri("https://packages.confluent.io/maven/")
+    }
+}
+
 dependencies {
     testFixturesApi("org.mockito:mockito-core:3.5.13")
     testFixturesApi("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
@@ -19,6 +25,9 @@ dependencies {
     testRuntimeOnly ("org.junit.jupiter:junit-jupiter-engine:5.3.1")
 
     implementation(project(":nats"))
+
+    implementation("io.confluent:kafka-protobuf-serializer:7.5.1")
+    implementation("org.springframework.kafka:spring-kafka")
     implementation("io.projectreactor:reactor-core:3.5.11")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")

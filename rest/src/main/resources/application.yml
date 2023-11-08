@@ -5,6 +5,8 @@ spring:
     redis:
       port: 6379
       host: localhost
+  kafka:
+    bootstrap-servers: localhost:9092
 
 nats:
   serverPath: nats://localhost:4222
