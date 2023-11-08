@@ -7,6 +7,7 @@ spring:
       host: localhost
   kafka:
     bootstrap-servers: localhost:9092
+    schema-registry-url: http://localhost:8085
 
 nats:
   serverPath: nats://localhost:4222
