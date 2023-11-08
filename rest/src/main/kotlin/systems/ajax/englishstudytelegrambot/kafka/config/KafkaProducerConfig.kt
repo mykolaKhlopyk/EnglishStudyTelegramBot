@@ -17,10 +17,12 @@ import java.util.*
 
 
 @Configuration
-class KafkaProducerConfig {
-
+class KafkaProducerConfig(
     @Value("\${spring.kafka.bootstrap-servers}")
-    lateinit var bootstrapServers: String
+    val bootstrapServers: String,
+    @Value("\${spring.kafka.schema-registry-url}")
+    val schemaRegistryUrl: String
+) {
 
     @Bean
     fun producer(): Producer<String, EventUpdateWord> =
@@ -29,9 +31,9 @@ class KafkaProducerConfig {
     private fun getProperties() =
         Properties().apply {
             set(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
-            set(ConsumerConfig.GROUP_ID_CONFIG,"group_id")
-            set(KafkaProtobufSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8085")
+            set(ConsumerConfig.GROUP_ID_CONFIG, "group_id")
             set(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java)
             set(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaProtobufSerializer::class.java.name)
+            set(KafkaProtobufSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl)
         }
 }
