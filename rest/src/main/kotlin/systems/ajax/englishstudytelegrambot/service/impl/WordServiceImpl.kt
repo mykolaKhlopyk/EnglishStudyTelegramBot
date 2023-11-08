@@ -1,8 +1,11 @@
 package systems.ajax.englishstudytelegrambot.service.impl
 
+import org.apache.kafka.clients.producer.Producer
+import org.apache.kafka.clients.producer.ProducerRecord
 import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
@@ -18,13 +21,15 @@ import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import systems.ajax.englishstudytelegrambot.service.AdditionalInfoAboutWordService
 import systems.ajax.englishstudytelegrambot.service.WordService
+import systems.ajax.response_request.word.EventUpdateWordOuterClass.EventUpdateWord
 
 
 @Service
 class WordServiceImpl(
     @Qualifier("wordCashableRepositoryImpl") val wordRepository: WordRepository,
     val libraryRepository: LibraryRepository,
-    val additionalInfoAboutWordService: AdditionalInfoAboutWordService
+    val additionalInfoAboutWordService: AdditionalInfoAboutWordService,
+    val producer: Producer<String, EventUpdateWord>
 ) : WordService {
 
     override fun saveNewWord(
@@ -55,6 +60,18 @@ class WordServiceImpl(
             }
         }
         .flatMap { word -> wordRepository.updateWordTranslating(word.id, createWordDtoRequest.translate) }
+        .doOnSuccess {
+            producer.send(
+                ProducerRecord<String, EventUpdateWord>("mytopic", "updated",
+                    EventUpdateWord.newBuilder()
+                        .setLibraryName(libraryName)
+                        .setTelegramUserId(telegramUserId)
+                        .setWordSpelling(it.spelling)
+                        .setNewWordTranslate(it.translate)
+                        .build()
+                )
+            )
+        }
 
     override fun deleteWord(
         libraryName: String,
