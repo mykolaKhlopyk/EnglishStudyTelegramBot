@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package systems.ajax.response_request.word;
+
+import "systems/ajax/entity/word.proto";
+
+message EventUpdateWord{
+  string library_name = 1;
+  string telegram_user_id = 2;
+  string word_spelling = 3;
+  string new_word_translate = 4;
+}
