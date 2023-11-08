@@ -16,7 +16,11 @@ class KafkaListener {
     )
     fun listener(record: ConsumerRecord<String, UpdateWordEvent>) {
         val message = record.value()
-        log.info("word with spelling '{}', was updated, new translate '{}'", message.wordSpelling, message.newWordTranslate)
+        log.info(
+            "word with spelling '{}', was updated, new translate '{}'",
+            message.wordSpelling,
+            message.newWordTranslate
+        )
     }
 
     companion object {
