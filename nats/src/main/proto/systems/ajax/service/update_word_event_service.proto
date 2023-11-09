@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package systems.ajax.service;
+
+import "systems/ajax/event/word/update_word_event.proto";
+
+option java_multiple_files = true;
+
+service UpdateWordEventService{
+
+  rpc getUpdatesOfWordBySpelling(GetUpdatesOfWordBySpellingRequest) returns (stream event.word.UpdateWordEvent);
+}
+
+message GetUpdatesOfWordBySpellingRequest{
+  string spelling = 1;
+}
