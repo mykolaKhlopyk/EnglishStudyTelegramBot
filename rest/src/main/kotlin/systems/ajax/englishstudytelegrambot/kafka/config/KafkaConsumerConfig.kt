@@ -12,6 +12,8 @@ import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
+import reactor.kafka.receiver.KafkaReceiver
+import reactor.kafka.receiver.ReceiverOptions
 import systems.ajax.response_request.word.UpdateWordEventOuterClass.UpdateWordEvent
 
 
@@ -24,17 +26,12 @@ class KafkaConsumerConfig(
     val schemaRegistryUrl: String
 ) {
 
-    @Bean
-    fun consumerFactory(): ConsumerFactory<String, UpdateWordEvent> {
-        return DefaultKafkaConsumerFactory(getMapProperties())
-    }
+    fun receiverOptions(): ReceiverOptions<String, UpdateWordEvent> =
+        ReceiverOptions.create(getMapProperties())
 
     @Bean
-    fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, UpdateWordEvent> {
-        val factory = ConcurrentKafkaListenerContainerFactory<String, UpdateWordEvent>()
-        factory.consumerFactory = consumerFactory()
-        return factory
-    }
+    fun kafkaReceiverUpdatingWord(): KafkaReceiver<String, UpdateWordEvent> =
+        KafkaReceiver.create(receiverOptions().subscription(listOf(KafkaTopics.UPDATED_WORD)))
 
     private fun getMapProperties(): MutableMap<String, Any> =
         mutableMapOf(
