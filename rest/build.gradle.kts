@@ -43,6 +43,7 @@ dependencies {
     implementation("io.lettuce:lettuce-core:6.2.6.RELEASE")
     implementation("org.springframework.data:spring-data-redis:3.1.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    implementation("io.projectreactor.kafka:reactor-kafka:1.3.21")
 
     testImplementation("io.mockk:mockk:1.12.0")
     testImplementation("io.projectreactor:reactor-test:3.5.11")
