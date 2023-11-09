@@ -1,8 +1,11 @@
 package systems.ajax.englishstudytelegrambot.service.impl
 
+import org.apache.kafka.clients.producer.Producer
+import org.apache.kafka.clients.producer.ProducerRecord
 import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
@@ -14,17 +17,20 @@ import systems.ajax.englishstudytelegrambot.entity.Word
 import systems.ajax.englishstudytelegrambot.exception.LibraryIsMissingException
 import systems.ajax.englishstudytelegrambot.exception.WordAlreadyPresentInLibraryException
 import systems.ajax.englishstudytelegrambot.exception.WordIsMissingException
+import systems.ajax.englishstudytelegrambot.kafka.config.KafkaTopics
 import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import systems.ajax.englishstudytelegrambot.service.AdditionalInfoAboutWordService
 import systems.ajax.englishstudytelegrambot.service.WordService
+import systems.ajax.response_request.word.UpdateWordEventOuterClass.UpdateWordEvent
 
 
 @Service
 class WordServiceImpl(
     @Qualifier("wordCashableRepositoryImpl") val wordRepository: WordRepository,
     val libraryRepository: LibraryRepository,
-    val additionalInfoAboutWordService: AdditionalInfoAboutWordService
+    val additionalInfoAboutWordService: AdditionalInfoAboutWordService,
+    val producer: Producer<String, UpdateWordEvent>
 ) : WordService {
 
     override fun saveNewWord(
@@ -55,6 +61,9 @@ class WordServiceImpl(
             }
         }
         .flatMap { word -> wordRepository.updateWordTranslating(word.id, createWordDtoRequest.translate) }
+        .doOnSuccess {
+            sendUpdateWordEventToKafka(it, libraryName, telegramUserId)
+        }
 
     override fun deleteWord(
         libraryName: String,
@@ -140,6 +149,25 @@ class WordServiceImpl(
         ).map {
             it.not()
         }
+
+
+    private fun sendUpdateWordEventToKafka(
+        word: Word,
+        libraryName: String,
+        telegramUserId: String
+    ) {
+        producer.send(
+            ProducerRecord(
+                KafkaTopics.UPDATED_WORD, word.libraryId.toHexString(),
+                UpdateWordEvent.newBuilder()
+                    .setLibraryName(libraryName)
+                    .setTelegramUserId(telegramUserId)
+                    .setWordSpelling(word.spelling)
+                    .setNewWordTranslate(word.translate)
+                    .build()
+            )
+        )
+    }
 
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)

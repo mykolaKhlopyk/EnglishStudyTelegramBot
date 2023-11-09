@@ -21,6 +21,7 @@ allprojects {
         implementation("com.salesforce.servicelibs:reactive-grpc-common:1.2.4")
         implementation("com.salesforce.servicelibs:reactor-grpc-stub:1.2.4")
         implementation("io.projectreactor:reactor-core:3.5.11")
+        implementation("com.google.protobuf:protobuf-java:3.25.0")
         implementation("net.devh:grpc-spring-boot-starter:2.15.0.RELEASE")
         implementation("io.grpc:grpc-protobuf:1.59.0")
         implementation("io.grpc:grpc-stub:1.59.0")
