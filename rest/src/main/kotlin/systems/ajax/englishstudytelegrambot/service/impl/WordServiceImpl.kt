@@ -155,7 +155,7 @@ class WordServiceImpl(
         it: Word,
         libraryName: String,
         telegramUserId: String,
-    ): Mono<Word> = //TODO
+    ): Mono<Word> =
         sender.send(createRecord(it, libraryName, telegramUserId).toMono()).then(it.toMono())
 
     private fun createRecord(
