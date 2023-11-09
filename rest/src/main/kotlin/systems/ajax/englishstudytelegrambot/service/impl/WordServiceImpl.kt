@@ -1,6 +1,5 @@
 package systems.ajax.englishstudytelegrambot.service.impl
 
-import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
@@ -24,7 +23,7 @@ import systems.ajax.englishstudytelegrambot.repository.LibraryRepository
 import systems.ajax.englishstudytelegrambot.repository.WordRepository
 import systems.ajax.englishstudytelegrambot.service.AdditionalInfoAboutWordService
 import systems.ajax.englishstudytelegrambot.service.WordService
-import systems.ajax.response_request.word.UpdateWordEventOuterClass.UpdateWordEvent
+import systems.ajax.event.word.UpdateWordEventOuterClass.UpdateWordEvent
 
 
 @Service

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package systems.ajax.response_request.word;
+package systems.ajax.event.word;
 
 import "systems/ajax/entity/word.proto";
 

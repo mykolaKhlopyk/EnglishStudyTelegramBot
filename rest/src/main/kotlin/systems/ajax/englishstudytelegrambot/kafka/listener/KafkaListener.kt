@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
 import systems.ajax.englishstudytelegrambot.kafka.config.KafkaTopics
-import systems.ajax.response_request.word.UpdateWordEventOuterClass.UpdateWordEvent
+import systems.ajax.event.word.UpdateWordEventOuterClass.UpdateWordEvent
 
 @Component
 class KafkaListener {

@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.scheduler.Schedulers
 import reactor.kafka.receiver.KafkaReceiver
-import systems.ajax.response_request.word.UpdateWordEventOuterClass.UpdateWordEvent
+import systems.ajax.event.word.UpdateWordEventOuterClass.UpdateWordEvent
 
 @Component
 class UpdateWordEventReceiver(
