@@ -5,10 +5,12 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.kafka.sender.KafkaSender
+import reactor.kafka.sender.SenderRecord
 import reactor.kotlin.core.publisher.switchIfEmpty
+import reactor.kotlin.core.publisher.toMono
 import reactor.kotlin.core.util.function.component1
 import reactor.kotlin.core.util.function.component2
 import systems.ajax.englishstudytelegrambot.dto.request.CreateWordDtoRequest
@@ -30,13 +32,13 @@ class WordServiceImpl(
     @Qualifier("wordCashableRepositoryImpl") val wordRepository: WordRepository,
     val libraryRepository: LibraryRepository,
     val additionalInfoAboutWordService: AdditionalInfoAboutWordService,
-    val producer: Producer<String, UpdateWordEvent>
+    val sender: KafkaSender<String, UpdateWordEvent>
 ) : WordService {
 
     override fun saveNewWord(
         libraryName: String,
         telegramUserId: String,
-        createWordDtoRequest: CreateWordDtoRequest
+        createWordDtoRequest: CreateWordDtoRequest,
     ): Mono<Word> =
         Mono.zip(
             findLibraryIdWithoutCertainSpelling(libraryName, telegramUserId, createWordDtoRequest.spelling),
@@ -48,7 +50,7 @@ class WordServiceImpl(
     override fun updateWordTranslate(
         libraryName: String,
         telegramUserId: String,
-        createWordDtoRequest: CreateWordDtoRequest
+        createWordDtoRequest: CreateWordDtoRequest,
     ): Mono<Word> = wordRepository
         .getWordByLibraryNameTelegramUserIdWordSpelling(
             libraryName,
@@ -61,14 +63,14 @@ class WordServiceImpl(
             }
         }
         .flatMap { word -> wordRepository.updateWordTranslating(word.id, createWordDtoRequest.translate) }
-        .doOnSuccess {
-            sendUpdateWordEventToKafka(it, libraryName, telegramUserId)
+        .flatMap {
+            sendUpdateWordEventTKafka(it, libraryName, telegramUserId)
         }
 
     override fun deleteWord(
         libraryName: String,
         telegramUserId: String,
-        wordSpelling: String
+        wordSpelling: String,
     ): Mono<Word> = wordRepository
         .getWordByLibraryNameTelegramUserIdWordSpelling(
             libraryName,
@@ -88,7 +90,7 @@ class WordServiceImpl(
     override fun getFullInfoAboutWord(
         libraryName: String,
         telegramUserId: String,
-        wordSpelling: String
+        wordSpelling: String,
     ): Mono<Word> = wordRepository
         .getWordByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling)
         .switchIfEmpty {
@@ -101,7 +103,7 @@ class WordServiceImpl(
     private fun findLibraryIdWithoutCertainSpelling(
         libraryName: String,
         telegramUserId: String,
-        spelling: String
+        spelling: String,
     ): Mono<ObjectId> = findLibraryId(libraryName, telegramUserId)
         .doOnNext { log.info("library id = {}", it) }
         // .doOnNext{ log.info("is word not belongs = {}", isWordNotBelongsToLibrary(it, spelling).block()!!)}
@@ -115,7 +117,7 @@ class WordServiceImpl(
 
     private fun findLibraryId(
         libraryName: String,
-        telegramUserId: String
+        telegramUserId: String,
     ): Mono<ObjectId> = libraryRepository
         .getLibraryIdByLibraryNameAndTelegramUserId(
             libraryName,
@@ -128,7 +130,7 @@ class WordServiceImpl(
     private fun collectAndSaveWordInDb(
         createWordDtoRequest: CreateWordDtoRequest,
         libraryId: ObjectId,
-        additionalInfoAboutWord: AdditionalInfoAboutWord
+        additionalInfoAboutWord: AdditionalInfoAboutWord,
     ): Mono<Word> = wordRepository
         .saveNewWord(
             Word(
@@ -141,7 +143,7 @@ class WordServiceImpl(
 
     private fun isWordNotBelongsToLibrary(
         libraryId: ObjectId,
-        wordSpelling: String
+        wordSpelling: String,
     ): Mono<Boolean> = wordRepository
         .isWordBelongsToLibrary(
             wordSpelling,
@@ -150,24 +152,30 @@ class WordServiceImpl(
             it.not()
         }
 
-
-    private fun sendUpdateWordEventToKafka(
-        word: Word,
+    private fun sendUpdateWordEventTKafka(
+        it: Word,
         libraryName: String,
-        telegramUserId: String
-    ) {
-        producer.send(
+        telegramUserId: String,
+    ): Mono<Word> = //TODO
+        sender.send(createRecord(it, libraryName, telegramUserId).toMono()).then(it.toMono())
+
+    private fun createRecord(
+        it: Word,
+        libraryName: String,
+        telegramUserId: String,
+    ): SenderRecord<String, UpdateWordEvent, Nothing> =
+        SenderRecord.create(
             ProducerRecord(
-                KafkaTopics.UPDATED_WORD, word.libraryId.toHexString(),
+                KafkaTopics.UPDATED_WORD, it.libraryId.toHexString(),
                 UpdateWordEvent.newBuilder()
                     .setLibraryName(libraryName)
                     .setTelegramUserId(telegramUserId)
-                    .setWordSpelling(word.spelling)
-                    .setNewWordTranslate(word.translate)
+                    .setWordSpelling(it.spelling)
+                    .setNewWordTranslate(it.translate)
                     .build()
-            )
+            ),
+            null
         )
-    }
 
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)
