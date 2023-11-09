@@ -14,14 +14,14 @@ class UpdateWordEventSubscriber(
     val natsConnection: Connection,
 ) : EventSubscriber<UpdateWordEvent> {
 
-    val sinks: Sinks.Many<UpdateWordEvent> = Sinks.many().multicast().onBackpressureBuffer()
 
     override fun subscribe(eventKey: String): Flux<UpdateWordEvent> {
-        makeNatsSubscriber(eventKey)
+        val sinks: Sinks.Many<UpdateWordEvent> = Sinks.many().unicast().onBackpressureBuffer()
+        makeNatsSubscriber(eventKey, sinks)
         return sinks.asFlux()
     }
 
-    private fun makeNatsSubscriber(eventKey: String) {
+    private fun makeNatsSubscriber(eventKey: String, sinks: Sinks.Many<UpdateWordEvent>) {
         natsConnection.createDispatcher { message: Message ->
             sinks.tryEmitNext(UpdateWordEvent.parseFrom(message.data))
         }.subscribe(createUpdateWordEventSubject(eventKey))
