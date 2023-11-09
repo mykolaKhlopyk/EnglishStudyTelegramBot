@@ -6,11 +6,13 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import reactor.core.scheduler.Schedulers
 import reactor.kafka.receiver.KafkaReceiver
+import systems.ajax.englishstudytelegrambot.kafka.publisher.EventPublisher
 import systems.ajax.event.word.UpdateWordEventOuterClass.UpdateWordEvent
 
 @Component
 class UpdateWordEventReceiver(
     val receiver: KafkaReceiver<String, UpdateWordEvent>,
+    val eventPublisher: EventPublisher<UpdateWordEvent>
 ) {
 
     @PostConstruct
@@ -24,6 +26,7 @@ class UpdateWordEventReceiver(
                     updatedWordEventValue.wordSpelling,
                     updatedWordEventValue.newWordTranslate
                 )
+                eventPublisher.publish(updatedWordEventValue)
             }
 
     companion object {
