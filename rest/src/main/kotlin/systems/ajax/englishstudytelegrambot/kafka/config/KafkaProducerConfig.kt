@@ -11,6 +11,8 @@ import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import reactor.kafka.sender.KafkaSender
+import reactor.kafka.sender.SenderOptions
 import systems.ajax.response_request.word.UpdateWordEventOuterClass.UpdateWordEvent
 import java.util.*
 
@@ -24,8 +26,8 @@ class KafkaProducerConfig(
 ) {
 
     @Bean
-    fun producer(): Producer<String, UpdateWordEvent> =
-        KafkaProducer(getProperties())
+    fun sender(): KafkaSender<String, UpdateWordEvent> =
+        KafkaSender.create(SenderOptions.create(getProperties()))
 
     private fun getProperties() =
         Properties().apply {
