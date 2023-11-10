@@ -26,7 +26,7 @@ import systems.ajax.englishstudytelegrambot.repository.WordRepository
 @Repository
 @Suppress("TooManyFunctions")
 class WordRepositoryImpl(
-    val mongoTemplate: ReactiveMongoTemplate
+    val mongoTemplate: ReactiveMongoTemplate,
 ) : WordRepository {
 
     override fun saveNewWord(word: Word): Mono<Word> =
@@ -68,7 +68,7 @@ class WordRepositoryImpl(
     override fun getWordByLibraryNameTelegramUserIdWordSpelling(
         libraryName: String,
         telegramUserId: String,
-        wordSpelling: String
+        wordSpelling: String,
     ): Mono<Word> {
         val matchLibraryByNameAndOwner = Aggregation.match(
             Criteria.where("name").`is`(libraryName).and("ownerId").`is`(telegramUserId)
@@ -99,12 +99,17 @@ class WordRepositoryImpl(
     override fun getWordIdByLibraryNameTelegramUserIdWordSpelling(
         libraryName: String,
         telegramUserId: String,
-        wordSpelling: String
+        wordSpelling: String,
     ): Mono<ObjectId> =
         getWordByLibraryNameTelegramUserIdWordSpelling(libraryName, telegramUserId, wordSpelling).map(Word::id)
 
     override fun getAllWordsFromLibrary(libraryId: ObjectId): Flux<Word> =
         mongoTemplate.find<Word>(
             Query.query(Criteria.where("libraryId").`is`(libraryId))
+        )
+
+    override fun getAllWordsWithSpelling(wordSpelling: String): Flux<Word> =
+        mongoTemplate.find<Word>(
+            Query.query(Criteria.where("spelling").`is`(wordSpelling))
         )
 }

@@ -85,6 +85,9 @@ class WordCashableRepositoryImpl(
     override fun getAllWordsFromLibrary(libraryId: ObjectId): Flux<Word> =
         wordRepository.getAllWordsFromLibrary(libraryId)
 
+    override fun getAllWordsWithSpelling(wordSpelling: String): Flux<Word> =
+        wordRepository.getAllWordsWithSpelling(wordSpelling)
+
     private fun Word.createKeyFindWordById(): String =
         id.createKeyFindWordById()
 

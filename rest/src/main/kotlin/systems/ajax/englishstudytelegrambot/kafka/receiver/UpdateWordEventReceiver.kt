@@ -23,7 +23,7 @@ class UpdateWordEventReceiver(
                 val updatedWordEventValue = event.value()
                 log.info(
                     "UpdateWordEvent was gotten, word spelling = {}, new translate = {}",
-                    updatedWordEventValue.wordSpelling,
+                    updatedWordEventValue.spelling,
                     updatedWordEventValue.newWordTranslate
                 )
                 eventPublisher.publish(updatedWordEventValue)

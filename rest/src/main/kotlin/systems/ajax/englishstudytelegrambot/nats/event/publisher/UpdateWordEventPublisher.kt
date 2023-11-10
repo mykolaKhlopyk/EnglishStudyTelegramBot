@@ -12,6 +12,6 @@ class UpdateWordEventPublisher(
 ) : EventPublisher<UpdateWordEvent> {
 
     override fun publish(message: UpdateWordEvent) {
-        natsPublishFactory.publish(createUpdateWordEventSubject(message.wordSpelling), message.toByteArray())
+        natsPublishFactory.publish(createUpdateWordEventSubject(message.spelling), message.toByteArray())
     }
 }

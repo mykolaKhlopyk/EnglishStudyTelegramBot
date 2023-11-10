@@ -37,4 +37,6 @@ interface WordRepository {
     ): Mono<ObjectId>
 
     fun getAllWordsFromLibrary(libraryId: ObjectId): Flux<Word>
+
+    fun getAllWordsWithSpelling(wordSpelling: String): Flux<Word>
 }
