@@ -4,16 +4,16 @@ package systems.ajax.service;
 
 option java_multiple_files = true;
 
-service UpdateWordEventService{
+service UpdateWordEventService {
 
   rpc getUpdatesOfWordBySpelling(GetUpdatesOfWordBySpellingRequest) returns (stream GetUpdatesOfWordBySpellingResponse);
 }
 
-message GetUpdatesOfWordBySpellingRequest{
+message GetUpdatesOfWordBySpellingRequest {
   string spelling = 1;
 }
 
-message GetUpdatesOfWordBySpellingResponse{
+message GetUpdatesOfWordBySpellingResponse {
   string new_word_translate = 1;
   string library_id = 2;
 }

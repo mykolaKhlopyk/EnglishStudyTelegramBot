@@ -4,12 +4,12 @@ package systems.ajax.response_request.library;
 
 import "systems/ajax/entity/library.proto";
 
-message DeleteLibraryRequest{
+message DeleteLibraryRequest {
   string library_name = 1;
   string telegram_user_id = 2;
 }
 
-message DeleteLibraryResponse{
+message DeleteLibraryResponse {
 
   oneof response{
     Success success = 1;
@@ -20,7 +20,7 @@ message DeleteLibraryResponse{
     entity.Library deleted_library = 1;
   }
 
-  message Failure{
+  message Failure {
     string error_massage = 1;
   }
 }

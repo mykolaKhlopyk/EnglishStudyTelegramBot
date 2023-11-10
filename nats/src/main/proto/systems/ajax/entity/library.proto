@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package systems.ajax.entity;
 
-message Library{
+message Library {
   optional string id = 1;
   string name = 2;
   optional string owner_id = 3;
