@@ -14,7 +14,6 @@ class UpdateWordEventSubscriber(
     val natsConnection: Connection,
 ) : EventSubscriber<UpdateWordEvent> {
 
-
     override fun subscribe(eventKey: String): Flux<UpdateWordEvent> {
         val sinks: Sinks.Many<UpdateWordEvent> = Sinks.many().unicast().onBackpressureBuffer()
         makeNatsSubscriber(eventKey, sinks)

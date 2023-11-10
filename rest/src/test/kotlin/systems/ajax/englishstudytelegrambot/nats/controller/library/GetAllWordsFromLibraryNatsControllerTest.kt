@@ -45,7 +45,7 @@ class GetAllWordsFromLibraryNatsControllerTest {
             GetAllWordsFromLibrary.GetAllWordsFromLibraryRequest.newBuilder()
                 .setLibraryName(libraryName)
                 .setTelegramUserId(telegramUserId)
-                .build().toByteArray()
+                .build()
         )
 
         // THEN

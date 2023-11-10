@@ -53,7 +53,7 @@ class DeleteLibraryNatsControllerTest {
             DeleteLibrary.DeleteLibraryRequest.newBuilder()
                 .setLibraryName(nameOfDeleteLibrary)
                 .setTelegramUserId(telegramUserId)
-                .build().toByteArray()
+                .build()
         )
 
         // THEN
