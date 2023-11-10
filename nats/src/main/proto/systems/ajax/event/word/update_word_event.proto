@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package systems.ajax.event.word;
+
+import "systems/ajax/entity/word.proto";
+
+message UpdateWordEvent {
+  string spelling = 1;
+  string new_word_translate = 2;
+  string library_name = 3;
+}

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package systems.ajax.service;
+
+option java_multiple_files = true;
+
+service UpdateWordEventService {
+
+  rpc getUpdatesOfWordBySpelling(GetUpdatesOfWordBySpellingRequest) returns (stream GetUpdatesOfWordBySpellingResponse);
+}
+
+message GetUpdatesOfWordBySpellingRequest {
+  string spelling = 1;
+}
+
+message GetUpdatesOfWordBySpellingResponse {
+  string new_word_translate = 1;
+  string library_id = 2;
+}

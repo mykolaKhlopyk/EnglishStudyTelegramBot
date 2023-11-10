@@ -6,11 +6,11 @@ import "systems/ajax/entity/word.proto";
 
 option java_multiple_files = true;
 
-message GetAllWordsRequest{
+message GetAllWordsRequest {
 
 }
 
-message GetAllWordsResponse{
+message GetAllWordsResponse {
 
   oneof response{
     Success success = 1;
@@ -21,7 +21,7 @@ message GetAllWordsResponse{
     repeated entity.Word words = 1;
   }
 
-  message Failure{
+  message Failure {
     string error_massage = 1;
   }
 }

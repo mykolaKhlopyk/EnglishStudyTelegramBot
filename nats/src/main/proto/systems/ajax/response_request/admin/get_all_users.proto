@@ -6,11 +6,11 @@ import "systems/ajax/entity/user.proto";
 
 option java_multiple_files = true;
 
-message GetAllUsersRequest{
+message GetAllUsersRequest {
 
 }
 
-message GetAllUsersResponse{
+message GetAllUsersResponse {
 
   oneof response{
     Success success = 1;
@@ -21,7 +21,7 @@ message GetAllUsersResponse{
     repeated string telegram_user_ids = 1;
   }
 
-  message Failure{
+  message Failure {
     string error_massage = 1;
   }
 }

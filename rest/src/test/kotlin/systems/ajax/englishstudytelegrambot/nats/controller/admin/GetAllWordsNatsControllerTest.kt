@@ -50,7 +50,7 @@ class GetAllWordsNatsControllerTest {
         // WHEN
         val message: Message = natsRequestFactory.doRequest(
                 NatsSubject.Admin.GET_ALL_WORDS_SUBJECT,
-                GetAllWordsRequest.getDefaultInstance().toByteArray()
+                GetAllWordsRequest.getDefaultInstance()
             )
 
         println("time "+nanoTime)

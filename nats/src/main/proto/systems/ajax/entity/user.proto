@@ -2,6 +2,6 @@ syntax = "proto3";
 
 package systems.ajax.entity;
 
-message User{
+message User {
   string telegram_user_id = 1;
 }

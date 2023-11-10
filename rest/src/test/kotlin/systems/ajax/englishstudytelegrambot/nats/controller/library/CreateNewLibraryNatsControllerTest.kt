@@ -36,7 +36,7 @@ class CreateNewLibraryNatsControllerTest {
             CreateNewLibrary.CreateNewLibraryRequest.newBuilder()
                 .setLibraryName(libraryName)
                 .setTelegramUserId(userIdName)
-                .build().toByteArray()
+                .build()
         )
 
         // THEN

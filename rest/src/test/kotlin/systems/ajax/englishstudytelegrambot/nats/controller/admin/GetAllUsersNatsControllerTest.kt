@@ -41,7 +41,7 @@ class GetAllUsersNatsControllerTest {
         // WHEN
         val message: Message = natsRequestFactory.doRequest(
             NatsSubject.Admin.GET_ALL_USERS_SUBJECT,
-            GetAllUsersRequest.getDefaultInstance().toByteArray()
+            GetAllUsersRequest.getDefaultInstance()
         )
 
         //THEN
