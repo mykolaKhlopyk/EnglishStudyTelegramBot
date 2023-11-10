@@ -5,8 +5,7 @@ package systems.ajax.event.word;
 import "systems/ajax/entity/word.proto";
 
 message UpdateWordEvent{
-  string library_name = 1;
-  string telegram_user_id = 2;
-  string word_spelling = 3;
-  string new_word_translate = 4;
+  string spelling = 1;
+  string new_word_translate = 2;
+  string library_name = 3;
 }
