@@ -1,3 +1,8 @@
 rootProject.name = "EnglishStudyTelegramBot"
 
-include("rest", "nats")
+include(
+    "common",
+    "internal-api",
+    "library",
+    "word"
+)
