@@ -100,7 +100,7 @@ class WordCashableRepository(
 
     private fun String.createKeyFindWordById(): String =
         buildString {
-            append(KEY_FIND_WORD_BY_ID, ":", this)
+            append(KEY_FIND_WORD_BY_ID, ":", this@createKeyFindWordById)
         }
 
     private fun createKeyFindWordByParameters(

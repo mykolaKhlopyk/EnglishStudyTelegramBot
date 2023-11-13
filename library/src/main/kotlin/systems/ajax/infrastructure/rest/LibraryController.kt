@@ -20,10 +20,6 @@ class LibraryController(
     private val libraryService: LibraryServiceIn
 ) {
 
-    init {
-        println(1)
-    }
-
     @GetMapping("/libraries")
     fun getAllUsersLibraries(
         @RequestHeader("telegramUserId") telegramUserId: String
