@@ -6,11 +6,10 @@ plugins {
     java
     id("org.springframework.boot") version "3.1.3"
     id("io.spring.dependency-management") version "1.1.3"
-   // id("java-test-fixtures")
     id("com.google.protobuf") version "0.9.4"
     id("io.gitlab.arturbosch.detekt") version "1.23.1"
-    kotlin("jvm") version "1.9.10"
-    kotlin("plugin.serialization") version "1.9.10"
+    kotlin("jvm") version "1.9.0"
+    kotlin("plugin.serialization") version "1.9.0"
     kotlin("plugin.noarg") version "1.9.0"
     kotlin("plugin.spring") version "1.9.0"
 }
@@ -21,16 +20,15 @@ tasks.withType<BootJar> {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
+
     subprojects.forEach {
         implementation(it)
     }
 }
 
 subprojects {
-   // apply(plugin = "java")
     apply(plugin = "kotlin")
     apply(plugin = "com.google.protobuf")
-    apply(plugin = "io.gitlab.arturbosch.detekt")
 
     dependencies {
 
@@ -81,6 +79,7 @@ subprojects {
         testImplementation("io.mockk:mockk:1.12.0")
         testImplementation("io.projectreactor:reactor-test:3.5.11")
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
+        testImplementation("org.junit.jupiter:junit-jupiter-engine:5.3.1")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
     }
 
