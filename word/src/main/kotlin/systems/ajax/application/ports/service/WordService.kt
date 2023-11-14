@@ -105,7 +105,6 @@ class WordService(
         spelling: String,
     ): Mono<String> = findLibraryId(libraryName, telegramUserId)
         .doOnNext { log.info("library id = {}", it) }
-        // .doOnNext{ log.info("is word not belongs = {}", isWordNotBelongsToLibrary(it, spelling).block()!!)}
         .filterWhen { libraryId ->
             isWordNotBelongsToLibrary(libraryId, spelling)
         }
