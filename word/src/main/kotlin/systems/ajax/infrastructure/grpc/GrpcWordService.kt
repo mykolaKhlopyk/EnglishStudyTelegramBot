@@ -24,7 +24,7 @@ class GrpcWordService(
 
     override fun saveNewWord(request: Mono<SaveNewWordRequest>): Mono<SaveNewWordResponse> =
         request.flatMap {
-            wordService.saveNewWord(it.libraryName, it.telegramUserId, it.createWordDtoRequest.toServiceDto())
+            wordService.saveNewWord(it.libraryName, it.telegramUserId, it.createWordDtoRequest.spelling, it.createWordDtoRequest.translate)
         }.map {
             SaveNewWordResponse.newBuilder().apply {
                 successBuilder.setWord(it.toProto())
@@ -37,7 +37,7 @@ class GrpcWordService(
 
     override fun updateWordTranslate(request: Mono<UpdateWordTranslateRequest>): Mono<UpdateWordTranslateResponse> =
         request.flatMap {
-            wordService.updateWordTranslate(it.libraryName, it.telegramUserId, it.createWordDtoRequest.toServiceDto())
+            wordService.updateWordTranslate(it.libraryName, it.telegramUserId, it.createWordDtoRequest.spelling, it.createWordDtoRequest.translate)
         }.map {
             UpdateWordTranslateResponse.newBuilder().apply {
                 successBuilder.setWord(it.toProto())

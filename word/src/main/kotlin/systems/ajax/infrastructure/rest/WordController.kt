@@ -44,7 +44,7 @@ class WordController(
         @RequestHeader("telegramUserId") telegramUserId: String,
         @RequestBody createWordDtoRequest: CreateWordDtoRequest
     ): Mono<WordDtoResponse> =
-        wordService.saveNewWord(libraryName, telegramUserId, createWordDtoRequest).map(Word::toDtoResponse)
+        wordService.saveNewWord(libraryName, telegramUserId, createWordDtoRequest.spelling, createWordDtoRequest.translate).map(Word::toDtoResponse)
 
     @PatchMapping("/{libraryName}")
     fun updateWordTranslateInLibrary(
@@ -52,7 +52,7 @@ class WordController(
         @RequestHeader("telegramUserId") telegramUserId: String,
         @RequestBody createWordDtoRequest: CreateWordDtoRequest
     ): Mono<WordDtoResponse> =
-        wordService.updateWordTranslate(libraryName, telegramUserId, createWordDtoRequest).map(Word::toDtoResponse)
+        wordService.updateWordTranslate(libraryName, telegramUserId, createWordDtoRequest.spelling, createWordDtoRequest.translate).map(Word::toDtoResponse)
 
     @DeleteMapping("/{libraryName}")
     fun deleteWordFromLibrary(
