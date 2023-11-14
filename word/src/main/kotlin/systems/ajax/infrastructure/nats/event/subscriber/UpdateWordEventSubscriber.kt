@@ -1,4 +1,4 @@
-package systems.ajax.infrastructure.nats.event.subscriber.impl
+package systems.ajax.infrastructure.nats.event.subscriber
 
 import io.nats.client.Connection
 import io.nats.client.Message
