@@ -3,14 +3,14 @@ package systems.ajax.application.ports.input
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import systems.ajax.domain.model.Word
-import systems.ajax.infrastructure.rest.dto.request.CreateWordDtoRequest
 
 interface WordServiceIn {
 
     fun saveNewWord(
         libraryName: String,
         telegramUserId: String,
-        createWordDtoRequest: CreateWordDtoRequest,
+        spelling: String,
+        translate: String
     ): Mono<Word>
 
     fun getAllWordsFromLibrary(
@@ -22,7 +22,8 @@ interface WordServiceIn {
     fun updateWordTranslate(
         libraryName: String,
         telegramUserId: String,
-        createWordDtoRequest: CreateWordDtoRequest,
+        spelling: String,
+        newTranslate: String
     ): Mono<Word>
 
     fun deleteWord(

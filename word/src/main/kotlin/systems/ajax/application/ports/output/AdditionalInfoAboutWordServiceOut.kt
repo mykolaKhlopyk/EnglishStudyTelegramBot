@@ -1,8 +1,8 @@
-package systems.ajax.application.ports.input
+package systems.ajax.application.ports.output
 
 import reactor.core.publisher.Mono
 import systems.ajax.domain.model.AdditionalInfoAboutWord
 
-interface AdditionalInfoAboutWordServiceIn {
+interface AdditionalInfoAboutWordServiceOut {
     fun findAdditionInfoAboutWord(wordSpelling: String): Mono<AdditionalInfoAboutWord>
 }

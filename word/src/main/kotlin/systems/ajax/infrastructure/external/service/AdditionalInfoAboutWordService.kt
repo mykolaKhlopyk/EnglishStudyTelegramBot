@@ -1,4 +1,4 @@
-package systems.ajax.application.ports.service
+package systems.ajax.infrastructure.external.service
 
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -6,7 +6,7 @@ import reactor.kotlin.core.util.function.component1
 import reactor.kotlin.core.util.function.component2
 import reactor.kotlin.core.util.function.component3
 import reactor.kotlin.core.util.function.component4
-import systems.ajax.application.ports.input.AdditionalInfoAboutWordServiceIn
+import systems.ajax.application.ports.output.AdditionalInfoAboutWordServiceOut
 import systems.ajax.domain.model.AdditionalInfoAboutWord
 import systems.ajax.infrastructure.external.api.AudioForWordResponse
 import systems.ajax.infrastructure.external.api.DefinitionOfWordResponse
@@ -19,7 +19,7 @@ import systems.ajax.infrastructure.property.WordnikProperties
 class AdditionalInfoAboutWordService(
     private val wordnikProperties: WordnikProperties,
     private val externalWordSource: ExternalWordSource
-) : AdditionalInfoAboutWordServiceIn {
+) : AdditionalInfoAboutWordServiceOut {
 
     @Suppress("DestructuringDeclarationWithTooManyEntries")
     override fun findAdditionInfoAboutWord(wordSpelling: String): Mono<AdditionalInfoAboutWord> =
