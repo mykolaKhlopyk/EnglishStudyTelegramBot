@@ -3,7 +3,7 @@ spring:
     import: classpath:application-dev.yml
   data:
     mongodb:
-      database: englishwordsdb
+      database: englishwordsdb_test
       host: localhost
       port: 27017
       auto-index-creation: true

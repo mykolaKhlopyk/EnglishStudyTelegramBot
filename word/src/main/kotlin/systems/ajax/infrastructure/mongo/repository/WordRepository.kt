@@ -122,4 +122,9 @@ class WordRepository(
         mongoTemplate.remove<MongoWord>(
             Query.query(Criteria.where("libraryId").`is`(ObjectId(libraryId)))
         ).then(Unit.toMono())
+
+    override fun getAllWordsWithSpelling(spelling: String): Flux<Word> =
+        mongoTemplate.find<MongoWord>(
+            Query.query(Criteria.where("spelling").`is`(spelling))
+        ).map(MongoWord::toModel)
 }

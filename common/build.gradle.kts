@@ -7,6 +7,8 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":internal-api"))
+
     implementation("io.confluent:kafka-protobuf-serializer:7.5.1")
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))

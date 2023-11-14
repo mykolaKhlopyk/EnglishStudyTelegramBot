@@ -2,22 +2,31 @@ version: "3.8"
 services:
   telegram-bot:
     build: .
-    container_name: telegram-bot
-    ports:
-      - "8081:8080"
     depends_on:
       mongodb:
         condition: service_healthy
+      nats:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      schema-registry:
+        condition: service_started
+
+    container_name: "telegram-bot"
+    ports:
+      - "8082:8080"
   mongodb:
     image: mongo:6.0
-    container_name: mongodb
+    container_name: "mongodb"
     ports:
-      - "27018:27017"
+      - "27017:27017"
     volumes:
       - data:/data
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=rootuser
-      - MONGO_INITDB_ROOT_PASSWORD=rootpass
+#    environment:
+#      - MONGO_INITDB_ROOT_USERNAME=rootuser
+#      - MONGO_INITDB_ROOT_PASSWORD=rootpass
     healthcheck:
       test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
       interval: 1s
@@ -25,14 +34,17 @@ services:
       retries: 5
   nats:
     image: nats
-    container_name: nats
+    container_name: "nats"
     ports:
       - "4222:4222"
+
   redis:
     image: redis
-    container_name: redis
+    container_name: "redis"
     ports:
-      - "6380:6379"
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
 
   kafka:
     image: confluentinc/cp-kafka:7.5.1
@@ -58,7 +70,7 @@ services:
   schema-registry:
     image: confluentinc/cp-schema-registry:7.5.1
     ports:
-      - "8085:8081"
+      - "8081:8081"
     depends_on:
       - kafka
       - zookeeper

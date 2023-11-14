@@ -8,7 +8,7 @@ import reactor.kafka.sender.SenderRecord
 import reactor.kotlin.core.publisher.toMono
 import systems.ajax.application.ports.output.UpdateWordEventSenderOut
 import systems.ajax.domain.model.Word
-import systems.ajax.infrastructure.kafka.config.KafkaTopics
+import systems.ajax.infrastructure.kafka.KafkaTopics
 import systems.ajax.response_request.word.UpdateWordEvent
 
 @Component
@@ -17,21 +17,18 @@ class UpdateWordEventSender(
 ) : UpdateWordEventSenderOut {
 
     override fun sendEvent(word: Word, libraryName: String, telegramUserId: String): Mono<Void> =
-        sender.send(createRecord(word, libraryName, telegramUserId).toMono()).then()
-
+        sender.send(createRecord(word, libraryName).toMono()).then()
 
     private fun createRecord(
         it: Word,
         libraryName: String,
-        telegramUserId: String,
     ): SenderRecord<String, UpdateWordEvent, Nothing> =
         SenderRecord.create(
             ProducerRecord(
                 KafkaTopics.UPDATED_WORD, it.libraryId,
                 UpdateWordEvent.newBuilder()
                     .setLibraryName(libraryName)
-                    .setTelegramUserId(telegramUserId)
-                    .setWordSpelling(it.spelling)
+                    .setSpelling(it.spelling)
                     .setNewWordTranslate(it.translate)
                     .build()
             ),

@@ -1,6 +1,6 @@
 package systems.ajax.infrastructure.bpp
 
-import systems.ajax.infrastructure.nats.NatsController
+import systems.ajax.infrastructure.nats.controller.NatsController
 import com.google.protobuf.GeneratedMessageV3
 import io.nats.client.Connection
 import io.nats.client.Dispatcher

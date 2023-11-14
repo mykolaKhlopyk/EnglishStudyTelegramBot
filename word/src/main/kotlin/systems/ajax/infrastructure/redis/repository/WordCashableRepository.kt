@@ -87,6 +87,9 @@ class WordCashableRepository(
     override fun getAllWordsFromLibrary(libraryId: String): Flux<Word> =
         wordRepository.getAllWordsFromLibrary(libraryId)
 
+    override fun getAllWordsWithSpelling(spelling: String): Flux<Word> =
+        wordRepository.getAllWordsWithSpelling(spelling)
+
     override fun deleteAllWordsFromLibrary(libraryId: String): Mono<Unit> =
         wordsDeletingFromLibraryRepository.deleteAllWordsFromLibrary(libraryId)
 

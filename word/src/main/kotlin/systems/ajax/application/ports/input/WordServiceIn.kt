@@ -37,4 +37,6 @@ interface WordServiceIn {
         telegramUserId: String,
         wordSpelling: String,
     ): Mono<Word>
+
+    fun getAllWordsWithSpelling(spelling: String): Flux<Word>
 }

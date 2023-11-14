@@ -1,4 +1,4 @@
-package systems.ajax.infrastructure.nats
+package systems.ajax.infrastructure.nats.controller
 
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.Parser

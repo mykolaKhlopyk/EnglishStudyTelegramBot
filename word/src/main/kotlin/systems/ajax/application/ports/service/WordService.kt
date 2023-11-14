@@ -57,8 +57,13 @@ class WordService(
             }
         }
         .flatMap { word -> wordRepository.updateWordTranslating(word.id, newTranslate) }
+        .doOnNext{
+            println(it)
+        }
         .flatMap {
             sendUpdateWordEvent(it, libraryName, telegramUserId).thenReturn(it)
+        }.doOnNext{
+            println(it)
         }
 
     override fun deleteWord(
@@ -98,6 +103,8 @@ class WordService(
         libraryRepository.getLibraryIdByLibraryNameAndTelegramUserId(libraryName, telegramUserId)
             .flatMapMany(wordRepository::getAllWordsFromLibrary)
 
+    override fun getAllWordsWithSpelling(spelling: String): Flux<Word> =
+        wordRepository.getAllWordsWithSpelling(spelling)
 
     private fun findLibraryIdWithoutCertainSpelling(
         libraryName: String,

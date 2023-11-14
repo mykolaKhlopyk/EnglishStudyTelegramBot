@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.annotation.EnableKafka
 import reactor.kafka.receiver.KafkaReceiver
 import reactor.kafka.receiver.ReceiverOptions
+import systems.ajax.infrastructure.kafka.KafkaTopics
 import systems.ajax.response_request.word.UpdateWordEvent
 
 
@@ -23,12 +24,12 @@ class KafkaConsumerConfig(
     val schemaRegistryUrl: String
 ) {
 
-    fun receiverOptions(): ReceiverOptions<String, UpdateWordEvent> =
-        ReceiverOptions.create(getMapProperties())
-
     @Bean
     fun kafkaReceiverUpdatingWord(): KafkaReceiver<String, UpdateWordEvent> =
         KafkaReceiver.create(receiverOptions().subscription(listOf(KafkaTopics.UPDATED_WORD)))
+
+    fun receiverOptions(): ReceiverOptions<String, UpdateWordEvent> =
+        ReceiverOptions.create(getMapProperties())
 
     private fun getMapProperties(): MutableMap<String, Any> =
         mutableMapOf(

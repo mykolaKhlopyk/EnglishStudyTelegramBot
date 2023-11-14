@@ -1,6 +1,5 @@
 package systems.ajax.infrastructure.nats.controller
 
-import systems.ajax.infrastructure.nats.NatsController
 import com.google.protobuf.Parser
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono

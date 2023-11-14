@@ -14,7 +14,6 @@ import org.springframework.data.redis.core.ReactiveValueOperations
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import reactor.kotlin.test.test
-import reactor.test.StepVerifier
 import systems.ajax.application.port.out.WordsDeletingFromLibraryRepository
 import systems.ajax.domain.model.Word
 import systems.ajax.infrastructure.mongo.repository.WordRepository
@@ -48,13 +47,13 @@ class WordCashableRepositoryUnitTest {
         }
         every { redisTemplate.opsForValue() } returns redisOpsMock
 
-        // WHEN THEN
+        // WHEN
         wordCashableRepository.saveNewWord(word)
             .test()
             .expectNext(word)
             .verifyComplete()
 
-        // AND THEN
+        // THEN
         verify(exactly = 1) { wordRepository.saveNewWord(any()) }
         verify(exactly = 1) { redisOpsMock.set(any(), word) }
     }
@@ -72,13 +71,13 @@ class WordCashableRepositoryUnitTest {
         }
         every { redisTemplate.opsForValue() } returns redisOpsMock
 
-        // WHEN THEN
+        // WHEN
         wordCashableRepository.deleteWord(word.id)
             .test()
             .expectNext(word)
             .verifyComplete()
 
-        // AND THEN
+        // THEN
         verify(exactly = 1) { wordRepository.deleteWord(any()) }
         verify(exactly = 1) { redisOpsMock.delete(any()) }
     }
@@ -123,13 +122,13 @@ class WordCashableRepositoryUnitTest {
 
         every { redisTemplate.opsForValue() } returns redisOpsMock
 
-        // WHEN THEN
+        // WHEN
         wordCashableRepository.getWord(word.id)
             .test()
             .expectNext(word)
             .verifyComplete()
 
-        // AND THEN
+        // THEN
         verify(exactly = 1) { redisOpsMock.get(any()) }
         verify(exactly = 0) { wordRepository.getWord(any()) }
     }
@@ -151,13 +150,13 @@ class WordCashableRepositoryUnitTest {
 
         every { redisTemplate.opsForValue() } returns redisOpsMock
 
-        // WHEN THEN
+        // WHEN
         wordCashableRepository.getWordByLibraryNameTelegramUserIdWordSpelling("", "", "")
             .test()
             .expectNext(word)
             .verifyComplete()
 
-        // AND THEN
+        // THEN
         verify(exactly = 1) { redisOpsMock.get(any()) }
         verify(exactly = 1) { wordRepository.getWordByLibraryNameTelegramUserIdWordSpelling(any(), any(), any()) }
         verify(exactly = 1) { redisOpsMock.set(any(), any()) }
@@ -176,13 +175,13 @@ class WordCashableRepositoryUnitTest {
 
         every { redisTemplate.opsForValue() } returns redisOpsMock
 
-        // WHEN THEN
+        // WHEN
         wordCashableRepository.getWordByLibraryNameTelegramUserIdWordSpelling("", "", "")
             .test()
             .expectNext(word)
             .verifyComplete()
 
-        // AND THEN
+        // THEN
         verify(exactly = 1) { redisOpsMock.get(any()) }
         verify(exactly = 0) { wordRepository.getWordByLibraryNameTelegramUserIdWordSpelling(any(), any(), any()) }
     }
