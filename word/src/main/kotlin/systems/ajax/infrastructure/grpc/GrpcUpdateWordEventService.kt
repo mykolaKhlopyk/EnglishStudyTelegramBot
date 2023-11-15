@@ -3,10 +3,9 @@ package systems.ajax.infrastructure.grpc
 import net.devh.boot.grpc.server.service.GrpcService
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import systems.ajax.application.ports.input.WordServiceIn
-import systems.ajax.application.ports.service.WordService
+import systems.ajax.application.ports.input.WordInPort
 import systems.ajax.domain.model.Word
-import systems.ajax.infrastructure.nats.event.subscriber.EventSubscriber
+import systems.ajax.application.port.out.EventSubscriberOutPort
 import systems.ajax.response_request.word.UpdateWordEvent
 import systems.ajax.service.GetUpdatesOfWordBySpellingRequest
 import systems.ajax.service.GetUpdatesOfWordBySpellingResponse
@@ -14,8 +13,8 @@ import systems.ajax.service.ReactorUpdateWordEventServiceGrpc
 
 @GrpcService
 class GrpcUpdateWordEventService(
-    val eventSubscriber: EventSubscriber<UpdateWordEvent>,
-    val wordService: WordServiceIn
+    val eventSubscriberOutPort: EventSubscriberOutPort<UpdateWordEvent>,
+    val wordService: WordInPort
 ) : ReactorUpdateWordEventServiceGrpc.UpdateWordEventServiceImplBase() {
 
     override fun getUpdatesOfWordBySpelling(request: Mono<GetUpdatesOfWordBySpellingRequest>): Flux<GetUpdatesOfWordBySpellingResponse> =
@@ -23,7 +22,7 @@ class GrpcUpdateWordEventService(
             wordService.getAllWordsWithSpelling(it.spelling)
                 .map(::createGetUpdatesOfWordBySpellingResponse)
                 .concatWith(
-                    eventSubscriber.subscribe(it.spelling)
+                    eventSubscriberOutPort.subscribe(it.spelling)
                         .map(::createGetUpdatesOfWordBySpellingResponse))
         }
 

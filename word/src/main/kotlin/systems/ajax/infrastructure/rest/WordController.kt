@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import systems.ajax.application.ports.input.WordServiceIn
+import systems.ajax.application.ports.input.WordInPort
 import systems.ajax.domain.model.Word
 import systems.ajax.infrastructure.rest.dto.request.CreateWordDtoRequest
 import systems.ajax.infrastructure.rest.dto.response.WordDtoResponse
@@ -20,7 +20,7 @@ import systems.ajax.infrastructure.rest.dto.response.toDtoResponse
 @RestController
 @RequestMapping("/api/word")
 class WordController(
-    private val wordService: WordServiceIn
+    private val wordService: WordInPort
 ) {
 
     @GetMapping("/{libraryName}/fullInfo")

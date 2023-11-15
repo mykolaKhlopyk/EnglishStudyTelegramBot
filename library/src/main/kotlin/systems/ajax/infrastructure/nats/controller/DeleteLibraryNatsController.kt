@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import systems.ajax.NatsSubject.Library.DELETE_LIBRARY_SUBJECT
-import systems.ajax.application.ports.input.LibraryServiceIn
+import systems.ajax.application.ports.input.LibraryInPort
 import systems.ajax.domain.model.Library
 import systems.ajax.infrastructure.nats.mapper.toProto
 import systems.ajax.response_request.library.DeleteLibraryRequest
@@ -13,7 +13,7 @@ import systems.ajax.response_request.library.DeleteLibraryResponse
 import systems.ajax.entity.Library as ProtoLibrary
 
 @Component
-class DeleteLibraryNatsController(private val libraryService: LibraryServiceIn) :
+class DeleteLibraryNatsController(private val libraryService: LibraryInPort) :
     NatsController<DeleteLibraryRequest, DeleteLibraryResponse> {
 
     override val subject: String = DELETE_LIBRARY_SUBJECT

@@ -8,17 +8,17 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
-import systems.ajax.application.port.out.WordsDeletingFromLibraryRepository
-import systems.ajax.application.ports.output.WordRepositoryOut
+import systems.ajax.application.ports.output.WordsDeletingFromLibraryRepositoryOutPort
+import systems.ajax.application.ports.output.WordRepositoryOutPort
 import systems.ajax.domain.model.Word
 
 @Repository
 @Suppress("TooManyFunctions")
 class WordCashableRepository(
     val redisTemplate: ReactiveRedisTemplate<String, Word>,
-    @Qualifier("wordRepository") val wordRepository: WordRepositoryOut,
-    @Qualifier("wordRepository") val wordsDeletingFromLibraryRepository: WordsDeletingFromLibraryRepository,
-) : WordRepositoryOut, WordsDeletingFromLibraryRepository {
+    @Qualifier("wordRepository") val wordRepository: WordRepositoryOutPort,
+    @Qualifier("wordRepository") val wordsDeletingFromLibraryRepositoryOutPort: WordsDeletingFromLibraryRepositoryOutPort,
+) : WordRepositoryOutPort, WordsDeletingFromLibraryRepositoryOutPort {
 
     override fun saveNewWord(word: Word): Mono<Word> =
         wordRepository.saveNewWord(word)
@@ -91,7 +91,7 @@ class WordCashableRepository(
         wordRepository.getAllWordsWithSpelling(spelling)
 
     override fun deleteAllWordsFromLibrary(libraryId: String): Mono<Unit> =
-        wordsDeletingFromLibraryRepository.deleteAllWordsFromLibrary(libraryId)
+        wordsDeletingFromLibraryRepositoryOutPort.deleteAllWordsFromLibrary(libraryId)
 
     private fun Word.createKeyFindWordById(): String =
         id.createKeyFindWordById()

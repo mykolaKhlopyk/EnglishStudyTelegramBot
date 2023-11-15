@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import systems.ajax.application.ports.input.LibraryServiceIn
+import systems.ajax.application.ports.input.LibraryInPort
 import systems.ajax.infrastructure.rest.dto.LibraryDtoResponse
 import systems.ajax.infrastructure.rest.dto.toDtoResponse
 import systems.ajax.domain.model.Library
@@ -17,7 +17,7 @@ import systems.ajax.domain.model.Library
 @RestController
 @RequestMapping("/api/library")
 class LibraryController(
-    private val libraryService: LibraryServiceIn
+    private val libraryService: LibraryInPort
 ) {
 
     @GetMapping("/libraries")

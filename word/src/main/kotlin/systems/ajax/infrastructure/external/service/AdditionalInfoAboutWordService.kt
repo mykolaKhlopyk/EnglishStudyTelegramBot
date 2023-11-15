@@ -6,7 +6,7 @@ import reactor.kotlin.core.util.function.component1
 import reactor.kotlin.core.util.function.component2
 import reactor.kotlin.core.util.function.component3
 import reactor.kotlin.core.util.function.component4
-import systems.ajax.application.ports.output.AdditionalInfoAboutWordServiceOut
+import systems.ajax.application.ports.output.AdditionalInfoAboutWordServiceOutPort
 import systems.ajax.domain.model.AdditionalInfoAboutWord
 import systems.ajax.infrastructure.external.api.AudioForWordResponse
 import systems.ajax.infrastructure.external.api.DefinitionOfWordResponse
@@ -19,7 +19,7 @@ import systems.ajax.infrastructure.property.WordnikProperties
 class AdditionalInfoAboutWordService(
     private val wordnikProperties: WordnikProperties,
     private val externalWordSource: ExternalWordSource
-) : AdditionalInfoAboutWordServiceOut {
+) : AdditionalInfoAboutWordServiceOutPort {
 
     @Suppress("DestructuringDeclarationWithTooManyEntries")
     override fun findAdditionInfoAboutWord(wordSpelling: String): Mono<AdditionalInfoAboutWord> =

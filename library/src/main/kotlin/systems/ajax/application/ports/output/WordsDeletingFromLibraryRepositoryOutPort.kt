@@ -1,7 +1,7 @@
-package systems.ajax.application.port.out
+package systems.ajax.application.ports.output
 
 import reactor.core.publisher.Mono
 
-interface  WordsDeletingFromLibraryRepository {
+interface  WordsDeletingFromLibraryRepositoryOutPort {
     fun deleteAllWordsFromLibrary(libraryId: String): Mono<Unit>
 }

@@ -6,13 +6,13 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Sinks
 import systems.ajax.infrastructure.nats.event.SubjectEventFactory.createUpdateWordEventSubject
-import systems.ajax.infrastructure.nats.event.subscriber.EventSubscriber
+import systems.ajax.application.port.out.EventSubscriberOutPort
 import systems.ajax.response_request.word.UpdateWordEvent
 
 @Component
-class UpdateWordEventSubscriber(
+class UpdateWordEventSubscriberOutPort(
     val natsConnection: Connection,
-) : EventSubscriber<UpdateWordEvent> {
+) : EventSubscriberOutPort<UpdateWordEvent> {
 
     override fun subscribe(eventKey: String): Flux<UpdateWordEvent> {
         val sinks: Sinks.Many<UpdateWordEvent> = Sinks.many().unicast().onBackpressureBuffer()

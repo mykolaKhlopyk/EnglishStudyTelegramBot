@@ -8,11 +8,11 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.util.function.component1
 import reactor.kotlin.core.util.function.component2
-import systems.ajax.application.ports.input.WordServiceIn
-import systems.ajax.application.ports.output.AdditionalInfoAboutWordServiceOut
-import systems.ajax.application.ports.output.UpdateWordEventSenderOut
-import systems.ajax.application.ports.output.LibraryRepositoryOut
-import systems.ajax.application.ports.output.WordRepositoryOut
+import systems.ajax.application.ports.input.WordInPort
+import systems.ajax.application.ports.output.AdditionalInfoAboutWordServiceOutPort
+import systems.ajax.application.ports.output.UpdateWordEventSenderOutPort
+import systems.ajax.application.ports.output.LibraryRepositoryOutPort
+import systems.ajax.application.ports.output.WordRepositoryOutPort
 import systems.ajax.domain.exception.LibraryNotFoundException
 import systems.ajax.domain.exception.WordAlreadyPresentInLibraryException
 import systems.ajax.domain.exception.WordNotFoundException
@@ -21,11 +21,11 @@ import systems.ajax.domain.model.Word
 
 @Service
 class WordService(
-    @Qualifier("wordCashableRepository") val wordRepository: WordRepositoryOut,
-    val libraryRepository: LibraryRepositoryOut,
-    val additionalInfoAboutWordService: AdditionalInfoAboutWordServiceOut,
-    val updateWordEventSenderOut: UpdateWordEventSenderOut,
-) : WordServiceIn {
+    @Qualifier("wordCashableRepository") val wordRepository: WordRepositoryOutPort,
+    val libraryRepository: LibraryRepositoryOutPort,
+    val additionalInfoAboutWordService: AdditionalInfoAboutWordServiceOutPort,
+    val updateWordEventSenderOutPort: UpdateWordEventSenderOutPort,
+) : WordInPort {
 
     override fun saveNewWord(
         libraryName: String,
@@ -158,7 +158,7 @@ class WordService(
         libraryName: String,
         telegramUserId: String,
     ): Mono<Void> =
-        updateWordEventSenderOut.sendEvent(word, libraryName, telegramUserId)
+        updateWordEventSenderOutPort.sendEvent(word, libraryName, telegramUserId)
 
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)

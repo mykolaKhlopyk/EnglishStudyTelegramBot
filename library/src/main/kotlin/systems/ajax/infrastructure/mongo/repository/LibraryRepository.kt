@@ -11,13 +11,13 @@ import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import systems.ajax.application.ports.output.LibraryRepositoryOut
+import systems.ajax.application.ports.output.LibraryRepositoryOutPort
 import systems.ajax.domain.model.Library
 import systems.ajax.infrastructure.mapper.toModel
 import systems.ajax.infrastructure.mongo.entity.MongoLibrary
 
 @Repository
-class LibraryRepository(private val mongoTemplate: ReactiveMongoTemplate) : LibraryRepositoryOut {
+class LibraryRepository(private val mongoTemplate: ReactiveMongoTemplate) : LibraryRepositoryOutPort {
 
     override fun saveNewLibrary(nameOfNewLibrary: String, telegramUserId: String): Mono<Library> =
         mongoTemplate.insert(MongoLibrary(name = nameOfNewLibrary, ownerId = telegramUserId))

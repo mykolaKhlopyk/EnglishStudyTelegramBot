@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import systems.ajax.NatsSubject.Library.GET_ALL_WORDS_FROM_LIBRARY_SUBJECT
-import systems.ajax.application.ports.input.WordServiceIn
+import systems.ajax.application.ports.input.WordInPort
 import systems.ajax.domain.model.Word
 import systems.ajax.infrastructure.nats.mapper.toProto
 import systems.ajax.entity.Word as ProtoWord
@@ -14,7 +14,7 @@ import systems.ajax.response_request.library.GetAllWordsFromLibraryRequest
 import systems.ajax.response_request.library.GetAllWordsFromLibraryResponse
 
 @Component
-class GetAllWordsFromLibraryNatsController(private val wordService: WordServiceIn) :
+class GetAllWordsFromLibraryNatsController(private val wordService: WordInPort) :
     NatsController<GetAllWordsFromLibraryRequest, GetAllWordsFromLibraryResponse> {
 
     override val subject: String = GET_ALL_WORDS_FROM_LIBRARY_SUBJECT

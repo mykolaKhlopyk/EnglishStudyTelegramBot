@@ -1,9 +1,9 @@
-package systems.ajax.infrastructure.nats.event.subscriber
+package systems.ajax.application.port.out
 
 import com.google.protobuf.GeneratedMessageV3
 import reactor.core.publisher.Flux
 
-interface EventSubscriber<EventType : GeneratedMessageV3> {
+interface EventSubscriberOutPort<EventType : GeneratedMessageV3> {
 
     fun subscribe(eventKey: String): Flux<EventType>
 }

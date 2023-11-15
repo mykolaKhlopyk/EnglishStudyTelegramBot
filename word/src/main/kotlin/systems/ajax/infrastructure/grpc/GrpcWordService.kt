@@ -3,7 +3,7 @@ package systems.ajax.infrastructure.grpc
 import net.devh.boot.grpc.server.service.GrpcService
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
-import systems.ajax.application.ports.input.WordServiceIn
+import systems.ajax.application.ports.input.WordInPort
 import systems.ajax.infrastructure.nats.mapper.toProto
 import systems.ajax.service.CreateWordDtoRequest as ProtoCreateWordDtoRequest
 import systems.ajax.service.DeleteWordRequest
@@ -19,7 +19,7 @@ import systems.ajax.infrastructure.rest.dto.request.CreateWordDtoRequest
 
 @GrpcService
 class GrpcWordService(
-    val wordService: WordServiceIn,
+    val wordService: WordInPort,
 ) : ReactorWordServiceGrpc.WordServiceImplBase() {
 
     override fun saveNewWord(request: Mono<SaveNewWordRequest>): Mono<SaveNewWordResponse> =

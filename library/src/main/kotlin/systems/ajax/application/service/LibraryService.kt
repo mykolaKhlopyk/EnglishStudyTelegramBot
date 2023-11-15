@@ -5,18 +5,18 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
-import systems.ajax.application.port.out.WordsDeletingFromLibraryRepository
-import systems.ajax.application.ports.input.LibraryServiceIn
-import systems.ajax.application.ports.output.LibraryRepositoryOut
+import systems.ajax.application.ports.output.WordsDeletingFromLibraryRepositoryOutPort
+import systems.ajax.application.ports.input.LibraryInPort
+import systems.ajax.application.ports.output.LibraryRepositoryOutPort
 import systems.ajax.domain.exception.LibraryNotFoundException
 import systems.ajax.domain.exception.LibraryWithTheSameNameForUserAlreadyExistException
 import systems.ajax.domain.model.Library
 
 @Service
 class LibraryService(
-    private val libraryRepository: LibraryRepositoryOut,
-    @Qualifier("wordRepository")private val wordsDeletingFromLibraryRepository: WordsDeletingFromLibraryRepository
-) : LibraryServiceIn {
+    private val libraryRepository: LibraryRepositoryOutPort,
+    @Qualifier("wordRepository")private val wordsDeletingFromLibraryRepositoryOutPort: WordsDeletingFromLibraryRepositoryOutPort
+) : LibraryInPort {
 
     override fun createNewLibrary(
         nameOfNewLibrary: String,
@@ -36,7 +36,7 @@ class LibraryService(
             telegramUserId
         )
         .flatMap { libraryId ->
-            wordsDeletingFromLibraryRepository.deleteAllWordsFromLibrary(libraryId)
+            wordsDeletingFromLibraryRepositoryOutPort.deleteAllWordsFromLibrary(libraryId)
                 .then(
                     libraryRepository.deleteLibrary(libraryId)
                 )

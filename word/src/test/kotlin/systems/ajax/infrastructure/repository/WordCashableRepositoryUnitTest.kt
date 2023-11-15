@@ -14,7 +14,7 @@ import org.springframework.data.redis.core.ReactiveValueOperations
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import reactor.kotlin.test.test
-import systems.ajax.application.port.out.WordsDeletingFromLibraryRepository
+import systems.ajax.application.ports.output.WordsDeletingFromLibraryRepositoryOutPort
 import systems.ajax.domain.model.Word
 import systems.ajax.infrastructure.mongo.repository.WordRepository
 import systems.ajax.infrastructure.redis.repository.WordCashableRepository
@@ -29,7 +29,7 @@ class WordCashableRepositoryUnitTest {
     lateinit var wordRepository: WordRepository
 
     @MockK
-    lateinit var wordsDeletingFromLibraryRepository: WordsDeletingFromLibraryRepository
+    lateinit var wordsDeletingFromLibraryRepositoryOutPort: WordsDeletingFromLibraryRepositoryOutPort
 
     @InjectMockKs
     lateinit var wordCashableRepository: WordCashableRepository

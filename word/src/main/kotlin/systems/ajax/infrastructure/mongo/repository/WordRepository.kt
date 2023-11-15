@@ -22,8 +22,8 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
-import systems.ajax.application.port.out.WordsDeletingFromLibraryRepository
-import systems.ajax.application.ports.output.WordRepositoryOut
+import systems.ajax.application.ports.output.WordsDeletingFromLibraryRepositoryOutPort
+import systems.ajax.application.ports.output.WordRepositoryOutPort
 import systems.ajax.domain.model.Word
 import systems.ajax.infrastructure.mongo.entity.MongoWord
 import systems.ajax.infrastructure.mongo.mapper.toModel
@@ -33,7 +33,7 @@ import systems.ajax.infrastructure.mongo.mapper.toMongoEntity
 @Suppress("TooManyFunctions")
 class WordRepository(
     val mongoTemplate: ReactiveMongoTemplate,
-) : WordRepositoryOut, WordsDeletingFromLibraryRepository {
+) : WordRepositoryOutPort, WordsDeletingFromLibraryRepositoryOutPort {
 
     override fun saveNewWord(word: Word): Mono<Word> =
         mongoTemplate.save(word.toMongoEntity()).map(MongoWord::toModel)

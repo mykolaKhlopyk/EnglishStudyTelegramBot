@@ -1,11 +1,10 @@
 package systems.ajax.application.ports.output
 
-import org.bson.types.ObjectId
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import systems.ajax.domain.model.Library
 
-interface LibraryRepositoryOut {
+interface LibraryRepositoryOutPort {
 
     fun saveNewLibrary(nameOfNewLibrary: String, telegramUserId: String): Mono<Library>
 
