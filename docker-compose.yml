@@ -1,6 +1,7 @@
 version: "3.8"
+
 services:
-  telegram-bot:
+  test:
     build: .
     depends_on:
       mongodb:
@@ -16,22 +17,21 @@ services:
 
     container_name: "telegram-bot"
     ports:
-      - "8082:8080"
+      - "8080:8080"
+
   mongodb:
     image: mongo:6.0
     container_name: "mongodb"
     ports:
       - "27017:27017"
     volumes:
-      - data:/data
-#    environment:
-#      - MONGO_INITDB_ROOT_USERNAME=rootuser
-#      - MONGO_INITDB_ROOT_PASSWORD=rootpass
+      - ./mongodb_data:/data/db
     healthcheck:
       test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
-      interval: 1s
-      timeout: 1s
-      retries: 5
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
   nats:
     image: nats
     container_name: "nats"
@@ -77,7 +77,6 @@ services:
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:29092
+
 volumes:
-  data:
-
-
+  mongo-data:
