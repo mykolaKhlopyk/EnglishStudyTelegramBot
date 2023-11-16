@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package systems.ajax.response_request.word;
+
+import "systems/ajax/entity/word.proto";
+
+option java_multiple_files = true;
+
+message UpdateWordEvent{
+  string spelling = 1;
+  string new_word_translate = 2;
+  string library_name = 3;
+}

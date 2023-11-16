@@ -35,4 +35,5 @@ out/
 
 ### VS Code ###
 .vscode/
-/src/main/resources/key.properties
+/rest/src/main/resources/key.properties
+/rest/src/main/resources/mongodb.yml
